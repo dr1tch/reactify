@@ -15,10 +15,10 @@ const message = execSync('git log -1 --pretty=%B').toString().trim()
 console.log({message})
 
 // get changed files
-console.log({changedFiles: execSync('::set-output name=files::$(git diff-tree --no-commit-id --name-only -r ${{ github.sha }} | xargs)')})
- const changedFiles = execSync('::set-output name=files::$(git diff-tree --no-commit-id --name-only -r ${{ github.sha }} | xargs)').toString().trim().split('\n')
+ const changedFiles = execSync('git --no-pager diff --name-only ${{ github.event.before }} ${{ github.event.after }}')
+ const anotherlist = execSync('git --no-pager diff --name-only HEAD^ HEAD')
 
-console.log({ changedFiles })
+console.log({ changedFiles, anotherlist })
 
 // verify if a file inside ui has changed with regex check
 const uiRegex = /packages\/ui\/.*\.*/
