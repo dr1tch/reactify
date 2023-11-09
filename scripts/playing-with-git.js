@@ -1,15 +1,16 @@
 const { execSync } = require('child_process');
 const fs = require('fs')
-
+const Changes = require('./get-changed-files')
+const {getChangedFiles} = Changes
 // get branch name
 const branch = execSync('git rev-parse --abbrev-ref HEAD').toString().trim()
 
-console.log(branch)
+console.log({branch})
 
 // get commit hash
 const commit = execSync('git rev-parse HEAD').toString().trim()
 
-console.log(commit)
+console.log({commit})
 
 // get commit message
 const message = execSync('git log -1 --pretty=%B').toString().trim()
@@ -17,21 +18,7 @@ const message = execSync('git log -1 --pretty=%B').toString().trim()
 console.log(message)
 
 // get changed files
-let changedFiles = []
-try {
-  const commitCount = execSync('git rev-list --count HEAD').toString().trim();
-  if (parseInt(commitCount) < 2) {
-    console.error('Not enough commits for comparison.');
-    // process.exit(1);
-  }
-
-  changedFiles = execSync('git diff --name-only HEAD^ HEAD').toString().trim().split('\n');
-  console.log('Changed files:', changedFiles);
-} catch (error) {
-  console.error('Error:', error.message);
-//   process.exit(1);
-}
-// const changedFiles = execSync('git diff --name-only HEAD HEAD~1').toString().trim().split('\n')
+ const changedFiles = execSync('git diff --name-only ${{ github.event.before }} ${{ github.event.after }}').toString().trim().split('\n')
 
 console.log({ changedFiles })
 
@@ -44,7 +31,7 @@ console.log(changed)
 const changed2 = changedFiles.filter(file => file.includes('packages/ui')).length > 0
 console.log(changed2)
 
-console.log({process: process})
+// console.log({process: process.env})
 // get the pull request name
 const pullRequestName = execSync('git log -1 --pretty=%s').toString().trim()
 console.log(pullRequestName)
