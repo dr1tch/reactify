@@ -45,7 +45,7 @@ const changed2 = changedFiles.filter(file => file.includes('packages/ui')).lengt
 console.log(changed2)
 
 const githubRef = process.env.GITHUB_REF;
-console.log({githubRef})
+console.log({githubRef, process: process.env})
 if (githubRef && githubRef.startsWith('refs/pull/')) {
   const prNumber = githubRef.match(/refs\/pull\/(\d+)\/merge/);
   if (prNumber) {
