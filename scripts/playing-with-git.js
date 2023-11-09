@@ -15,7 +15,7 @@ console.log({commit})
 // get commit message
 const message = execSync('git log -1 --pretty=%B').toString().trim()
 
-console.log(message)
+console.log({message})
 
 // get changed files
  const changedFiles = execSync('git diff --name-only ${{ github.event.before }} ${{ github.event.after }}').toString().trim().split('\n')
@@ -25,20 +25,20 @@ console.log({ changedFiles })
 // verify if a file inside ui has changed with regex check
 const uiRegex = /packages\/ui\/.*\.*/
 const changed = changedFiles.filter(file => uiRegex.test(file)).length > 0
-console.log(changed)
+console.log({changed})
 
 // verify if a file inside ui has changed with string check
 const changed2 = changedFiles.filter(file => file.includes('packages/ui')).length > 0
-console.log(changed2)
+console.log({changed2})
 
 // console.log({process: process.env})
-// get the pull request name
+// get the pull request name inside 
 const pullRequestName = execSync('git log -1 --pretty=%s').toString().trim()
-console.log(pullRequestName)
+console.log({pullRequestName})
 
 // get the pull request number
 const pullRequestNumber = execSync('git log -1 --pretty=%s').toString().trim()
-console.log(pullRequestNumber)
+console.log({pullRequestNumber})
 
 // get the pull request author
 const pullRequestAuthor = execSync('git log -1 --pretty=%an').toString().trim()
