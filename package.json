@@ -11,5 +11,8 @@
     "changeset": "changeset",
     "version-packages": "changeset version",
     "release": "yarn --cwd packages/ui build && yarn changeset publish"
+  },
+  "devDependencies": {
+    "yarn-changed-workspaces": "^2.0.11"
   }
 }
