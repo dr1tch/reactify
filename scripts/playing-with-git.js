@@ -17,7 +17,7 @@ const message = execSync('git log -1 --pretty=%B').toString().trim()
 console.log(message)
 
 // get changed files
-const changedFiles = execSync('git diff --name-only HEAD HEAD~1').toString().trim().split('\n')
+const changedFiles = execSync('git diff --name-only HEAD^ HEAD').toString().trim().split('\n')
 
 console.log({ changedFiles })
 
