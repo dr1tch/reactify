@@ -1,0 +1,25 @@
+export type Variant = 'ghost' | 'outline' | 'solid' | 'link'
+
+export type Size = 'xs' | 'sm' | 'md' | 'lg' | 'xl'
+
+export type Placement = 'start' | 'end' | 'top' | 'bottom' | 'middle'
+
+export type ColorScheme =
+  | 'whiteAlpha'
+  | 'blackAlpha'
+  | 'gray'
+  | 'red'
+  | 'orange'
+  | 'yellow'
+  | 'green'
+  | 'teal'
+  | 'blue'
+  | 'cyan'
+  | 'purple'
+  | 'pink'
+  | 'linkedin'
+  | 'facebook'
+  | 'messenger'
+  | 'whatsapp'
+  | 'twitter'
+  | 'telegram'
