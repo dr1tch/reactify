@@ -1,7 +1,4 @@
 const { execSync } = require('child_process');
-const fs = require('fs')
-const Changes = require('./get-changed-files')
-const {getChangedFiles} = Changes
 // get branch name
 const branch = execSync('git rev-parse --abbrev-ref HEAD').toString().trim()
 
