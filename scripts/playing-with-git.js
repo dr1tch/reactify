@@ -15,7 +15,8 @@ const message = execSync('git log -1 --pretty=%B').toString().trim()
 console.log({message})
 
 // get changed files
- const changedFiles = execSync('git diff --name-only ${{ github.event.before }} ${{ github.event.after }}').toString().trim().split('\n')
+console.log({changedFiles: execSync('::set-output name=files::$(git diff-tree --no-commit-id --name-only -r ${{ github.sha }} | xargs)')})
+ const changedFiles = execSync('::set-output name=files::$(git diff-tree --no-commit-id --name-only -r ${{ github.sha }} | xargs)').toString().trim().split('\n')
 
 console.log({ changedFiles })
 
