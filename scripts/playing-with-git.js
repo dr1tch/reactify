@@ -44,22 +44,7 @@ console.log(changed)
 const changed2 = changedFiles.filter(file => file.includes('packages/ui')).length > 0
 console.log(changed2)
 
-const githubRef = process.env.GITHUB_REF;
-console.log({githubRef, process: process.env})
-if (githubRef && githubRef.startsWith('refs/pull/')) {
-  const prNumber = githubRef.match(/refs\/pull\/(\d+)\/merge/);
-  if (prNumber) {
-    const prName = `pull/${prNumber[1]}`;
-    console.log(`Pull Request Name: ${prName}`);
-    // fs.writeFileSync('.pr-name', prName);
-  } else {
-    console.error('Error: Unable to extract pull request number.');
-    // process.exit(1);
-  }
-} else {
-  console.error('Error: Not a pull request event.');
-//   process.exit(1);
-}
+
 // get the pull request name
 const pullRequestName = execSync('git log -1 --pretty=%s').toString().trim()
 console.log(pullRequestName)
@@ -70,7 +55,8 @@ console.log(pullRequestNumber)
 
 // get the pull request author
 const pullRequestAuthor = execSync('git log -1 --pretty=%an').toString().trim()
-console.log(pullRequestAuthor)
+const pullRequestTriggeringActor = process.env.GITHUB_TRIGGERING_ACTOR || null
+console.log({pullRequestAuthor, pullRequestTriggeringActor})
 
 const prTitle = process.env.GITHUB_EVENT_NAME === 'pull_request' ? process.env.GITHUB_PULL_REQUEST_TITLE : null;
 const prNumber = process.env.GITHUB_EVENT_NAME === 'pull_request' ? process.env.GITHUB_PULL_REQUEST_NUMBER : null;
