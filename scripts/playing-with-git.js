@@ -15,7 +15,7 @@ const message = execSync('git log -1 --pretty=%B').toString().trim()
 console.log({message})
 
 // get changed files
- const changedFiles =execSync('git --no-pager diff --name-only -- HEAD^ HEAD')
+ const changedFiles =execSync('git --no-pager diff --name-only origin/${{github.head_ref}} origin/${{github.base_ref}}')
 //  const anotherlist = execSync('git --no-pager diff --name-only HEAD^ HEAD')
 
 console.log({ changedFiles, anotherlist })
