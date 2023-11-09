@@ -1,5 +1,5 @@
 const { execSync } = require('child_process');
-
+const fs = require('fs')
 
 // get branch name
 const branch = execSync('git rev-parse --abbrev-ref HEAD').toString().trim()
@@ -44,7 +44,21 @@ console.log(changed)
 const changed2 = changedFiles.filter(file => file.includes('packages/ui')).length > 0
 console.log(changed2)
 
-
+const githubRef = process.env.GITHUB_REF;
+if (githubRef && githubRef.startsWith('refs/pull/')) {
+  const prNumber = githubRef.match(/refs\/pull\/(\d+)\/merge/);
+  if (prNumber) {
+    const prName = `pull/${prNumber[1]}`;
+    console.log(`Pull Request Name: ${prName}`);
+    // fs.writeFileSync('.pr-name', prName);
+  } else {
+    console.error('Error: Unable to extract pull request number.');
+    // process.exit(1);
+  }
+} else {
+  console.error('Error: Not a pull request event.');
+//   process.exit(1);
+}
 // get the pull request name
 const pullRequestName = execSync('git log -1 --pretty=%s').toString().trim()
 console.log(pullRequestName)
