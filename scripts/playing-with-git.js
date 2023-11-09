@@ -16,7 +16,7 @@ console.log({message})
 
 // get changed files
 console.log({changes: execSync('git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | xargs')})
- const changedFiles =execSync('git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | xargs').toString().trim().split('\n')
+ const changedFiles =execSync('git diff --name-only ${{ github.event.before }} ${{ github.event.after }}').toString().trim().split('\n')
 //  const anotherlist = execSync('git --no-pager diff --name-only HEAD^ HEAD')
 
 console.log({ changedFiles })
