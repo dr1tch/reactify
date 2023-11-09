@@ -13,6 +13,7 @@
     "release": "yarn --cwd packages/ui build && yarn changeset publish"
   },
   "devDependencies": {
+    "@octokit/core": "4.2.4",
     "yarn-changed-workspaces": "^2.0.11"
   }
 }
