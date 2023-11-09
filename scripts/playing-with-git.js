@@ -22,14 +22,14 @@ try {
   const commitCount = execSync('git rev-list --count HEAD').toString().trim();
   if (parseInt(commitCount) < 2) {
     console.error('Not enough commits for comparison.');
-    process.exit(1);
+    // process.exit(1);
   }
 
   changedFiles = execSync('git diff --name-only HEAD^ HEAD').toString().trim().split('\n');
   console.log('Changed files:', changedFiles);
 } catch (error) {
   console.error('Error:', error.message);
-  process.exit(1);
+//   process.exit(1);
 }
 // const changedFiles = execSync('git diff --name-only HEAD HEAD~1').toString().trim().split('\n')
 
