@@ -1,52 +1,49 @@
 {
-  "name": "@react-super/ui",
-  "private": false,
-  "version": "0.0.1",
-  "license": "MIT",
-  "type": "module",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/dr1tch/reactify"
-  },
-  "main": "./dist/index.umd.js",
-  "module": "./dist/index.es.js",
-  "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.es.js",
-      "require": "./dist/index.umd.js"
+    "name": "@react-super/ui",
+    "private": false,
+    "version": "0.0.1",
+    "license": "MIT",
+    "type": "module",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/dr1tch/reactify"
     },
-    "./dist/style.css": "./dist/style.css"
-  },
-  "engines": {
-    "node": "18"
-  },
-  "sideEffects": [
-    "**/*.css"
-  ],
-  "scripts": {
-    "story:dev": "storybook dev -p 6006",
-    "story:build": "storybook build",
-    "build:lib": "tsc && vite build",
-    "build:style": "postcss src/style/index.css --verbose -o dist/styles.css",
-    "lint": "eslint --ext .js,.jsx,.ts,tsx --report-unused-disable-directives --max-warnings 0 --fix",
-    "prettier": "prettier --write \"src/**/*.{ts,tsx,js,mdx}\"",
-    "test": "vitest",
-    "build": "yarn build:lib && yarn build:style",
-    "test:cov": "vitest run --coverage",
-    "prepack": "json -f package.json -I -e \"delete this.devDependencies; delete this.dependencies\""
-  },
-  "peerDependencies": {
-    "react": "18.2.0",
-    "react-dom": "18.2.0"
-  },
-  "files": [
-    "dist"
-  ],
-  "lint-staged": {
-    "*.{ts,tsx,js,jsx,json,css,md}": [
-      "prettier -w"
-    ]
-  }
+    "main": "./dist/index.umd.js",
+    "module": "./dist/index.es.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.es.js",
+            "require": "./dist/index.umd.js"
+        },
+        "./dist/style.css": "./dist/style.css"
+    },
+    "sideEffects": [
+        "**/*.css"
+    ],
+    "scripts": {
+        "story:dev": "storybook dev -p 6006",
+        "story:build": "storybook build",
+        "build:lib": "tsc && vite build",
+        "build:style": "postcss src/style/index.css --verbose -o dist/styles.css",
+        "lint": "eslint --ext .js,.jsx,.ts,tsx --report-unused-disable-directives --max-warnings 0 --fix",
+        "prettier": "prettier --write \"src/**/*.{ts,tsx,js,mdx}\"",
+        "test": "vitest",
+        "build": "yarn build:lib && yarn build:style",
+        "test:cov": "vitest run --coverage",
+        "prepack": "json -f package.json -I -e \"delete this.devDependencies; delete this.dependencies\""
+    },
+    "peerDependencies": {
+        "react": "18.2.0",
+        "react-dom": "18.2.0"
+    },
+    "files": [
+        "dist"
+    ],
+    "lint-staged": {
+        "*.{ts,tsx,js,jsx,json,css,md}": [
+            "prettier -w"
+        ]
+    }
 }
