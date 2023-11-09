@@ -44,7 +44,7 @@ console.log(changed)
 const changed2 = changedFiles.filter(file => file.includes('packages/ui')).length > 0
 console.log(changed2)
 
-
+console.log({process: process})
 // get the pull request name
 const pullRequestName = execSync('git log -1 --pretty=%s').toString().trim()
 console.log(pullRequestName)
