@@ -149,6 +149,7 @@ const main = async() => {
             console.log('Package Version:', versionOutput);
         } catch (error) {
             // Handle errors
+            console.log({ error })
             console.error('Error during release:', error.message);
             process.exit(1); // Exit with an error code
         }
