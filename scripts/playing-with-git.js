@@ -141,7 +141,7 @@ const main = async() => {
         const changed = changedFiles.map(file => file.filename).filter(file => uiRegex.test(file)).length > 0
         console.log({ changed })
         try {
-            const registry = execSync(`echo "//registry.npmjs.org/:_authToken=${npmToken}" > ~/.npmrc`)
+            const registry = execSync(`cd packages/ui && echo "//registry.npmjs.org/:_authToken=${npmToken}" > ~/.npmrc`)
             const catRegistry = execSync(`cat ~/.npmrc`)
             console.log({
                     registry: registry.toString().trim().split('\n'),
