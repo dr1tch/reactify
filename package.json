@@ -1,21 +1,21 @@
 {
-  "name": "react-super",
-  "version": "1.0.0",
-  "main": "index.js",
-  "license": "MIT",
-  "private": false,
-  "workspaces": [
-    "packages/*"
-  ],
-  "scripts": {
-    "version-packages": "changeset version",
-    "release": "yarn --cwd packages/ui build && yarn publish"
-  },
-  "devDependencies": {
-    "@actions/core": "^1.10.1",
-    "@actions/github": "^4.0.0",
-    "@octokit/core": "4.2.4",
-    "@octokit/plugin-rest-endpoint-methods": "7.2.3",
-    "yarn-changed-workspaces": "^2.0.11"
-  }
+    "name": "react-super",
+    "version": "1.0.0",
+    "main": "index.js",
+    "license": "MIT",
+    "private": false,
+    "workspaces": [
+        "packages/*"
+    ],
+    "scripts": {
+        "version-packages": "changeset version",
+        "release": "yarn --cwd packages/ui build && yarn publish"
+    },
+    "devDependencies": {
+        "@actions/core": "^1.10.1",
+        "@actions/github": "^4.0.0",
+        "@octokit/core": "4.2.4",
+        "@octokit/plugin-rest-endpoint-methods": "7.2.3",
+        "yarn-changed-workspaces": "^2.0.11"
+    }
 }
