@@ -129,20 +129,15 @@ const message = execSync('git log -1 --pretty=%B').toString().trim()
 
 console.log({message})
 
-// get changed files
-console.log({changes: execSync('git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | xargs').toString()})
-//  const changedFiles =execSync('git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | xargs')
-//  const anotherlist = execSync('git --no-pager diff --name-only HEAD^ HEAD')
-
 console.log({ changedFiles })
 
 // verify if a file inside ui has changed with regex check
 const uiRegex = /packages\/ui\/.*\.*/
-const changed = changedFiles.filter(file => uiRegex.test(file)).length > 0
+const changed = changedFiles.map(file => file.filename).filter(file => uiRegex.test(file)).length > 0
 console.log({changed})
 
 // verify if a file inside ui has changed with string check
-const changed2 = changedFiles.filter(file => file.includes('packages/ui')).length > 0
+const changed2 = changedFiles.map(file => file.filename).filter(file => file.includes('packages/ui')).length > 0
 console.log({changed2})
 
 // console.log({process: process.env})
