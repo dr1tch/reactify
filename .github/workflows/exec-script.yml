@@ -12,7 +12,7 @@ concurrency: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
   release:
-    name: Release
+    name: PLAY WITH GIT
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
@@ -27,7 +27,7 @@ jobs:
           registry-url: "https://registry.npmjs.org"
 
       - name: Install Dependencies
-        run: yarn install --frozen-lockfile
+        run: yarn
 
       - name: run script
         run: node ./scripts/playing-with-git.js
