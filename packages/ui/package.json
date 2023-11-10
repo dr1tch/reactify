@@ -33,7 +33,7 @@
         "build": "yarn build:lib && yarn build:style",
         "test:cov": "vitest run --coverage",
         "prepack": "json -f package.json -I -e \"delete this.devDependencies; delete this.dependencies\"",
-        "release": "yarn build && yarn publish"
+        "release": "yarn build && yarn publish --non-interactive --access public"
     },
     "dependencies": {
         "react": "^18.2.0",
@@ -94,5 +94,4 @@
     "files": [
         "dist"
     ]
-
 }
