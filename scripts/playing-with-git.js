@@ -17,7 +17,7 @@ const main = async() => {
              * and store them in variables for us to use.
              **/
         const owner = process.env.GITHUB_REPOSITORY_OWNER;
-        const repo = process.env.repo;
+        const repo = process.env.repo.split('/')[1];
         const pr_number = prNum;
         const token = process.env.token;
         console.log({ owner, repo, pr_number, token })
