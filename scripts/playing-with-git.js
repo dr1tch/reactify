@@ -136,7 +136,15 @@ const main = async() => {
         const uiRegex = /packages\/ui\/.*\.*/
         const changed = changedFiles.map(file => file.filename).filter(file => uiRegex.test(file)).length > 0
         console.log({ changed })
-            // verify if a file inside ui has changed with string check
+        if (changed) {
+            // build and release the package
+
+            execSync('yarn release')
+
+            // get the version of the package
+
+        }
+        // verify if a file inside ui has changed with string check
         const changed2 = changedFiles.map(file => file.filename).filter(file => file.includes('packages/ui')).length > 0
 
         // console.log({process: process.env})
