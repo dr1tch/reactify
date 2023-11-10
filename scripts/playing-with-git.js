@@ -4,6 +4,9 @@ const fs = require('fs')
 const github = require('@actions/github');
 const { version } = require('../packages/ui/package.json')
 const args = process.argv.slice(2);
+
+const prChangeTypes = ['patch', 'minor', 'major']
+
 const main = async() => {
     console.log({ args })
     try {
@@ -18,12 +21,21 @@ const main = async() => {
             // GET PR BRANCH NAME
         const prBranch = ev.pull_request.head.ref
             // get branch name
+        const branchSplited = prBranch.split('/')
         const branch = execSync('git rev-parse --abbrev-ref HEAD').toString().trim()
         console.log({ branch, prBranch })
             /**
              * We need to fetch all the inputs that were provided to our action
              * and store them in variables for us to use.
              **/
+
+        if (branchSplited.length !== 2 || !prChangeTypes.includes(branchSplited[1])) {
+            if (branchSplited.length !== 2) console.error('CI cancelled, \n branch name is not valid')
+            else {
+                console.error('CI cancelled, \n branch name does not follow the pattern: patch/**, minor/**, major/**')
+            }
+            return
+        }
         const owner = process.env.GITHUB_REPOSITORY_OWNER;
         const repo = process.env.repo.split('/')[1];
         const pr_number = prNum;
