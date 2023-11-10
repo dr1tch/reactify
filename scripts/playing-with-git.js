@@ -8,10 +8,10 @@ const main = async() => {
          * We need to fetch all the inputs that were provided to our action
          * and store them in variables for us to use.
          **/
-        const owner = process.env.OWNER;
-        const repo = process.env.REPO;
-        const pr_number = process.env.PR_NUMBER;
-        const token = process.env.TOKEN;
+        const owner = process.env.GITHUB_REPOSITORY_OWNER;
+        const repo = process.env.GITHUB_REPOSITORY;
+        const pr_number = execSync('git log -1 --pretty=%s').toString().trim();
+        const token = process.env.token;
         console.log({ owner, repo, pr_number, token, process: process.env })
             /**
              * Now we need to create an instance of Octokit which will use to call
