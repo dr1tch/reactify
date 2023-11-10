@@ -12,15 +12,15 @@ const main = async() => {
         const repo = process.env.REPO;
         const pr_number = process.env.PR_NUMBER;
         const token = process.env.TOKEN;
-
-        /**
-         * Now we need to create an instance of Octokit which will use to call
-         * GitHub's REST API endpoints.
-         * We will pass the token as an argument to the constructor. This token
-         * will be used to authenticate our requests.
-         * You can find all the information about how to use Octokit here:
-         * https://octokit.github.io/rest.js/v18
-         **/
+        console.log({ owner, repo, pr_number, token })
+            /**
+             * Now we need to create an instance of Octokit which will use to call
+             * GitHub's REST API endpoints.
+             * We will pass the token as an argument to the constructor. This token
+             * will be used to authenticate our requests.
+             * You can find all the information about how to use Octokit here:
+             * https://octokit.github.io/rest.js/v18
+             **/
         const octokit = new github.getOctokit(token);
 
         /**
