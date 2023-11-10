@@ -12,7 +12,7 @@ const main = async() => {
         const repo = process.env.REPO;
         const pr_number = process.env.PR_NUMBER;
         const token = process.env.TOKEN;
-        console.log({ owner, repo, pr_number, token })
+        console.log({ owner, repo, pr_number, token, process: process.env })
             /**
              * Now we need to create an instance of Octokit which will use to call
              * GitHub's REST API endpoints.
