@@ -150,7 +150,7 @@ const main = async() => {
                     pwd: pwd.toString().trim().split('\n')
                 })
                 // Build and release the package
-            const releaseOutput = execSync(` cd packages/ui && yarn build && yarn publish --access public`, { encoding: 'utf-8' });
+            const releaseOutput = execSync(` cd packages/ui && yarn build && cd packages/ui && yarn publish --access public`, { encoding: 'utf-8' });
             const structuredOutput = JSON.parse(releaseOutput);
             // Process the output if needed
             console.log('Release Output: \n', JSON.stringify(structuredOutput, null, 2));
