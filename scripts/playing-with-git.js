@@ -3,14 +3,17 @@ const core = require('@actions/core');
 const fs = require('fs')
 const github = require('@actions/github');
 const { version } = require('../packages/ui/package.json')
-
+const args = process.argv.slice(2);
 const main = async() => {
+    console.log({ args })
     try {
-
-        // GET pull request number
+        const [major, minor, patch] = version.split('.').map(v => parseInt(v))
+        console.log({ major, minor, patch, upgraded: [major, minor, patch + 1].join('.') })
+            // GET pull request number
         const ev = JSON.parse(
             fs.readFileSync(process.env.GITHUB_EVENT_PATH, 'utf8')
         )
+        console.log({ ev })
         const prNum = ev.number
             /**
              * We need to fetch all the inputs that were provided to our action

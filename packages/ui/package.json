@@ -6,7 +6,7 @@
     "type": "module",
     "repository": {
         "type": "git",
-        "url": "https://github.com/dr1tch/reactify"
+        "url": "https://github.com/dr1tch/reactify/tree/master/packages/ui"
     },
     "main": "./dist/index.umd.js",
     "module": "./dist/index.es.js",
