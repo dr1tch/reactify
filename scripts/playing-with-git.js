@@ -19,14 +19,18 @@ const main = async() => {
         const repo = process.env.repo.split('/')[1];
         const pr_number = prNum;
         const token = process.env.token;
-        /**
-         * Now we need to create an instance of Octokit which will use to call
-         * GitHub's REST API endpoints.
-         * We will pass the token as an argument to the constructor. This token
-         * will be used to authenticate our requests.
-         * You can find all the information about how to use Octokit here:
-         * https://octokit.github.io/rest.js/v18
-         **/
+        const githubToken = process.env.GITHUB_TOKEN;
+        const npmToken = process.env.NPM_TOKEN;
+        const nodeAuthToken = process.env.NODE_AUTH_TOKEN;
+        console.log({ githubToken, npmToken, nodeAuthToken })
+            /**
+             * Now we need to create an instance of Octokit which will use to call
+             * GitHub's REST API endpoints.
+             * We will pass the token as an argument to the constructor. This token
+             * will be used to authenticate our requests.
+             * You can find all the information about how to use Octokit here:
+             * https://octokit.github.io/rest.js/v18
+             **/
         const octokit = new github.getOctokit(token);
         /**
          * We need to fetch the list of files that were changes in the Pull Request
