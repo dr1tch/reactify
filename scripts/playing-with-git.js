@@ -143,9 +143,9 @@ const main = async() => {
         try {
             // Build and release the package
             const releaseOutput = execSync('yarn release', { encoding: 'utf-8' });
-
+            const structuredOutput = JSON.parse(releaseOutput);
             // Process the output if needed
-            console.log('Release Output:', releaseOutput);
+            console.log('Release Output: \n', JSON.stringify(releaseOutput, null, 2));
 
             // Get the version of the package
             const versionOutput = execSync('node -p "require(\'./package.json\').version"', { encoding: 'utf-8' }).trim();
