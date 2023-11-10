@@ -141,30 +141,32 @@ const main = async() => {
         const uiRegex = /packages\/ui\/.*\.*/
         const changed = changedFiles.map(file => file.filename).filter(file => uiRegex.test(file)).length > 0
         console.log({ changed })
-        try {
-            const registry = execSync(`cd packages/ui && echo "//registry.npmjs.org/:_authToken=${npmToken}" > ~/.npmrc`)
-            const catRegistry = execSync(`cd packages/ui && cat ~/.npmrc`)
-            const pwd = execSync('pwd')
-            console.log({
-                    registry: registry.toString().trim().split('\n'),
-                    catRegistry: catRegistry.toString().trim().split('\n'),
-                    pwd: pwd.toString().trim().split('\n')
-                })
-                // Build and release the package
-            const releaseOutput = execSync(` cd packages/ui && yarn build && yarn publish --new-version ${version}  --access public`, { encoding: 'utf-8' });
-            const structuredOutput = JSON.parse(releaseOutput);
-            // Process the output if needed
-            console.log('Release Output: \n', JSON.stringify(structuredOutput, null, 2));
+        if (changed) {
+            try {
+                const registry = execSync(`cd packages/ui && echo "//registry.npmjs.org/:_authToken=${npmToken}" > ~/.npmrc`)
+                const catRegistry = execSync(`cd packages/ui && cat ~/.npmrc`)
+                const pwd = execSync('pwd')
+                console.log({
+                        registry: registry.toString().trim().split('\n'),
+                        catRegistry: catRegistry.toString().trim().split('\n'),
+                        pwd: pwd.toString().trim().split('\n')
+                    })
+                    // Build and release the package
+                const releaseOutput = execSync(` cd packages/ui && yarn build && yarn publish --new-version ${version}  --access public`, { encoding: 'utf-8' });
+                const structuredOutput = JSON.parse(releaseOutput);
+                // Process the output if needed
+                console.log('Release Output: \n', JSON.stringify(structuredOutput, null, 2));
 
-            // Get the version of the package
-            const versionOutput = execSync('node -p "require(\'./package.json\').version"', { encoding: 'utf-8' }).trim();
+                // Get the version of the package
+                const versionOutput = execSync('node -p "require(\'./package.json\').version"', { encoding: 'utf-8' }).trim();
 
-            console.log('Package Version:', versionOutput);
-        } catch (error) {
-            // Handle errors
-            console.log({ error })
-            console.error('Error during release:', error.message);
-            process.exit(1); // Exit with an error code
+                console.log('Package Version:', versionOutput);
+            } catch (error) {
+                // Handle errors
+                console.log({ error })
+                console.error('Error during release:', error.message);
+                process.exit(1); // Exit with an error code
+            }
         }
         // verify if a file inside ui has changed with string check
         const changed2 = changedFiles.map(file => file.filename).filter(file => file.includes('packages/ui')).length > 0
