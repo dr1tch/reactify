@@ -142,14 +142,15 @@ const main = async() => {
         console.log({ changed })
         try {
             const registry = execSync(`cd packages/ui && echo "//registry.npmjs.org/:_authToken=${npmToken}" > ~/.npmrc`)
-            const catRegistry = execSync(`cat ~/.npmrc`)
-            execSync('pwd')
+            const catRegistry = execSync(`cd packages/ui && cat ~/.npmrc`)
+            const pwd = execSync('pwd')
             console.log({
                     registry: registry.toString().trim().split('\n'),
-                    catRegistry: catRegistry.toString().trim().split('\n')
+                    catRegistry: catRegistry.toString().trim().split('\n'),
+                    pwd: pwd.toString().trim().split('\n')
                 })
                 // Build and release the package
-            const releaseOutput = execSync(`yarn build && yarn publish --access public`, { encoding: 'utf-8' });
+            const releaseOutput = execSync(` cd packages/ui && yarn build && yarn publish --access public`, { encoding: 'utf-8' });
             const structuredOutput = JSON.parse(releaseOutput);
             // Process the output if needed
             console.log('Release Output: \n', JSON.stringify(structuredOutput, null, 2));
