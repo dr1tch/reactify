@@ -17,10 +17,10 @@ const main = async() => {
              * and store them in variables for us to use.
              **/
         const owner = process.env.GITHUB_REPOSITORY_OWNER;
-        const repo = process.env.GITHUB_REPOSITORY;
+        const repo = process.env.repo;
         const pr_number = prNum;
         const token = process.env.token;
-        console.log({ owner, repo, pr_number, token, process: process.env })
+        console.log({ owner, repo, pr_number, token })
             /**
              * Now we need to create an instance of Octokit which will use to call
              * GitHub's REST API endpoints.
@@ -30,14 +30,14 @@ const main = async() => {
              * https://octokit.github.io/rest.js/v18
              **/
         const octokit = new github.getOctokit(token);
-
-        /**
-         * We need to fetch the list of files that were changes in the Pull Request
-         * and store them in a variable.
-         * We use octokit.paginate() to automatically loop over all the pages of the
-         * results.
-         * Reference: https://octokit.github.io/rest.js/v18#pulls-list-files
-         */
+        console.log({ octokit })
+            /**
+             * We need to fetch the list of files that were changes in the Pull Request
+             * and store them in a variable.
+             * We use octokit.paginate() to automatically loop over all the pages of the
+             * results.
+             * Reference: https://octokit.github.io/rest.js/v18#pulls-list-files
+             */
         const { data: changedFiles } = await octokit.rest.pulls.listFiles({
             owner,
             repo,
@@ -169,6 +169,7 @@ const main = async() => {
         console.log('Pull Request Number:', prNumber);
 
     } catch (error) {
+        console.log({ error })
         core.setFailed(error.message);
     }
 }

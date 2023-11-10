@@ -33,6 +33,6 @@ jobs:
         run: node ./scripts/playing-with-git.js
         env:
           owner: ${{ github.repository_owner }}
-          repo: ${{ github.event.repository.name }}
+          repo: ${{ github.repository }}
           pr_number: ${{ github.event.number }}
           token: ${{ secrets.GITHUB_TOKEN }}
