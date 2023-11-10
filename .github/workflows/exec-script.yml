@@ -27,7 +27,7 @@ jobs:
           registry-url: "https://registry.npmjs.org"
 
       - name: Install Dependencies
-        run: yarn
+        run: yarn install --frozen-lockfile
 
       - name: run script
         run: node ./scripts/playing-with-git.js
