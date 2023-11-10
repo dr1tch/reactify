@@ -15,9 +15,11 @@ const main = async() => {
             )
             // console.log({ ev })
         const prNum = ev.number
+            // GET PR BRANCH NAME
+        const prBranch = ev.pull_request.head.ref
             // get branch name
         const branch = execSync('git rev-parse --abbrev-ref HEAD').toString().trim()
-        console.log({ branch })
+        console.log({ branch, prBranch })
             /**
              * We need to fetch all the inputs that were provided to our action
              * and store them in variables for us to use.
