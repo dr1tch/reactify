@@ -109,6 +109,7 @@ const main = async () => {
         - ${diffData.changes} changes \n
         - ${diffData.additions} additions \n
         - ${diffData.deletions} deletions \n
+        - changed files: ${changedFiles.map(file => file.filename)}
       `
     });
 
