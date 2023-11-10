@@ -2,24 +2,47 @@ const { execSync } = require('child_process');
 const core = require('@actions/core');
 const fs = require('fs')
 const github = require('@actions/github');
+const { version } = require('../packages/ui/package.json')
+const args = process.argv.slice(2);
+
+const prChangeTypes = ['patch', 'minor', 'major']
 
 const main = async() => {
+    console.log({ args })
     try {
-
-        // GET pull request number
+        const [major, minor, patch] = version.split('.').map(v => parseInt(v))
+        console.log({ major, minor, patch, upgraded: [major, minor, patch + 1].join('.') })
+            // GET pull request number
         const ev = JSON.parse(
-            fs.readFileSync(process.env.GITHUB_EVENT_PATH, 'utf8')
-        )
-        const prNum = ev.pull_request.number
+                fs.readFileSync(process.env.GITHUB_EVENT_PATH, 'utf8')
+            )
+            // console.log({ ev })
+        const prNum = ev.number
+            // GET PR BRANCH NAME
+        const prBranch = ev.pull_request.head.ref
+            // get branch name
+        const branchSplited = prBranch.split('/')
+        const branch = execSync('git rev-parse --abbrev-ref HEAD').toString().trim()
+        console.log({ branch, prBranch })
             /**
              * We need to fetch all the inputs that were provided to our action
              * and store them in variables for us to use.
              **/
+
+        if (branchSplited.length !== 2 || !prChangeTypes.includes(branchSplited[1])) {
+            console.error('########################################################################################')
+            console.error('Branch name does not follow the pattern: patch/**, minor/**, major/**, CI cancelled ')
+            console.error('########################################################################################')
+            return
+        }
         const owner = process.env.GITHUB_REPOSITORY_OWNER;
-        const repo = process.env.GITHUB_REPOSITORY;
+        const repo = process.env.repo.split('/')[1];
         const pr_number = prNum;
         const token = process.env.token;
-        console.log({ owner, repo, pr_number, token, process: process.env })
+        const githubToken = process.env.GITHUB_TOKEN;
+        const npmToken = process.env.NPM_TOKEN;
+        const nodeAuthToken = process.env.NODE_AUTH_TOKEN;
+        console.log({ githubToken, npmToken, nodeAuthToken })
             /**
              * Now we need to create an instance of Octokit which will use to call
              * GitHub's REST API endpoints.
@@ -29,7 +52,6 @@ const main = async() => {
              * https://octokit.github.io/rest.js/v18
              **/
         const octokit = new github.getOctokit(token);
-
         /**
          * We need to fetch the list of files that were changes in the Pull Request
          * and store them in a variable.
@@ -42,7 +64,6 @@ const main = async() => {
             repo,
             pull_number: pr_number,
         });
-
         /**
          * Contains the sum of all the additions, deletions, and changes
          * in all the files in the Pull Request.
@@ -121,53 +142,68 @@ const main = async() => {
         });
 
 
-        // get branch name
-        const branch = execSync('git rev-parse --abbrev-ref HEAD').toString().trim()
+        // const branch = execSync('git rev-parse --abbrev-ref HEAD').toString().trim()
 
-        console.log({ branch })
 
         // get commit hash
         const commit = execSync('git rev-parse HEAD').toString().trim()
 
-        console.log({ commit })
 
         // get commit message
         const message = execSync('git log -1 --pretty=%B').toString().trim()
 
-        console.log({ message })
 
-        console.log({ changedFiles })
+        console.log({ "pkg-version": version })
 
         // verify if a file inside ui has changed with regex check
         const uiRegex = /packages\/ui\/.*\.*/
         const changed = changedFiles.map(file => file.filename).filter(file => uiRegex.test(file)).length > 0
         console.log({ changed })
+        if (changed) {
+            try {
+                const registry = execSync(`cd packages/ui && echo "//registry.npmjs.org/:_authToken=${npmToken}" > ~/.npmrc`)
+                const catRegistry = execSync(`cd packages/ui && cat ~/.npmrc`)
+                const pwd = execSync('pwd')
+                console.log({
+                        registry: registry.toString().trim().split('\n'),
+                        catRegistry: catRegistry.toString().trim().split('\n'),
+                        pwd: pwd.toString().trim().split('\n')
+                    })
+                    // Build and release the package
+                const releaseOutput = execSync(` cd packages/ui && yarn build && yarn publish --new-version ${version}  --access public`, { encoding: 'utf-8' });
+                const structuredOutput = JSON.parse(releaseOutput);
+                // Process the output if needed
+                console.log('Release Output: \n', JSON.stringify(structuredOutput, null, 2));
 
+                // Get the version of the package
+                const versionOutput = execSync('node -p "require(\'./package.json\').version"', { encoding: 'utf-8' }).trim();
+
+                console.log('Package Version:', versionOutput);
+            } catch (error) {
+                // Handle errors
+                console.log({ error })
+                console.error('Error during release:', error.message);
+                process.exit(1); // Exit with an error code
+            }
+        }
         // verify if a file inside ui has changed with string check
         const changed2 = changedFiles.map(file => file.filename).filter(file => file.includes('packages/ui')).length > 0
-        console.log({ changed2 })
 
         // console.log({process: process.env})
         // get the pull request name inside 
         const pullRequestName = execSync('git log -1 --pretty=%s').toString().trim()
-        console.log({ pullRequestName })
 
         // get the pull request number
         const pullRequestNumber = execSync('git log -1 --pretty=%s').toString().trim()
-        console.log({ pullRequestNumber })
 
         // get the pull request author
         const pullRequestAuthor = execSync('git log -1 --pretty=%an').toString().trim()
         const pullRequestTriggeringActor = process.env.GITHUB_TRIGGERING_ACTOR || null
-        console.log({ pullRequestAuthor, pullRequestTriggeringActor })
 
-        const prTitle = process.env.GITHUB_EVENT_NAME === 'pull_request' ? process.env.GITHUB_PULL_REQUEST_TITLE : null;
-        const prNumber = process.env.GITHUB_EVENT_NAME === 'pull_request' ? process.env.GITHUB_PULL_REQUEST_NUMBER : null;
 
-        console.log('Pull Request Title:', prTitle);
-        console.log('Pull Request Number:', prNumber);
 
     } catch (error) {
+        console.log({ error })
         core.setFailed(error.message);
     }
 }

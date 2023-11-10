@@ -12,7 +12,7 @@ concurrency: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
   release:
-    name: Release
+    name: PLAY WITH GIT
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
@@ -33,6 +33,9 @@ jobs:
         run: node ./scripts/playing-with-git.js
         env:
           owner: ${{ github.repository_owner }}
-          repo: ${{ github.event.repository.name }}
+          repo: ${{ github.repository }}
           pr_number: ${{ github.event.number }}
           token: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.npm_token_test }}
+          NODE_AUTH_TOKEN: ${{ secrets.npm_token_test }}
