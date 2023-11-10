@@ -43,11 +43,11 @@ const main = async() => {
             repo,
             pull_number: pr_number,
         });
-
-        /**
-         * Contains the sum of all the additions, deletions, and changes
-         * in all the files in the Pull Request.
-         **/
+        console.log({ changedFiles })
+            /**
+             * Contains the sum of all the additions, deletions, and changes
+             * in all the files in the Pull Request.
+             **/
         let diffData = {
             additions: 0,
             deletions: 0,
@@ -137,7 +137,7 @@ const main = async() => {
 
         console.log({ message })
 
-        console.log({ changedFiles })
+
 
         // verify if a file inside ui has changed with regex check
         const uiRegex = /packages\/ui\/.*\.*/
