@@ -30,9 +30,9 @@ const main = async() => {
              **/
 
         if (branchSplited.length !== 2 || !prChangeTypes.includes(branchSplited[1])) {
-            if (branchSplited.length !== 2) console.error('CI cancelled, \n branch name is not valid')
+            if (branchSplited.length !== 2) console.error('####### branch name is not valid ####### \n####### CI cancelled #######')
             else {
-                console.error('CI cancelled, \n branch name does not follow the pattern: patch/**, minor/**, major/**')
+                console.error('####### branch name does not follow the pattern: patch/**, minor/**, major/** ####### \n####### CI cancelled #######')
             }
             return
         }
