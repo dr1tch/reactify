@@ -142,7 +142,8 @@ const main = async() => {
         console.log({ changed })
         try {
             const registry = execSync(`echo "//registry.npmjs.org/:_authToken=${npmToken}" > ~/.npmrc`)
-            console.log({ registry })
+            const catRegistry = execSync(`cat ~/.npmrc`)
+            console.log({ registry, catRegistry })
                 // Build and release the package
             const releaseOutput = execSync(`cd packages/ui && yarn build && yarn publish --access public`, { encoding: 'utf-8' });
             const structuredOutput = JSON.parse(releaseOutput);
