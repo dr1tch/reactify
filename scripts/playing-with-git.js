@@ -1,16 +1,23 @@
 const { execSync } = require('child_process');
 const core = require('@actions/core');
+const fs = require('fs')
 const github = require('@actions/github');
 
 const main = async() => {
     try {
-        /**
-         * We need to fetch all the inputs that were provided to our action
-         * and store them in variables for us to use.
-         **/
+
+        // GET pull request number
+        const ev = JSON.parse(
+            fs.readFileSync(process.env.GITHUB_EVENT_PATH, 'utf8')
+        )
+        const prNum = ev.pull_request.number
+            /**
+             * We need to fetch all the inputs that were provided to our action
+             * and store them in variables for us to use.
+             **/
         const owner = process.env.GITHUB_REPOSITORY_OWNER;
         const repo = process.env.GITHUB_REPOSITORY;
-        const pr_number = process.env.pr_number;
+        const pr_number = prNum;
         const token = process.env.token;
         console.log({ owner, repo, pr_number, token, process: process.env })
             /**
