@@ -11,10 +11,13 @@ const main = async() => {
         console.log({ major, minor, patch, upgraded: [major, minor, patch + 1].join('.') })
             // GET pull request number
         const ev = JSON.parse(
-            fs.readFileSync(process.env.GITHUB_EVENT_PATH, 'utf8')
-        )
-        console.log({ ev })
+                fs.readFileSync(process.env.GITHUB_EVENT_PATH, 'utf8')
+            )
+            // console.log({ ev })
         const prNum = ev.number
+            // get branch name
+        const branch = execSync('git rev-parse --abbrev-ref HEAD').toString().trim()
+        console.log({ branch })
             /**
              * We need to fetch all the inputs that were provided to our action
              * and store them in variables for us to use.
@@ -126,8 +129,7 @@ const main = async() => {
         });
 
 
-        // get branch name
-        const branch = execSync('git rev-parse --abbrev-ref HEAD').toString().trim()
+        // const branch = execSync('git rev-parse --abbrev-ref HEAD').toString().trim()
 
 
         // get commit hash
