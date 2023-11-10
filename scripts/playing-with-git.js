@@ -136,13 +136,21 @@ const main = async() => {
         const uiRegex = /packages\/ui\/.*\.*/
         const changed = changedFiles.map(file => file.filename).filter(file => uiRegex.test(file)).length > 0
         console.log({ changed })
-        if (changed) {
-            // build and release the package
+        try {
+            // Build and release the package
+            const releaseOutput = execSync('yarn release', { encoding: 'utf-8' });
 
-            execSync('yarn release')
+            // Process the output if needed
+            console.log('Release Output:', releaseOutput);
 
-            // get the version of the package
+            // Get the version of the package
+            const versionOutput = execSync('node -p "require(\'./package.json\').version"', { encoding: 'utf-8' }).trim();
 
+            console.log('Package Version:', versionOutput);
+        } catch (error) {
+            // Handle errors
+            console.error('Error during release:', error.message);
+            process.exit(1); // Exit with an error code
         }
         // verify if a file inside ui has changed with string check
         const changed2 = changedFiles.map(file => file.filename).filter(file => file.includes('packages/ui')).length > 0
