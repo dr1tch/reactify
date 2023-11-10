@@ -10,7 +10,7 @@ const main = async() => {
          **/
         const owner = process.env.GITHUB_REPOSITORY_OWNER;
         const repo = process.env.GITHUB_REPOSITORY;
-        const pr_number = execSync('git log -1 --pretty=%s').toString().trim();
+        const pr_number = process.env.pr_number;
         const token = process.env.token;
         console.log({ owner, repo, pr_number, token, process: process.env })
             /**
