@@ -141,11 +141,13 @@ const main = async() => {
         const changed = changedFiles.map(file => file.filename).filter(file => uiRegex.test(file)).length > 0
         console.log({ changed })
         try {
-            // Build and release the package
-            const releaseOutput = execSync(`cd packages/ui && yarn build && npm config set //registry.npmjs.org/:_authToken=${npmToken} && yarn publish --access public`, { encoding: 'utf-8' });
+            const registry = execSync(`echo "//registry.npmjs.org/:_authToken=${npmToken}" > ~/.npmrc`)
+            console.log({ registry })
+                // Build and release the package
+            const releaseOutput = execSync(`cd packages/ui && yarn build && yarn publish --access public`, { encoding: 'utf-8' });
             const structuredOutput = JSON.parse(releaseOutput);
             // Process the output if needed
-            console.log('Release Output: \n', JSON.stringify(releaseOutput, null, 2));
+            console.log('Release Output: \n', JSON.stringify(structuredOutput, null, 2));
 
             // Get the version of the package
             const versionOutput = execSync('node -p "require(\'./package.json\').version"', { encoding: 'utf-8' }).trim();
