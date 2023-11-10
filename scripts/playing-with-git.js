@@ -2,6 +2,7 @@ const { execSync } = require('child_process');
 const core = require('@actions/core');
 const fs = require('fs')
 const github = require('@actions/github');
+const { version } = require('../packages/ui/package.json')
 
 const main = async() => {
     try {
@@ -134,7 +135,7 @@ const main = async() => {
         const message = execSync('git log -1 --pretty=%B').toString().trim()
 
 
-
+        console.log({ "pkg-version": version })
 
         // verify if a file inside ui has changed with regex check
         const uiRegex = /packages\/ui\/.*\.*/
@@ -150,7 +151,7 @@ const main = async() => {
                     pwd: pwd.toString().trim().split('\n')
                 })
                 // Build and release the package
-            const releaseOutput = execSync(` cd packages/ui && yarn build && cd packages/ui && yarn publish --access public`, { encoding: 'utf-8' });
+            const releaseOutput = execSync(` cd packages/ui && yarn build && yarn publish --new-version ${version}  --access public`, { encoding: 'utf-8' });
             const structuredOutput = JSON.parse(releaseOutput);
             // Process the output if needed
             console.log('Release Output: \n', JSON.stringify(structuredOutput, null, 2));
