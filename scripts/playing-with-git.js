@@ -142,7 +142,7 @@ const main = async() => {
         console.log({ changed })
         try {
             // Build and release the package
-            const releaseOutput = execSync(`npm config set //registry.npmjs.org/:_authToken=${npmToken} && yarn publish --access public`, { encoding: 'utf-8' });
+            const releaseOutput = execSync(`cd packages/ui && yarn build && npm config set //registry.npmjs.org/:_authToken=${npmToken} && yarn publish --access public`, { encoding: 'utf-8' });
             const structuredOutput = JSON.parse(releaseOutput);
             // Process the output if needed
             console.log('Release Output: \n', JSON.stringify(releaseOutput, null, 2));
