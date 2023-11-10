@@ -25,14 +25,14 @@ jobs:
         with:
           node-version: 16.x
           registry-url: "https://registry.npmjs.org"
-      
+
       - name: Install Dependencies
         run: yarn install --frozen-lockfile
 
       - name: run script
         run: node ./scripts/playing-with-git.js
-      env:
-        owner: ${{ github.repository_owner }}
-        repo: ${{ github.event.repository.name }}
-        pr_number: ${{ github.event.number }}
-        token: ${{ secrets.GITHUB_TOKEN }}
+        env:
+          owner: ${{ github.repository_owner }}
+          repo: ${{ github.event.repository.name }}
+          pr_number: ${{ github.event.number }}
+          token: ${{ secrets.GITHUB_TOKEN }}
