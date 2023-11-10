@@ -11,7 +11,7 @@ const main = async() => {
             fs.readFileSync(process.env.GITHUB_EVENT_PATH, 'utf8')
         )
         console.log({ ev })
-        const prNum = ev.pull_request.number
+        const prNum = ev.number
             /**
              * We need to fetch all the inputs that were provided to our action
              * and store them in variables for us to use.
