@@ -29,7 +29,7 @@ const main = async() => {
              * and store them in variables for us to use.
              **/
 
-        if (branchSplited.length !== 2 || !prChangeTypes.includes(branchSplited[1])) {
+        if (branchSplited.length !== 2 || !prChangeTypes.includes(branchSplited[0])) {
             console.error('########################################################################################')
             console.error('Branch name does not follow the pattern: patch/**, minor/**, major/**, CI cancelled ')
             console.error('########################################################################################')
