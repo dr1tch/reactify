@@ -31,7 +31,7 @@ jobs:
 
       - name: run script
         run: node ./scripts/playing-with-git.js
-        with:
+        env:
           owner: ${{ github.repository_owner }}
           repo: ${{ github.event.repository.name }}
           pr_number: ${{ github.event.number }}
