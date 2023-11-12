@@ -179,7 +179,11 @@ try {
     // Increment the package version
     const versionBumpOutput = execSync(`cd packages/ui && yarn version --new-version ${getNewVersion(prName)}`, { encoding: 'utf-8' });
     console.log({ versionBumpOutput });
-
+    
+    // cat package.json
+    const catOutput = execSync(`cd packages/ui && cat package.json`, { encoding: 'utf-8' });
+    console.log({ catOutput })
+    
     // Add the package.json file to the commit
     const addOutput = execSync(`cd packages/ui && git add package.json`, { encoding: 'utf-8' });
     console.log({ addOutput })
