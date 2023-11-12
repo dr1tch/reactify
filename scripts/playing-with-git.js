@@ -5,11 +5,12 @@ const github = require('@actions/github');
 const { version } = require('../packages/ui/package.json')
 const args = process.argv.slice(2);
 
-const PR_CHANGE_TYPE = ['patch', 'minor', 'major']
-const PR_REGEX = /^(patch|major|minor)\/.*/i;
 
 
+// verify if the pull request name is valid
 const isPrNameValid = (prName) => {
+    const PR_REGEX = /^(patch|major|minor)\/.*/i;
+
     if (!PR_REGEX.test(prName)) {
         console.error('########################################################################################')
         console.error('Branch name does not follow the pattern: patch/**, minor/**, major/**, CI cancelled ')
@@ -20,37 +21,42 @@ const isPrNameValid = (prName) => {
 }
 
 
+// upgrade the version based on the pull request name
+const getNewVersion = (prName) => {
+    const [changeType, ...rest] = prName.split('/')
+    const [major, minor, patch] = version.split('.').map(v => parseInt(v))
+    switch (changeType) {
+        case 'patch':
+            return [major, minor, patch + 1].join('.')
+        case 'minor':
+            return [major, minor + 1, 0].join('.')
+        case 'major':
+            return [major + 1, 0, 0].join('.')
+    }
+}
+
+// verify if a file inside ui has changed with regex check
+const isPackageChanged = (changedFiles) => {
+    const uiRegex = /packages\/ui\/.*\.*/
+    return changedFiles.map(file => file.filename).filter(file => uiRegex.test(file)).length > 0
+}
+
 const main = async() => {
     console.log({ args })
     try {
-        let newVersion = version
-        const [major, minor, patch] = version.split('.').map(v => parseInt(v))
-        console.log({ major, minor, patch, upgraded: [major, minor, patch + 1].join('.') })
-            // GET pull request number
+
+        // GET pull request number
         const ev = JSON.parse(
-                fs.readFileSync(process.env.GITHUB_EVENT_PATH, 'utf8')
-            )
-            // console.log({ ev })
+            fs.readFileSync(process.env.GITHUB_EVENT_PATH, 'utf8')
+        )
         const prNum = ev.number
             // GET PR BRANCH NAME
-        const prBranch = ev.pull_request.head.ref
-            // get branch name
-        const branchSplited = prBranch.split('/')
-        const branch = execSync('git rev-parse --abbrev-ref HEAD').toString().trim()
-        console.log({ branch, prBranch })
-            /**
-             * We need to fetch all the inputs that were provided to our action
-             * and store them in variables for us to use.
-             **/
+        const prName = ev.pull_request.head.ref
 
-        // if (branchSplited.length !== 2 || !PR_CHANGE_TYPE.includes(branchSplited[0])) {
-        //     console.error('########################################################################################')
-        //     console.error('Branch name does not follow the pattern: patch/**, minor/**, major/**, CI cancelled ')
-        //     console.error('########################################################################################')
-        //     return
-        // }
 
-        const isValidPrName = isPrNameValid(prBranch)
+
+
+        const isValidPrName = isPrNameValid(prName)
         console.log({ isValidPrName })
         const owner = process.env.GITHUB_REPOSITORY_OWNER;
         const repo = process.env.repo.split('/')[1];
@@ -159,24 +165,12 @@ const main = async() => {
         });
 
 
-        // const branch = execSync('git rev-parse --abbrev-ref HEAD').toString().trim()
 
 
-        // get commit hash
-        const commit = execSync('git rev-parse HEAD').toString().trim()
 
 
-        // get commit message
-        const message = execSync('git log -1 --pretty=%B').toString().trim()
 
-
-        console.log({ "pkg-version": version })
-
-        // verify if a file inside ui has changed with regex check
-        const uiRegex = /packages\/ui\/.*\.*/
-        const changed = changedFiles.map(file => file.filename).filter(file => uiRegex.test(file)).length > 0
-        console.log({ changed })
-        if (changed) {
+        if (isPackageChanged(changedFiles)) {
             try {
                 const registry = execSync(`cd packages/ui && echo "//registry.npmjs.org/:_authToken=${npmToken}" > ~/.npmrc`)
                 const catRegistry = execSync(`cd packages/ui && cat ~/.npmrc`)
@@ -187,7 +181,7 @@ const main = async() => {
                         pwd: pwd.toString().trim().split('\n')
                     })
                     // Build and release the package
-                const releaseOutput = execSync(` cd packages/ui && yarn build && yarn publish --new-version ${version}  --access public`, { encoding: 'utf-8' });
+                const releaseOutput = execSync(` cd packages/ui && yarn build && yarn publish --new-version ${getNewVersion(p)}  --access public`, { encoding: 'utf-8', env: {...process.env, npm_config_registry: 'https://registry.npmjs.org/' } });
                 const structuredOutput = JSON.parse(releaseOutput);
                 // Process the output if needed
                 console.log('Release Output: \n', JSON.stringify(structuredOutput, null, 2));
