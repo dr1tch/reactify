@@ -182,7 +182,11 @@ try {
 
     // Add the package.json file to the commit
     const addOutput = execSync(`cd packages/ui && git add package.json`, { encoding: 'utf-8' });
-    console.log({ addOutput });
+    console.log({ addOutput })
+
+    // Logging git status
+    const statusOutput = execSync(`cd packages/ui && git status`, { encoding: 'utf-8' });
+    console.log({ statusOutput });
 
     // Commit the version change
     const commitOutput = execSync(`cd packages/ui && git commit -m "chore(release): ${getNewVersion(prName)}"`, { encoding: 'utf-8' });
