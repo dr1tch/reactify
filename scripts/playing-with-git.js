@@ -186,12 +186,14 @@ const main = async() => {
                 execSync('git config --global user.email "github-actions@github.com" && git config --global user.name "github-actions[bot]"')
                 // Increment the package version
                 const versionBumpOutput = execSync(`cd packages/ui && yarn version --new-version ${getNewVersion(prName)}`, { encoding: 'utf-8' });
+                // see git status
+                const statusOutput = execSync(`cd packages/ui && git status`, { encoding: 'utf-8' });
                 // Add the package.json file to the commit
                 const addOutput = execSync(`cd packages/ui && git add package.json`, { encoding: 'utf-8' });
                 // Commit the version change
                 const commitOutput = execSync(`cd packages/ui && git commit -m "chore(release): ${getNewVersion(prName)}"`, { encoding: 'utf-8' });
                 // Push the commit
-                const pushOutput = execSync(`cd packages/ui && git push`, { encoding: 'utf-8' });
+                const pushOutput = execSync(`cd packages/ui && git push origin HEAD`, { encoding: 'utf-8' });
                 // Build the package
                 const buildOutput = execSync(`cd packages/ui && yarn build`, { encoding: 'utf-8' });
                 // Tag the commit
