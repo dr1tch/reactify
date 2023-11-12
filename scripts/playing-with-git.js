@@ -173,7 +173,6 @@ const main = async() => {
             try {
                 // set up Git with your identity before running the commands
                 execSync('git config --global user.email "github-actions@github.com" && git config --global user.name "github-actions[bot]"')
-                console.log({ pushOutput })
                 const registry = execSync(`cd packages/ui && echo "//registry.npmjs.org/:_authToken=${npmToken}" > ~/.npmrc`)
                 const catRegistry = execSync(`cd packages/ui && cat ~/.npmrc`)
                 const pwd = execSync('pwd')
