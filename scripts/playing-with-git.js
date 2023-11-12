@@ -5,11 +5,25 @@ const github = require('@actions/github');
 const { version } = require('../packages/ui/package.json')
 const args = process.argv.slice(2);
 
-const prChangeTypes = ['patch', 'minor', 'major']
+const PR_CHANGE_TYPE = ['patch', 'minor', 'major']
+const PR_REGEX = /^(patch|major|minor)\/.*/i;
+
+
+const isPrNameValid = (prName) => {
+    if (!PR_REGEX.test(prName)) {
+        console.error('########################################################################################')
+        console.error('Branch name does not follow the pattern: patch/**, minor/**, major/**, CI cancelled ')
+        console.error('########################################################################################')
+        return false
+    }
+    return true
+}
+
 
 const main = async() => {
     console.log({ args })
     try {
+        let newVersion = version
         const [major, minor, patch] = version.split('.').map(v => parseInt(v))
         console.log({ major, minor, patch, upgraded: [major, minor, patch + 1].join('.') })
             // GET pull request number
@@ -29,12 +43,15 @@ const main = async() => {
              * and store them in variables for us to use.
              **/
 
-        if (branchSplited.length !== 2 || !prChangeTypes.includes(branchSplited[0])) {
-            console.error('########################################################################################')
-            console.error('Branch name does not follow the pattern: patch/**, minor/**, major/**, CI cancelled ')
-            console.error('########################################################################################')
-            return
-        }
+        // if (branchSplited.length !== 2 || !PR_CHANGE_TYPE.includes(branchSplited[0])) {
+        //     console.error('########################################################################################')
+        //     console.error('Branch name does not follow the pattern: patch/**, minor/**, major/**, CI cancelled ')
+        //     console.error('########################################################################################')
+        //     return
+        // }
+
+        const isValidPrName = isPrNameValid(prBranch)
+        console.log({ isValidPrName })
         const owner = process.env.GITHUB_REPOSITORY_OWNER;
         const repo = process.env.repo.split('/')[1];
         const pr_number = prNum;
