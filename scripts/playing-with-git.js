@@ -180,36 +180,74 @@ const main = async() => {
                         catRegistry: catRegistry.toString().trim().split('\n'),
                         pwd: pwd.toString().trim().split('\n')
                     })
-                    // Build and release the package
+                    // ######### Build and release the package ###########
+                    const branchOutput = execSync(`cd packages/ui && git rev-parse --abbrev-ref HEAD`, { encoding: 'utf-8' });
+                console.log({ branchOutput })
+                // Create a new branch
+                    const branchName = `pr-${pr_number}`;
+                    const createBranchOutput = execSync(`cd packages/ui && git checkout -b ${branchName}`, { encoding: 'utf-8' });
+                    console.log({ createBranchOutput });
+                    // Increment the package version
+                    const versionBumpOutput = execSync(`cd packages/ui && yarn version --new-version ${getNewVersion(prName)}`, { encoding: 'utf-8' });
 
+// Add the package.json file to the commit
+const addOutput = execSync(`cd packages/ui && git add package.json`, { encoding: 'utf-8' });
+console.log({ addOutput });
+
+// see git status
+console.log('git status')
+const statusOutput = execSync(`git status`, { encoding: 'utf-8' });
+console.log({ statusOutput })
+// Commit the version change
+const commitOutput = execSync(`cd packages/ui && git commit -m "chore(release): ${getNewVersion(prName)}"`, { encoding: 'utf-8' });
+console.log({ commitOutput });
+
+// Tag the commit
+const tagOutput = execSync(`cd packages/ui && git tag ${getNewVersion(prName)}`, { encoding: 'utf-8' });
+console.log({ tagOutput });
+
+// Push the commit and tag to the repository
+const pushOutput = execSync(`cd packages/ui && git push origin ${branchName} --tags`, { encoding: 'utf-8' });
+console.log({ pushOutput });
+const switchBackOutput = execSync(`cd packages/ui && git checkout pull/${pr_number}/merge`, { encoding: 'utf-8' });
+console.log({ switchBackOutput });
+
+// Fetch the latest changes from the remote repository
+const fetchOutput = execSync(`cd packages/ui && git fetch origin`, { encoding: 'utf-8' });
+console.log({ fetchOutput });
+
+// Rebase the branch on top of the latest changes
+const rebaseOutput = execSync(`cd packages/ui && git rebase origin/master`, { encoding: 'utf-8' });
+console.log({ rebaseOutput });
+
+// If there are conflicts during the rebase, resolve them manually and continue the rebase
+// After resolving conflicts, you can use `git rebase --continue`
+
+// Push the rebased changes to the remote repository
+const pushRebaseOutput = execSync(`cd packages/ui && git push origin pull/${pr_number}/merge --force`, { encoding: 'utf-8' });
+console.log({ pushRebaseOutput });
+                // // Add the package.json file to the commit
+                // console.log('git add')  
+                // const addOutput = execSync(`git add package.json`, { encoding: 'utf-8' });
+                // console.log({ addOutput })
+                // // Commit the version change
+                // console.log('git commit')
+                // const commitOutput = execSync(`git commit -m "chore(release): ${getNewVersion(prName)}"`, { encoding: 'utf-8' });
+                // console.log({ commitOutput })
+                // // Tag the commit
+                // const tagOutput = execSync(`git tag ${getNewVersion(prName)}`, { encoding: 'utf-8' });
+                // console.log({ tagOutput })
+                // // Push the commit
+                // console.log('git push')
+                // const pushOutput = execSync(`git push origin HEAD`, { encoding: 'utf-8' });
                 // set up Git with your identity before running the commands
                 execSync('git config --global user.email "github-actions@github.com" && git config --global user.name "github-actions[bot]"')
-                // Increment the package version
-                const versionBumpOutput = execSync(`cd packages/ui && yarn version --new-version ${getNewVersion(prName)}`, { encoding: 'utf-8' });
-                console.log('git status')
-                // see git status
-                const statusOutput = execSync(`cd packages/ui && git status`, { encoding: 'utf-8' });
-                console.log({ statusOutput })
-                // Add the package.json file to the commit
-                console.log('git add')  
-                const addOutput = execSync(`cd packages/ui && git add package.json`, { encoding: 'utf-8' });
-                console.log({ addOutput })
-                // Commit the version change
-                console.log('git commit')
-                const commitOutput = execSync(`cd packages/ui && git commit -m "chore(release): ${getNewVersion(prName)}"`, { encoding: 'utf-8' });
-                console.log({ commitOutput })
-                 // Tag the commit
-                const tagOutput = execSync(`cd packages/ui && git tag ${getNewVersion(prName)}`, { encoding: 'utf-8' });
-                console.log({ tagOutput })
-                // Push the commit
-                console.log('git push')
-                const pushOutput = execSync(`cd packages/ui && git push origin HEAD`, { encoding: 'utf-8' });
                 console.log({ pushOutput })
                 // Build the package
                 console.log('build')
                 const buildOutput = execSync(`cd packages/ui && yarn build`, { encoding: 'utf-8' });
                 console.log({ buildOutput })
-               
+                
                 // Publish the package
                 console.log('publish')
                 const publishOutput = execSync(`cd packages/ui && yarn publish --new-version ${getNewVersion(prName)} --access public`, { encoding: 'utf-8', env: {...process.env, npm_config_registry: 'https://registry.npmjs.org/' } });
