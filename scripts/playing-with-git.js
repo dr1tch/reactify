@@ -49,6 +49,9 @@ const main = async() => {
         const ev = JSON.parse(
             fs.readFileSync(process.env.GITHUB_EVENT_PATH, 'utf8')
         )
+        console.log({ ev })
+        console.log("###########################################################################################################")
+        console.log({ process: process.env })
         const prNum = ev.number
             // GET PR BRANCH NAME
         const prName = ev.pull_request.head.ref
