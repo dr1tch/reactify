@@ -4,9 +4,6 @@ on:
   push:
     branches:
       - master
-  pull_request:
-    branches:
-      - master # adjust this to your default branch
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 

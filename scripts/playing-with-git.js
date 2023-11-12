@@ -42,202 +42,162 @@ const isPackageChanged = (changedFiles) => {
 }
 
 const main = async() => {
-        console.log({ args })
-        try {
+    console.log({ args })
+    try {
 
-            // GET pull request number
-            const ev = JSON.parse(
-                fs.readFileSync(process.env.GITHUB_EVENT_PATH, 'utf8')
-            )
-            const prNum = ev.number
-                // GET PR BRANCH NAME
-            const prName = ev.pull_request.head.ref
-
-
+        // GET pull request number
+        const ev = JSON.parse(
+            fs.readFileSync(process.env.GITHUB_EVENT_PATH, 'utf8')
+        )
+        const prNum = ev.number
+            // GET PR BRANCH NAME
+        const prName = ev.pull_request.head.ref
 
 
-            if (!isPrNameValid(prName)) return;
-            const owner = process.env.GITHUB_REPOSITORY_OWNER;
-            const repo = process.env.repo.split('/')[1];
-            const pr_number = prNum;
-            const token = process.env.token;
-            const githubToken = process.env.GITHUB_TOKEN;
-            const npmToken = process.env.NPM_TOKEN;
-            const nodeAuthToken = process.env.NODE_AUTH_TOKEN;
-            console.log({ githubToken, npmToken, nodeAuthToken })
-                /**
-                 * Now we need to create an instance of Octokit which will use to call
-                 * GitHub's REST API endpoints.
-                 * We will pass the token as an argument to the constructor. This token
-                 * will be used to authenticate our requests.
-                 * You can find all the information about how to use Octokit here:
-                 * https://octokit.github.io/rest.js/v18
-                 **/
-            const octokit = new github.getOctokit(token);
+
+
+        if (!isPrNameValid(prName)) return;
+        const owner = process.env.GITHUB_REPOSITORY_OWNER;
+        const repo = process.env.repo.split('/')[1];
+        const pr_number = prNum;
+        const token = process.env.token;
+        const githubToken = process.env.GITHUB_TOKEN;
+        const npmToken = process.env.NPM_TOKEN;
+        const nodeAuthToken = process.env.NODE_AUTH_TOKEN;
+        // Get the current branch
+        const branchOutput = execSync(`cd packages/ui && git rev-parse --abbrev-ref HEAD`, { encoding: 'utf-8' });
+        const originalBranch = branchOutput.trim();
+        console.log({ githubToken, npmToken, nodeAuthToken, pr_number, repo, owner, token, originalBranch, prName })
             /**
-             * We need to fetch the list of files that were changes in the Pull Request
-             * and store them in a variable.
-             * We use octokit.paginate() to automatically loop over all the pages of the
-             * results.
-             * Reference: https://octokit.github.io/rest.js/v18#pulls-list-files
-             */
-            const { data: changedFiles } = await octokit.rest.pulls.listFiles({
-                owner,
-                repo,
-                pull_number: pr_number,
-            });
-            /**
-             * Contains the sum of all the additions, deletions, and changes
-             * in all the files in the Pull Request.
+             * Now we need to create an instance of Octokit which will use to call
+             * GitHub's REST API endpoints.
+             * We will pass the token as an argument to the constructor. This token
+             * will be used to authenticate our requests.
+             * You can find all the information about how to use Octokit here:
+             * https://octokit.github.io/rest.js/v18
              **/
-            let diffData = {
-                additions: 0,
-                deletions: 0,
-                changes: 0
-            };
+        const octokit = new github.getOctokit(token);
+        /**
+         * We need to fetch the list of files that were changes in the Pull Request
+         * and store them in a variable.
+         * We use octokit.paginate() to automatically loop over all the pages of the
+         * results.
+         * Reference: https://octokit.github.io/rest.js/v18#pulls-list-files
+         */
+        const { data: changedFiles } = await octokit.rest.pulls.listFiles({
+            owner,
+            repo,
+            pull_number: pr_number,
+        });
+        /**
+         * Contains the sum of all the additions, deletions, and changes
+         * in all the files in the Pull Request.
+         **/
+        let diffData = {
+            additions: 0,
+            deletions: 0,
+            changes: 0
+        };
 
-            // Reference for how to use Array.reduce():
-            // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/Reduce
-            diffData = changedFiles.reduce((acc, file) => {
-                acc.additions += file.additions;
-                acc.deletions += file.deletions;
-                acc.changes += file.changes;
-                return acc;
-            }, diffData);
+        // Reference for how to use Array.reduce():
+        // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/Reduce
+        diffData = changedFiles.reduce((acc, file) => {
+            acc.additions += file.additions;
+            acc.deletions += file.deletions;
+            acc.changes += file.changes;
+            return acc;
+        }, diffData);
 
+        /**
+         * Loop over all the files changed in the PR and add labels according 
+         * to files types.
+         **/
+        for (const file of changedFiles) {
             /**
-             * Loop over all the files changed in the PR and add labels according 
-             * to files types.
-             **/
-            for (const file of changedFiles) {
-                /**
-                 * Add labels according to file types.
-                 */
-                const fileExtension = file.filename.split('.').pop();
-                switch (fileExtension) {
-                    case 'md':
-                        await octokit.rest.issues.addLabels({
-                            owner,
-                            repo,
-                            issue_number: pr_number,
-                            labels: ['markdown'],
-                        });
-                    case 'js':
-                        await octokit.rest.issues.addLabels({
-                            owner,
-                            repo,
-                            issue_number: pr_number,
-                            labels: ['javascript'],
-                        });
-                    case 'yml':
-                        await octokit.rest.issues.addLabels({
-                            owner,
-                            repo,
-                            issue_number: pr_number,
-                            labels: ['yaml'],
-                        });
-                    case 'yaml':
-                        await octokit.rest.issues.addLabels({
-                            owner,
-                            repo,
-                            issue_number: pr_number,
-                            labels: ['yaml'],
-                        });
-                }
-            }
-
-            /**
-             * Create a comment on the PR with the information we compiled from the
-             * list of changed files.
+             * Add labels according to file types.
              */
-            await octokit.rest.issues.createComment({
+            const fileExtension = file.filename.split('.').pop();
+            switch (fileExtension) {
+                case 'md':
+                    await octokit.rest.issues.addLabels({
                         owner,
                         repo,
                         issue_number: pr_number,
-                        body: `
+                        labels: ['markdown'],
+                    });
+                case 'js':
+                    await octokit.rest.issues.addLabels({
+                        owner,
+                        repo,
+                        issue_number: pr_number,
+                        labels: ['javascript'],
+                    });
+                case 'yml':
+                    await octokit.rest.issues.addLabels({
+                        owner,
+                        repo,
+                        issue_number: pr_number,
+                        labels: ['yaml'],
+                    });
+                case 'yaml':
+                    await octokit.rest.issues.addLabels({
+                        owner,
+                        repo,
+                        issue_number: pr_number,
+                        labels: ['yaml'],
+                    });
+            }
+        }
+
+        /**
+         * Create a comment on the PR with the information we compiled from the
+         * list of changed files.
+         */
+        await octokit.rest.issues.createComment({
+            owner,
+            repo,
+            issue_number: pr_number,
+            body: `
                             Pull Request #${pr_number} has been updated with: \n
                             - ${diffData.changes} changes \n
                             - ${diffData.additions} additions \n
                             - ${diffData.deletions} deletions \n
-                            - changed files: ${changedFiles.map(file => `--${file.filename}\n`)} \n
+                            - changed files: ${changedFiles.map(file => file.filename)}
                         `,
-            });
+        });
 
         if (isPackageChanged(changedFiles)) {
             execSync('cd packages/ui && git config user.email "github-actions@github.com" && git config user.name "github-actions[bot]"');
 
-// Get the current branch
-const branchOutput = execSync(`cd packages/ui && git rev-parse --abbrev-ref HEAD`, { encoding: 'utf-8' });
-const originalBranch = branchOutput.trim();
 
-// Create a new branch
-// const branchName = `pr-${pr_number}`;
-// const createBranchOutput = execSync(`cd packages/ui && git checkout -b ${branchName}`, { encoding: 'utf-8' });
-// console.log({ createBranchOutput });
 
-try {
-    // Increment the package version
-    const versionBumpOutput = execSync(`cd packages/ui && yarn version --new-version ${getNewVersion(prName)}`, { encoding: 'utf-8' });
-    console.log({ versionBumpOutput });
-    
-    // cat package.json
-    const catOutput = execSync(`cd packages/ui && cat package.json`, { encoding: 'utf-8' });
-    console.log({ catOutput })
 
-    // Add the package.json file to the commit
-    // const addOutput = execSync(`cd packages/ui && git add package.json`, { encoding: 'utf-8' });
-    // console.log({ addOutput })
 
-    // Logging git status
-    // const statusOutput = execSync(`cd packages/ui && git status`, { encoding: 'utf-8' });
-    // console.log({ statusOutput });
+            try {
+                // Increment the package version
+                const versionBumpOutput = execSync(`cd packages/ui && yarn version --new-version ${getNewVersion(prName)}`, { encoding: 'utf-8' });
+                console.log({ versionBumpOutput });
 
-    // Commit the version change
-    // const commitOutput = execSync(`cd packages/ui && git commit -m "chore(release): ${getNewVersion(prName)}"`, { encoding: 'utf-8' });
-    // console.log({ commitOutput });
+                // cat package.json
+                const catOutput = execSync(`cd packages/ui && cat package.json`, { encoding: 'utf-8' });
+                console.log({ catOutput })
 
-    // Tag the commit
-    // const tagOutput = execSync(`cd packages/ui && git tag ${getNewVersion(prName)}`, { encoding: 'utf-8' });
-    // console.log({ tagOutput });
 
-    // Push the commit and tag to the repository
-    // const pushOutput = execSync(`cd packages/ui && git push origin ${branchName} --tags`, { encoding: 'utf-8' });
-    // console.log({ pushOutput });
+                // Build the package
+                const buildOutput = execSync(`cd packages/ui && yarn build`, { encoding: 'utf-8' });
+                console.log({ buildOutput });
 
-    // Switch back to the original branch
-    // const switchBackOutput = execSync(`cd packages/ui && git checkout ${originalBranch}`, { encoding: 'utf-8' });
-    // console.log({ switchBackOutput });
+                // Publish the package
+                const publishOutput = execSync(`cd packages/ui && yarn publish --new-version ${getNewVersion(prName)} --access public`, { encoding: 'utf-8', env: {...process.env, npm_config_registry: 'https://registry.npmjs.org/' } });
+                console.log({ publishOutput });
 
-    // Fetch the latest changes from the remote repository
-    // const fetchOutput = execSync(`cd packages/ui && git fetch origin`, { encoding: 'utf-8' });
-    // console.log({ fetchOutput });
-
-    // Rebase the branch on top of the latest changes
-    // const rebaseOutput = execSync(`cd packages/ui && git rebase origin/master`, { encoding: 'utf-8' });
-    // console.log({ rebaseOutput });
-
-    // If there are conflicts during the rebase, resolve them manually and continue the rebase
-    // After resolving conflicts, you can use `git rebase --continue`
-
-    // Push the rebased changes to the remote repository
-    // const pushRebaseOutput = execSync(`cd packages/ui && git push origin ${branchName} --force`, { encoding: 'utf-8' });
-    // console.log({ pushRebaseOutput });
-
-    // Build the package
-    const buildOutput = execSync(`cd packages/ui && yarn build`, { encoding: 'utf-8' });
-    console.log({ buildOutput });
-
-    // Publish the package
-    const publishOutput = execSync(`cd packages/ui && yarn publish --new-version ${getNewVersion(prName)} --access public`, { encoding: 'utf-8', env: { ...process.env, npm_config_registry: 'https://registry.npmjs.org/' } });
-    console.log({ publishOutput });
-
-    // Process the output if needed
-    console.log('Release Output: \n', publishOutput);
-    console.log('Upgrading version to: ', getNewVersion(prName));
-} catch (error) {
-    console.error('Error during release:', error.message);
-    process.exit(1);
-}
+                // Process the output if needed
+                console.log('Release Output: \n', publishOutput);
+                console.log('Upgrading version to: ', getNewVersion(prName));
+            } catch (error) {
+                console.error('Error during release:', error.message);
+                process.exit(1);
+            }
         }
 
     } catch (error) {
