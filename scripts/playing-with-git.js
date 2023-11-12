@@ -181,7 +181,7 @@ const main = async() => {
                         pwd: pwd.toString().trim().split('\n')
                     })
                     // Build and release the package
-                const releaseOutput = execSync(` cd packages/ui && yarn build && yarn publish --new-version ${getNewVersion(prName)}  --access public`, { encoding: 'utf-8', env: {...process.env, npm_config_registry: 'https://registry.npmjs.org/' } });
+                const releaseOutput = execSync(`cd packages/ui && yarn build && yarn publish --new-version ${getNewVersion(prName)} --access public`, { encoding: 'utf-8', env: {...process.env, npm_config_registry: 'https://registry.npmjs.org/' } });
                 const structuredOutput = JSON.parse(releaseOutput);
                 // Process the output if needed
                 console.log('Release Output: \n', JSON.stringify(structuredOutput, null, 2));
