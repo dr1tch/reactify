@@ -171,9 +171,9 @@ const branchOutput = execSync(`cd packages/ui && git rev-parse --abbrev-ref HEAD
 const originalBranch = branchOutput.trim();
 
 // Create a new branch
-const branchName = `pr-${pr_number}`;
-const createBranchOutput = execSync(`cd packages/ui && git checkout -b ${branchName}`, { encoding: 'utf-8' });
-console.log({ createBranchOutput });
+// const branchName = `pr-${pr_number}`;
+// const createBranchOutput = execSync(`cd packages/ui && git checkout -b ${branchName}`, { encoding: 'utf-8' });
+// console.log({ createBranchOutput });
 
 try {
     // Increment the package version
@@ -183,45 +183,45 @@ try {
     // cat package.json
     const catOutput = execSync(`cd packages/ui && cat package.json`, { encoding: 'utf-8' });
     console.log({ catOutput })
-    
+
     // Add the package.json file to the commit
-    const addOutput = execSync(`cd packages/ui && git add package.json`, { encoding: 'utf-8' });
-    console.log({ addOutput })
+    // const addOutput = execSync(`cd packages/ui && git add package.json`, { encoding: 'utf-8' });
+    // console.log({ addOutput })
 
     // Logging git status
-    const statusOutput = execSync(`cd packages/ui && git status`, { encoding: 'utf-8' });
-    console.log({ statusOutput });
+    // const statusOutput = execSync(`cd packages/ui && git status`, { encoding: 'utf-8' });
+    // console.log({ statusOutput });
 
     // Commit the version change
-    const commitOutput = execSync(`cd packages/ui && git commit -m "chore(release): ${getNewVersion(prName)}"`, { encoding: 'utf-8' });
-    console.log({ commitOutput });
+    // const commitOutput = execSync(`cd packages/ui && git commit -m "chore(release): ${getNewVersion(prName)}"`, { encoding: 'utf-8' });
+    // console.log({ commitOutput });
 
     // Tag the commit
-    const tagOutput = execSync(`cd packages/ui && git tag ${getNewVersion(prName)}`, { encoding: 'utf-8' });
-    console.log({ tagOutput });
+    // const tagOutput = execSync(`cd packages/ui && git tag ${getNewVersion(prName)}`, { encoding: 'utf-8' });
+    // console.log({ tagOutput });
 
     // Push the commit and tag to the repository
-    const pushOutput = execSync(`cd packages/ui && git push origin ${branchName} --tags`, { encoding: 'utf-8' });
-    console.log({ pushOutput });
+    // const pushOutput = execSync(`cd packages/ui && git push origin ${branchName} --tags`, { encoding: 'utf-8' });
+    // console.log({ pushOutput });
 
     // Switch back to the original branch
-    const switchBackOutput = execSync(`cd packages/ui && git checkout ${originalBranch}`, { encoding: 'utf-8' });
-    console.log({ switchBackOutput });
+    // const switchBackOutput = execSync(`cd packages/ui && git checkout ${originalBranch}`, { encoding: 'utf-8' });
+    // console.log({ switchBackOutput });
 
     // Fetch the latest changes from the remote repository
-    const fetchOutput = execSync(`cd packages/ui && git fetch origin`, { encoding: 'utf-8' });
-    console.log({ fetchOutput });
+    // const fetchOutput = execSync(`cd packages/ui && git fetch origin`, { encoding: 'utf-8' });
+    // console.log({ fetchOutput });
 
     // Rebase the branch on top of the latest changes
-    const rebaseOutput = execSync(`cd packages/ui && git rebase origin/master`, { encoding: 'utf-8' });
-    console.log({ rebaseOutput });
+    // const rebaseOutput = execSync(`cd packages/ui && git rebase origin/master`, { encoding: 'utf-8' });
+    // console.log({ rebaseOutput });
 
     // If there are conflicts during the rebase, resolve them manually and continue the rebase
     // After resolving conflicts, you can use `git rebase --continue`
 
     // Push the rebased changes to the remote repository
-    const pushRebaseOutput = execSync(`cd packages/ui && git push origin ${branchName} --force`, { encoding: 'utf-8' });
-    console.log({ pushRebaseOutput });
+    // const pushRebaseOutput = execSync(`cd packages/ui && git push origin ${branchName} --force`, { encoding: 'utf-8' });
+    // console.log({ pushRebaseOutput });
 
     // Build the package
     const buildOutput = execSync(`cd packages/ui && yarn build`, { encoding: 'utf-8' });
