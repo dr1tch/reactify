@@ -171,7 +171,9 @@ const main = async() => {
 
         if (isPackageChanged(changedFiles)) {
             try {
-                const [changeType, ...rest] = prName.split('/')
+                // set up Git with your identity before running the commands
+                execSync('git config --global user.email "github-actions@github.com" && git config --global user.name "github-actions[bot]"')
+                console.log({ pushOutput })
                 const registry = execSync(`cd packages/ui && echo "//registry.npmjs.org/:_authToken=${npmToken}" > ~/.npmrc`)
                 const catRegistry = execSync(`cd packages/ui && cat ~/.npmrc`)
                 const pwd = execSync('pwd')
@@ -240,9 +242,7 @@ console.log({ pushRebaseOutput });
                 // // Push the commit
                 // console.log('git push')
                 // const pushOutput = execSync(`git push origin HEAD`, { encoding: 'utf-8' });
-                // set up Git with your identity before running the commands
-                execSync('git config --global user.email "github-actions@github.com" && git config --global user.name "github-actions[bot]"')
-                console.log({ pushOutput })
+                
                 // Build the package
                 console.log('build')
                 const buildOutput = execSync(`cd packages/ui && yarn build`, { encoding: 'utf-8' });
