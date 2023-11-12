@@ -24,6 +24,12 @@ const listChangedFiles = async(octokit, owner, repo, prNumber) => {
     return changedFiles;
 };
 
+const isPackageChanged = (changedFiles) => {
+    const uiRegex = /packages\/ui\/.*\.*/
+    return changedFiles.map(file => file.filename).filter(file => uiRegex.test(file)).length > 0
+}
+
+
 const buildPackage = () => {
     const buildOutput = execSync('cd packages/ui && yarn build', { encoding: 'utf-8' });
     console.log('Build Output: \n', buildOutput);
@@ -31,6 +37,10 @@ const buildPackage = () => {
 
 const mainPullRequest = async() => {
     console.log('Running for Pull Request');
+    if (!isPackageChanged(listChangedFiles)) {
+        console.log('No changes in "packages/ui/". Skipping package build.');
+        return;
+    }
     try {
         const ev = JSON.parse(fs.readFileSync(process.env.GITHUB_EVENT_PATH, 'utf8'));
         console.log({ EventPath: JSON.stringify(ev, null, 2) });

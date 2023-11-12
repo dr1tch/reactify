@@ -8,6 +8,7 @@
     "type": "git",
     "url": "https://github.com/dr1tch/reactify/tree/master/packages/ui"
   },
+  "publishType": "patch",
   "main": "./dist/index.umd.js",
   "module": "./dist/index.es.js",
   "types": "./dist/index.d.ts",
