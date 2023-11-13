@@ -20,14 +20,15 @@ const isMergeEvent = !eventPath.hasOwnProperty('pull_request');
 
 const getNewVersion = () => {
     const [major, minor, patch] = version.split('.').map((v) => parseInt(v));
-    switch (publishType) {
+    return [major, minor, patch + 1].join('.')
+    /* switch (publishType) {
         case 'patch':
             return [major, minor, patch + 1].join('.');
         case 'minor':
             return [major, minor + 1, 0].join('.');
         case 'major':
             return [major + 1, 0, 0].join('.');
-    }
+    } */
 };
 
 const buildPackage = () => {
