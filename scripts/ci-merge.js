@@ -12,21 +12,13 @@ const mainMerge = async() => {
     }
     try {
         console.log({ EventPath: JSON.stringify(eventPath, null, 2) });
-        execSync('cd packages/ui && git config user.email "github-actions@github.com" && git config user.name "github-actions[bot]"');
-        const newVersion = getNewVersion();
 
-        console.log('Upgrading version to: ', newVersion);
-
-        execSync(`cd packages/ui && yarn version --new-version ${newVersion}`, { encoding: 'utf-8' });
-        execSync(`cd packages/ui && git status`);
-        execSync(`cd packages/ui && git commit -am "chore: release version ${newVersion}"`);
-        execSync(`cd packages/ui && git push`);
-
-        console.log('Building the package...');
-        buildPackage();
-
-        console.log('Publishing the package...');
-        publishPackage(newVersion);
+        execSync('cd packages/ui && git config user.email "github-actions@github.com" && git config user.name "github-actions[bot]" && ' +
+            'newVersion=$(yarn version --new-version $(getNewVersion) | grep -oP "(?<=to\s).*(?=:)") && ' +
+            'git commit -am "chore: release version $newVersion" && ' +
+            'git push && ' +
+            'buildPackage && ' +
+            'publishPackage $newVersion');
 
         console.log('Merge processing completed.');
     } catch (error) {

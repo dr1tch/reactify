@@ -164,7 +164,7 @@ const main = async() => {
         });
 
         if (isPackageChanged(changedFiles)) {
-            execSync('cd packages/ui && git config user.email "github-actions@github.com" && git config user.name "github-actions[bot]"');
+            execSync(`cd packages/ui && git config user.email "github-actions@github.com" && git config user.name "github-actions[bot]"`);
 
 
 
