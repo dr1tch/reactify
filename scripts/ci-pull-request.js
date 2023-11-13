@@ -1,12 +1,12 @@
 const core = require('@actions/core');
-const { readFileSync } = require('fs');
 
 const { listChangedFiles, buildPackage, isPrNameValid, eventPath, isPackageChanged } = require('./utils');
 
 
 const mainPullRequest = async() => {
+    const changedFiles = await listChangedFiles()
     console.log('Running for Pull Request');
-    if (!isPackageChanged(listChangedFiles)) {
+    if (!isPackageChanged(changedFiles)) {
         console.log('No changes in "packages/ui/". Skipping package build.');
         return;
     }
@@ -17,8 +17,6 @@ const mainPullRequest = async() => {
         const prName = eventPath.pull_request.head.ref;
 
         if (!isPrNameValid(prName)) return;
-
-        const changedFiles = await listChangedFiles();
 
         console.log('Changed Files:', changedFiles);
 
