@@ -19,7 +19,7 @@ const mainMerge = async() => {
             `git config user.email "github-actions@github.com"`,
             `yarn version --new-version ${newVersion}`,
             `git push`
-        ].join("&&")
+        ].join(" && ")
 
         execSync(bumpVersionCommand, {encoding: "utf-8"})
 
