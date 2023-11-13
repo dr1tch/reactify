@@ -60,13 +60,7 @@ const main = async() => {
 
 
         if (!isPrNameValid(prName)) return;
-        const owner = process.env.GITHUB_REPOSITORY_OWNER;
-        const repo = process.env.repo.split('/')[1];
-        const pr_number = prNum;
-        const token = process.env.token;
-        const githubToken = process.env.GITHUB_TOKEN;
-        const npmToken = process.env.NPM_TOKEN;
-        const nodeAuthToken = process.env.NODE_AUTH_TOKEN;
+
         // Get the current branch
         const branchOutput = execSync(`cd packages/ui && git rev-parse --abbrev-ref HEAD`, { encoding: 'utf-8' });
         const originalBranch = branchOutput.trim();
