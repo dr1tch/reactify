@@ -14,7 +14,7 @@ const githubToken = process.env.GITHUB_TOKEN;
 const npmToken = process.env.NPM_TOKEN;
 const nodeAuthToken = process.env.NODE_AUTH_TOKEN;
 
-const isMergeEvent = eventPath.hasOwnProperty('before') && eventPath.hasOwnProperty('after');
+const isMergeEvent = !eventPath.hasOwnProperty('pull_request');
 
 console.log({ eventPath: JSON.stringify(eventPath, null, 2) })
 
