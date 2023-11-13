@@ -17,8 +17,8 @@ const mainMerge = async() => {
         console.log('Upgrading version to: ', newVersion);
 
 
-        const gitResult = execSync('cd packages/ui && git config user.email "github-actions@github.com" && git config user.name "github-actions[bot]" && ' +
-            `yarn version --new-version ${newVersion} ` +
+        execSync('cd packages/ui && git config user.email "github-actions@github.com" && git config user.name "github-actions[bot]" && ' +
+            `yarn version --new-version ${newVersion} &&` +
             'git push').toString();
 
         console.log('Building the package...');
