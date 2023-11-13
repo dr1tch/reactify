@@ -7,7 +7,7 @@ const github = require('@actions/github');
 const { version, publishType } = require('../packages/ui/package.json')
 
 const owner = process.env.GITHUB_REPOSITORY_OWNER;
-const repo = process.env.repo.split('/')[1];
+const repo = process.env.repo ? process.env.repo.split('/')[1] : "";
 const eventPath = JSON.parse(readFileSync(process.env.GITHUB_EVENT_PATH, 'utf8'));
 const pr_number = eventPath.number;
 const githubToken = process.env.GITHUB_TOKEN;
