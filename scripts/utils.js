@@ -45,8 +45,12 @@ const publishPackage = (newVersion) => {
 };
 
 const isPackageChanged = (changedFiles) => {
-    const uiRegex = /packages\/ui\/.*\.*/
-    return changedFiles.map(file => file.filename).filter(file => uiRegex.test(file)).length > 0
+    const uiRegex = /packages\/ui\/.*\.*/µ
+    if (isMergeEvent) {
+        return changedFiles.filter(file => uiRegex.test(file)).length > 0
+    } else {
+        return changedFiles.map(file => file.filename).filter(file => uiRegex.test(file)).length > 0
+    }
 }
 
 
