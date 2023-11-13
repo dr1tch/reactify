@@ -1,5 +1,8 @@
 const { execSync } = require('child_process');
+const { readFileSync } = require('fs')
+
 const github = require('@actions/github');
+
 
 const { version, publishType } = require('../packages/ui/package.json')
 
