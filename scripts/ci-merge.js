@@ -17,12 +17,12 @@ const mainMerge = async() => {
         console.log('Upgrading version to: ', newVersion);
 
 
-        execSync('cd packages/ui && git config user.email "github-actions@github.com" && git config user.name "github-actions[bot]" && ' +
+        const gitResult = execSync('cd packages/ui && git config user.email "github-actions@github.com" && git config user.name "github-actions[bot]" && ' +
             `newVersion=$(yarn version --new-version ${newVersion} | grep -oP "(?<=to\s).*(?=:)") && ` +
             'git commit -am "chore: release version $newVersion" && ' +
             'git push  ');
 
-
+        console.log()
         console.log('Building the package...');
         buildPackage();
 
@@ -31,7 +31,12 @@ const mainMerge = async() => {
 
         console.log('Merge processing completed.');
     } catch (error) {
-        console.log({ error });
+        console.error('Error:', error.message);
+
+        if (error.stderr) {
+            console.error('Error Output:');
+            console.error(error.stderr.toString());
+        }
         core.setFailed(error.message);
     }
 };
