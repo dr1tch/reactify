@@ -18,6 +18,7 @@ const mainMerge = async() => {
         console.log('Upgrading version to: ', newVersion);
 
         execSync(`cd packages/ui && yarn version --new-version ${newVersion}`, { encoding: 'utf-8' });
+        execSync(`cd packages/ui && git status`);
         execSync(`cd packages/ui && git commit -am "chore: release version ${newVersion}"`);
         execSync(`cd packages/ui && git push`);
 
