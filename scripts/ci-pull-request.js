@@ -1,7 +1,7 @@
 const core = require('@actions/core');
 const { readFileSync } = require('fs');
 
-const { listChangedFiles, buildPackage, isPrNameValid } = require('./utils');
+const { listChangedFiles, buildPackage, isPrNameValid, eventPath } = require('./utils');
 
 
 const mainPullRequest = async() => {
@@ -11,10 +11,10 @@ const mainPullRequest = async() => {
         return;
     }
     try {
-        const ev = JSON.parse(readFileSync(process.env.GITHUB_EVENT_PATH, 'utf8'));
-        console.log({ EventPath: JSON.stringify(ev, null, 2) });
 
-        const prName = ev.pull_request.head.ref;
+        console.log({ EventPath: JSON.stringify(eventPath, null, 2) });
+
+        const prName = eventPath.pull_request.head.ref;
 
         if (!isPrNameValid(prName)) return;
 

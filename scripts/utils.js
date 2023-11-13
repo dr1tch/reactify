@@ -5,11 +5,11 @@ const { version, publishType } = require('../packages/ui/package.json')
 
 const owner = process.env.GITHUB_REPOSITORY_OWNER;
 const repo = process.env.repo.split('/')[1];
-const pr_number = prNum;
+const eventPath = JSON.parse(readFileSync(process.env.GITHUB_EVENT_PATH, 'utf8'));
+const pr_number = eventPath.number;
 const githubToken = process.env.GITHUB_TOKEN;
 const npmToken = process.env.NPM_TOKEN;
 const nodeAuthToken = process.env.NODE_AUTH_TOKEN;
-
 
 const getNewVersion = () => {
     const [major, minor, patch] = version.split('.').map((v) => parseInt(v));
@@ -81,6 +81,7 @@ const listChangedFiles = async() => {
 };
 
 module.exports = {
+    eventPath,
     owner,
     repo,
     pr_number,

@@ -2,7 +2,7 @@ const { execSync } = require('child_process');
 const { readFileSync } = require('fs')
 const core = require('@actions/core');
 
-const { isPackageChanged, getNewVersion, buildPackage, publishPackage, listChangedFiles } = require("./utils");
+const { isPackageChanged, getNewVersion, buildPackage, publishPackage, listChangedFiles, eventPath } = require("./utils");
 
 const mainMerge = async() => {
     const changedFiles = listChangedFiles()
@@ -12,8 +12,7 @@ const mainMerge = async() => {
         return;
     }
     try {
-        const ev = JSON.parse(readFileSync(process.env.GITHUB_EVENT_PATH, 'utf8'));
-        console.log({ EventPath: JSON.stringify(ev, null, 2) });
+        console.log({ EventPath: JSON.stringify(eventPath, null, 2) });
 
         const newVersion = getNewVersion();
 
