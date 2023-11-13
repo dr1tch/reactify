@@ -28,6 +28,7 @@ const mainMerge = async() => {
         publishPackage(newVersion);
 
         console.log('Merge processing completed.');
+        console.log("NEW BUILD")
     } catch (error) {
         console.log({ error: JSON.stringify(error.toString('utf-8'), null, 2) })
         console.log("--------------")
