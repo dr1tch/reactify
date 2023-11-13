@@ -4,12 +4,12 @@ const core = require('@actions/core');
 const { isPackageChanged, getNewVersion, buildPackage, publishPackage, listChangedFiles, eventPath } = require("./utils");
 
 const mainMerge = async() => {
-    // const changedFiles = await listChangedFiles()
-    // console.log('Running for Merge');
-    // if (!isPackageChanged(changedFiles)) {
-    //     console.log('No changes in "packages/ui/". Skipping package build.');
-    //     return;
-    // }
+    const changedFiles = await listChangedFiles()
+    console.log('Running for Merge');
+    if (!isPackageChanged(changedFiles)) {
+        console.log('No changes in "packages/ui/". Skipping package build.');
+        return;
+    }
     try {
         console.log({ EventPath: JSON.stringify(eventPath, null, 2) });
         const newVersion = getNewVersion();
@@ -17,9 +17,15 @@ const mainMerge = async() => {
         console.log('Upgrading version to: ', newVersion);
 
 
-        execSync('cd packages/ui && git config user.email "github-actions@github.com" && git config user.name "github-actions[bot]" && ' +
-            `yarn version --new-version ${newVersion} &&` +
-            'git push').toString();
+        const versionCommand = [
+            "cd packages/ui",
+            'git config user.email "github-actions@github.com"',
+            'git config user.name "github-actions[bot]"',
+            `yarn version --new-version ${newVersion}`,
+            'git push'
+        ].join(" && ")
+
+        execSync(versionCommand).toString();
 
         console.log('Building the package...');
         buildPackage();
@@ -28,7 +34,6 @@ const mainMerge = async() => {
         publishPackage(newVersion);
 
         console.log('Merge processing completed.');
-        console.log("NEW BUILD")
     } catch (error) {
         console.log({ error: JSON.stringify(error.toString('utf-8'), null, 2) })
         console.log("--------------")
