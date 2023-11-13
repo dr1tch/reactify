@@ -1,7 +1,7 @@
 const core = require('@actions/core');
 const { readFileSync } = require('fs');
 
-const { listChangedFiles, buildPackage, isPrNameValid, eventPath } = require('./utils');
+const { listChangedFiles, buildPackage, isPrNameValid, eventPath, isPackageChanged } = require('./utils');
 
 
 const mainPullRequest = async() => {
