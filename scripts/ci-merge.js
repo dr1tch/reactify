@@ -20,7 +20,7 @@ const mainMerge = async() => {
         const gitResult = execSync('cd packages/ui && git config user.email "github-actions@github.com" && git config user.name "github-actions[bot]" && ' +
             `newVersion=$(yarn version --new-version ${newVersion} | grep -oP "(?<=to\s).*(?=:)") && ` +
             'git commit -am "chore: release version $newVersion" && ' +
-            'git push  ');
+            'git push  ', { encoding: 'utf-8', stdio: 'pipe' });
 
         console.log()
         console.log('Building the package...');
@@ -36,6 +36,10 @@ const mainMerge = async() => {
         if (error.stderr) {
             console.error('Error Output:');
             console.error(error.stderr.toString());
+        }
+        if (error.output) {
+            console.error('Error Output:');
+            console.error(error.output.toString());
         }
         core.setFailed(error.message);
     }
