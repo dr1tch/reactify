@@ -4,12 +4,12 @@ const core = require('@actions/core');
 const { isPackageChanged, getNewVersion, buildPackage, publishPackage, listChangedFiles, eventPath } = require("./utils");
 
 const mainMerge = async() => {
-    const changedFiles = await listChangedFiles()
-    console.log('Running for Merge');
-    if (!isPackageChanged(changedFiles)) {
-        console.log('No changes in "packages/ui/". Skipping package build.');
-        return;
-    }
+    // const changedFiles = await listChangedFiles()
+    // console.log('Running for Merge');
+    // if (!isPackageChanged(changedFiles)) {
+    //     console.log('No changes in "packages/ui/". Skipping package build.');
+    //     return;
+    // }
     try {
         console.log({ EventPath: JSON.stringify(eventPath, null, 2) });
         const newVersion = getNewVersion();
