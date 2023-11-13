@@ -16,7 +16,7 @@ const nodeAuthToken = process.env.NODE_AUTH_TOKEN;
 
 const isMergeEvent = !eventPath.hasOwnProperty('pull_request');
 
-console.log({ eventPath: JSON.stringify(eventPath, null, 2) })
+// console.log({ eventPath: JSON.stringify(eventPath, null, 2) })
 
 const getNewVersion = () => {
     const [major, minor, patch] = version.split('.').map((v) => parseInt(v));
