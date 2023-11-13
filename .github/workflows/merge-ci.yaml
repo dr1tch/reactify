@@ -7,7 +7,7 @@ on:
 
 jobs:
   release:
-    name: PLAY WITH GIT
+    name: Run merge script
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
@@ -30,3 +30,5 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.npm_token_test }}
           NODE_AUTH_TOKEN: ${{ secrets.npm_token_test }}
+          owner: ${{ github.repository_owner }}
+          repo: ${{ github.repository }}
