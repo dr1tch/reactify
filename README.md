@@ -29,22 +29,23 @@ in monorepos, after a lot of trying to make it work with github actions, or chan
 
 1. We'll look inside the changed files and see if anything in the `packages/ui` repo changed, else the ci will be canceled.
 
-![image](https://github.com/evercam/evercam-frontend/assets/35114389/241fefc4-2b01-42e3-afaa-a7fa589c5a4a)
+![Capture d'écran 2023-11-14 115239](https://github.com/dr1tch/reactify/assets/35114389/b24f5a78-94c0-46da-a9c7-f842ac4c7b7c)
 
 
 2. If there's changes inside ui repo, we'll upgrade the package version
 
-![image](https://github.com/evercam/evercam-frontend/assets/35114389/a0062c41-b22b-44b3-8ab9-7f7084bb393c)
+![Capture d'écran 2023-11-14 115307](https://github.com/dr1tch/reactify/assets/35114389/bd9e751c-eed6-45a0-b65f-dfde3d67d271)
 
 
 3. commit and push that changes
 4. build the package 
 
-![image](https://github.com/evercam/evercam-frontend/assets/35114389/3284b08a-e378-428b-83a3-3816f2ccace8)
+![Capture d'écran 2023-11-14 115348](https://github.com/dr1tch/reactify/assets/35114389/cfa7cc5d-74e7-4a71-a430-8e8460033d22)
 
 
 6. publish it to npm
 
-![image](https://github.com/evercam/evercam-frontend/assets/35114389/1ebff106-4310-4c18-80d3-dbea75b4041b)
+![Capture d'écran 2023-11-14 115425](https://github.com/dr1tch/reactify/assets/35114389/f28ae178-a96f-4dca-a90a-c624fa0d15b7)
+
 
 And this workflow will run only once when we merge our PR
