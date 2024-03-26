@@ -24,7 +24,7 @@ async function main() {
     console.log({ pkgFile, data })
     const commit = execSync('git rev-parse --short HEAD').toString('utf-8').trim()
         // const commitsListFromMaster = execSync('git log --oneline master..').toString('utf-8').trim()
-    const commitsListFromMaster = execSync('git log --pretty=format:%s master..').toString('utf-8').trim().split('\n')
+    const commitsListFromMaster = execSync('git log --pretty=format:%s HEAD..').toString('utf-8').trim().split('\n')
 
     const date = Math.round(Date.now() / (1000 * 60))
     let branchName = execSync('git rev-parse --abbrev-ref HEAD').toString('utf-8').trim()
