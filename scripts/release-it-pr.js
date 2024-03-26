@@ -1,7 +1,18 @@
 import { promises as fsPromises } from "fs"
 import { resolve } from "path"
 import { execSync } from "child_process"
-
+const getNewVersion = (version) => {
+    const [major, minor, patch] = version.split('.').map((v) => parseInt(v));
+    return [major, minor, patch + 1].join('.')
+        /* switch (publishType) {
+            case 'patch':
+                return [major, minor, patch + 1].join('.');
+            case 'minor':
+                return [major, minor + 1, 0].join('.');
+            case 'major':
+                return [major + 1, 0, 0].join('.');
+        } */
+};
 async function main() {
     const pkgFile = resolve('packages/ui/', "package.json")
     const data = JSON.parse(
@@ -19,10 +30,12 @@ async function main() {
     let branchName = execSync('git rev-parse --abbrev-ref HEAD').toString('utf-8').trim()
     let isPreview = branchName.includes('preview')
     const pkgVersion = branchName.split('/').join('-')
+    const version = data.version.split('-')[0]
     if (isPreview) {
-        data.version = `${data.version}-${pkgVersion}-${commit}`
+        data.version = `${version}-${pkgVersion}-${commit}`
+        data.name = `${data.name.split('-preview')[0]}-preview`
     } else {
-        data.version = `${data.version}-${commit}`
+        data.version = `${getNewVersion(version)}`
     }
 
     console.log({
@@ -36,7 +49,7 @@ async function main() {
         version: data.version,
         data
     })
-    data.name = `${data.name}-preview`
+
     const pwd = process.cwd()
     console.log({ pwd })
 
@@ -49,13 +62,22 @@ async function main() {
     console.log('Build Output: \n', buildOutput);
 
     console.log("Publishing the package...")
-    const publishOutput = execSync(`cd packages/ui && yarn release-it`, {
+    const publishOutput = execSync(`cd packages/ui && npm publish -q --access public`, {
         encoding: 'utf-8',
         env: {...process.env, npm_config_registry: 'https://registry.npmjs.org/' },
     });
     console.log('Publish Output: \n', publishOutput);
     const rootPKGFile = resolve('package.json')
-
+    const RootData = JSON.parse(
+        await fsPromises.readFile(rootPKGFile, "utf-8").catch((e) => {
+            console.error({ e })
+            return "{}"
+        })
+    )
+    RootData.dependencies[data.name] = data.version
+    console.log({ rootPKGFile, RootData })
+    await fsPromises
+        .writeFile(rootPKGFile, JSON.stringify(RootData, null, 2), "utf-8")
 }
 main().catch((err) => {
     // eslint-disable-next-line no-console
