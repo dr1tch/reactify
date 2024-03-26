@@ -24,7 +24,7 @@ async function main() {
     console.log({ pkgFile, data })
     const commit = execSync('git rev-parse --short HEAD').toString('utf-8').trim()
         // const commitsListFromMaster = execSync('git log --oneline master..').toString('utf-8').trim()
-    const commitsListFromMaster = execSync('git log --pretty=format:%s master..').toString('utf-8').trim()
+    const commitsListFromMaster = execSync('git log --pretty=format:%s master..').toString('utf-8').trim().split('\n')
 
     const date = Math.round(Date.now() / (1000 * 60))
     let branchName = execSync('git rev-parse --abbrev-ref HEAD').toString('utf-8').trim()
@@ -78,6 +78,17 @@ async function main() {
     console.log({ rootPKGFile, RootData })
     await fsPromises
         .writeFile(rootPKGFile, JSON.stringify(RootData, null, 2), "utf-8")
+        // create a .releases folder, with a file named after the version and with a changelog inside it
+    const releaseFolder = resolve('.releases')
+    await fsPromises.mkdir(releaseFolder, { recursive: true })
+    const releaseFile = resolve(releaseFolder, `${data.version}.md`)
+    const changelog = commitsListFromMaster.map((commit) => `- ${commit}`).join('\n')
+    await fsPromises.writeFile(releaseFile, changelog, "utf-8")
+    console.log({ releaseFile, changelog })
+    console.log("Committing changes...")
+    const releaseCommit = execSync(`git commit -am "chore: release ${data.name}@${data.version}"`, { encoding: 'utf-8' });
+    console.log('Commit Output: \n', releaseCommit);
+    co
 }
 main().catch((err) => {
     // eslint-disable-next-line no-console
