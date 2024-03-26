@@ -42,12 +42,23 @@ async function main() {
     console.log("Building the package...")
     const buildOutput = execSync(`cd packages/ui && yarn build`, { encoding: 'utf-8' });
     console.log('Build Output: \n', buildOutput);
+    const npmrcPath = path.join(os.homedir(), '.npmrc');
+    const nodeAuthToken = process.env.NODE_AUTH_TOKEN;
 
+    if (nodeAuthToken) {
+        fs.appendFileSync(npmrcPath, `//registry.npmjs.org/:_authToken=${nodeAuthToken}\n`);
+        fs.appendFileSync(npmrcPath, 'registry=https://registry.npmjs.org/\n');
+        fs.appendFileSync(npmrcPath, 'always-auth=true\n');
+
+        const whoami = execSync('npm whoami').toString().trim();
+        console.log({ whoami })
+    }
     console.log("Publishing the package...")
     const publishOutput = execSync(`cd packages/ui && npm publish -q --access public`, {
         encoding: 'utf-8',
         env: {...process.env, npm_config_registry: 'https://registry.npmjs.org/' },
     });
+    execSync(`rm ${npmrcPath}`)
     console.log('Publish Output: \n', publishOutput);
     const rootPKGFile = resolve('package.json')
     const RootData = JSON.parse(
