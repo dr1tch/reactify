@@ -88,7 +88,6 @@ async function main() {
     console.log("Committing changes...")
     const releaseCommit = execSync(`git commit -am "chore: release ${data.name}@${data.version}"`, { encoding: 'utf-8' });
     console.log('Commit Output: \n', releaseCommit);
-    co
 }
 main().catch((err) => {
     // eslint-disable-next-line no-console
