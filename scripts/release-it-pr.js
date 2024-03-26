@@ -1,6 +1,7 @@
 import { promises as fsPromises } from "fs"
-import { resolve } from "path"
+import { resolve, join } from "path"
 import { execSync } from "child_process"
+import os from "os"
 const getNewVersion = (version) => {
     const [major, minor, patch] = version.split('.').map((v) => parseInt(v));
     return [major, minor, patch + 1].join('.')
@@ -26,7 +27,6 @@ async function main() {
         // const commitsListFromMaster = execSync('git log --oneline master..').toString('utf-8').trim()
     const commitsListFromMaster = execSync('git log --pretty=format:%s HEAD..').toString('utf-8').trim().split('\n')
 
-    const date = Math.round(Date.now() / (1000 * 60))
     let branchName = execSync('git rev-parse --abbrev-ref HEAD').toString('utf-8').trim()
     let isPreview = branchName.includes('preview')
     const pkgVersion = branchName.split('/').join('-')
@@ -42,7 +42,7 @@ async function main() {
     console.log("Building the package...")
     const buildOutput = execSync(`cd packages/ui && yarn build`, { encoding: 'utf-8' });
     console.log('Build Output: \n', buildOutput);
-    const npmrcPath = path.join(os.homedir(), '.npmrc');
+    const npmrcPath = join(os.homedir(), '.npmrc');
     const nodeAuthToken = process.env.NODE_AUTH_TOKEN;
 
     if (nodeAuthToken) {
