@@ -19,9 +19,6 @@ jobs:
         with:
           node-version: "18.x"
 
-      - name: Install dependencies
-        run: yarn install --frozen-lockfile
-
       - name: Run Pull Request script
         run: node scripts/release-it-pr.js
         env:
@@ -32,3 +29,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.npm_token_test }}
           NODE_AUTH_TOKEN: ${{ secrets.npm_token_test }}
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
