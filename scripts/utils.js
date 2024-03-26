@@ -19,14 +19,14 @@ const isMergeEvent = !eventPath.hasOwnProperty('pull_request');
 const getNewVersion = () => {
     const [major, minor, patch] = version.split('.').map((v) => parseInt(v));
     return [major, minor, patch + 1].join('.')
-    /* switch (publishType) {
-        case 'patch':
-            return [major, minor, patch + 1].join('.');
-        case 'minor':
-            return [major, minor + 1, 0].join('.');
-        case 'major':
-            return [major + 1, 0, 0].join('.');
-    } */
+        /* switch (publishType) {
+            case 'patch':
+                return [major, minor, patch + 1].join('.');
+            case 'minor':
+                return [major, minor + 1, 0].join('.');
+            case 'major':
+                return [major + 1, 0, 0].join('.');
+        } */
 };
 
 const buildPackage = () => {
@@ -36,7 +36,7 @@ const buildPackage = () => {
 
 
 const publishPackage = (newVersion) => {
-    const publishOutput = execSync(`cd packages/ui && yarn publish --new-version ${newVersion} --access public`, {
+    const publishOutput = execSync(`cd packages/ui && npm publish -q --access public`, {
         encoding: 'utf-8',
         env: {...process.env, npm_config_registry: 'https://registry.npmjs.org/' },
     });

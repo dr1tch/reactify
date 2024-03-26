@@ -17,13 +17,13 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "16.x"
+          node-version: "18.x"
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
       - name: Run Pull Request script
-        run: node scripts/ci-pull-request.js
+        run: node scripts/release-it-pr.js
         env:
           owner: ${{ github.repository_owner }}
           repo: ${{ github.repository }}
