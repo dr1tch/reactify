@@ -1,7 +1,7 @@
 const { execSync } = require('child_process');
 const core = require('@actions/core');
 const github = require('@actions/github');
-
+const fs = require('fs');
 const main = async() => {
     try {
         // GET pull request number
