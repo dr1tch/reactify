@@ -1,6 +1,6 @@
 {
     "name": "react-super-preview",
-    "version": "0.0.16",
+    "version": "0.0.1",
     "main": "index.js",
     "license": "MIT",
     "type": "module",
@@ -25,6 +25,6 @@
         "yarn-changed-workspaces": "^2.0.11"
     },
     "dependencies": {
-        "react-super-ui-preview": "0.0.12-preview-test-1-cc908bc"
+        "react-super-ui-preview": "0.0.16-preview-test-1-f87fdd9"
     }
 }
