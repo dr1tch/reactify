@@ -2,6 +2,26 @@ import { promises as fsPromises, appendFileSync } from "fs"
 import { resolve, join } from "path"
 import { execSync } from "child_process"
 import os from "os"
+import * as github from '@actions/github';
+import * as core from '@actions/core';
+const token = core.getInput('GITHUB_TOKEN');
+const octokit = new github.getOctokit(token);
+
+async function getPRDetails() {
+    const prNumber = github.context.payload.pull_request.number;
+    const { data: pr } = await octokit.rest.pulls.get({
+        owner: github.context.repo.owner,
+        repo: github.context.repo.repo,
+        pull_number: prNumber,
+    });
+
+    const prName = pr.title;
+    const branchName = pr.head.ref;
+    console.log(`PR Name: ${prName}`);
+    console.log(`Branch Name: ${branchName}`);
+    return { prName, branchName }
+
+}
 const getNewVersion = (version) => {
     const [major, minor, patch] = version.split('.').map((v) => parseInt(v));
     return [major, minor, patch + 1].join('.')
@@ -15,6 +35,8 @@ const getNewVersion = (version) => {
         } */
 };
 async function main() {
+    const { branchName, prName } = await getPRDetails()
+    console.log({})
     console.log('changing branch')
     const checkout = execSync(`git checkout ${branchName}`, { encoding: 'utf-8' });
     console.log({ checkout })
@@ -30,7 +52,7 @@ async function main() {
         // const commitsListFromMaster = execSync('git log --oneline master..').toString('utf-8').trim()
     const commitsListFromMaster = execSync('git log --pretty=format:%s HEAD..').toString('utf-8').trim().split('\n')
 
-    let branchName = execSync('git rev-parse --abbrev-ref HEAD').toString('utf-8').trim()
+    // let branchName = execSync('git rev-parse --abbrev-ref HEAD').toString('utf-8').trim()
     let isPreview = branchName.includes('preview')
     const pkgVersion = branchName.split('/').join('-')
     const version = data.version.split('-')[0]
