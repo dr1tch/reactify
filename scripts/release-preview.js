@@ -148,14 +148,15 @@ async function main() {
         console.log('changed files:')
         const changedFiles = execSync(`git status --porcelain`, { encoding: 'utf-8' });
         console.log({ changedFiles })
-            // console.log("Committing changes...")
-            // const releaseAdd = execSync(`git add .releases package.json packages/ui/`, { encoding: 'utf-8' });
-            // const releaseCommit = execSync(`git commit -m "chore: release ${pkgData.name}@${pkgData.version}"`, { encoding: 'utf-8' });
-            // console.log('Commit Output: \n', releaseCommit);
-            // console.log("Pushing changes...")
+        console.log(`upgrading package version to ${pkgData.version}`)
+        console.log("Committing changes...")
+        const releaseAdd = execSync(`git add .releases package.json packages/ui/`, { encoding: 'utf-8' });
+        const releaseCommit = execSync(`git commit -m "upgrading package version to ${pkgData.version}"`, { encoding: 'utf-8' });
+        console.log('Commit Output: \n', releaseCommit);
+        console.log("Pushing changes...")
             // const releasePush = execSync(`git push`, { encoding: 'utf-8' });
             // console.log('Push Output: \n', releasePush);
-            // console.log(`Updated package version to: ${previewVersion}`);
+        console.log(`Updated package version to: ${previewVersion}`);
         const npmrcPath = join(os.homedir(), '.npmrc');
         const nodeAuthToken = process.env.NODE_AUTH_TOKEN;
         if (nodeAuthToken) {
