@@ -115,105 +115,57 @@ import { promises as fsPromises, appendFileSync } from "fs"
 import { resolve, join } from "path"
 import { execSync } from "child_process"
 import os from "os"
-import release from "release-it"
 
-import * as releaseOptions from "../.release-it.json"
+import * as github from '@actions/github';
 
-import * as github from "@actions/github"
-
-const octokit = new github.getOctokit(process.env.GITHUB_TOKEN)
+const octokit = new github.getOctokit(process.env.GITHUB_TOKEN);
 
 async function getPRDetails() {
-    const prNumber = github.context.payload.pull_request.number
+    const prNumber = github.context.payload.pull_request.number;
     const { data: pr } = await octokit.rest.pulls.get({
         owner: github.context.repo.owner,
         repo: github.context.repo.repo,
         pull_number: prNumber,
-    })
+    });
 
-    return { prTitle: pr.title, branchName: pr.head.ref }
+    return { prTitle: pr.title, branchName: pr.head.ref };
 }
 
 async function main() {
-    const { branchName } = await getPRDetails()
-    console.log(`PR Branch Name: ${branchName}`)
+    const { branchName } = await getPRDetails();
+    console.log(`PR Branch Name: ${branchName}`);
 
-    if (branchName.startsWith("preview/")) {
-        const pkgFile = resolve("packages/ui", "package.json")
-        const pkgData = JSON.parse(await fsPromises.readFile(pkgFile, "utf-8"))
-        const commitHash = execSync("git rev-parse --short HEAD")
-            .toString("utf-8")
-            .trim()
-        const pkgVersion = branchName.split("/").join("-")
-        const version = pkgData.version.split("-")[0]
-        const previewVersion = `${version}-${pkgVersion}-${commitHash}`
-        pkgData.version = previewVersion
-
-        console.log(`Updated package version to: ${previewVersion}`)
-        const npmrcPath = join(os.homedir(), ".npmrc")
-        const nodeAuthToken = process.env.NODE_AUTH_TOKEN
+    if (branchName.startsWith('preview/')) {
+        const pkgFile = resolve("packages/ui", "package.json");
+        const pkgData = JSON.parse(await fsPromises.readFile(pkgFile, "utf-8"));
+        const commitHash = execSync('git rev-parse --short HEAD').toString('utf-8').trim();
+        const pkgVersion = branchName.split('/').join('-')
+        const version = pkgData.version.split('-')[0]
+        const previewVersion = `${version}-${pkgVersion}-${commitHash}`;
+        pkgData.version = previewVersion;
+        await fsPromises.writeFile(pkgFile, JSON.stringify(pkgData, null, 2), "utf-8");
+        console.log(`Updated package version to: ${previewVersion}`);
+        const npmrcPath = join(os.homedir(), '.npmrc');
+        const nodeAuthToken = process.env.NODE_AUTH_TOKEN;
         if (nodeAuthToken) {
-            appendFileSync(
-                npmrcPath,
-                `//registry.npmjs.org/:_authToken=${nodeAuthToken}\n`
-            )
-            appendFileSync(npmrcPath, "registry=https://registry.npmjs.org/\n")
-            appendFileSync(npmrcPath, "always-auth=true\n")
+            appendFileSync(npmrcPath, `//registry.npmjs.org/:_authToken=${nodeAuthToken}\n`);
+            appendFileSync(npmrcPath, 'registry=https://registry.npmjs.org/\n');
+            appendFileSync(npmrcPath, 'always-auth=true\n');
         }
-        const whoami = execSync("npm whoami").toString().trim()
+        const whoami = execSync('npm whoami').toString().trim();
         console.log({ whoami })
-        console.log("Building and Publishing the package...")
-        const releaseItResp = await release({
-            git: {
-                commit: true,
-                commitMessage: `chore: release v${previewVersion}`,
-                tag: true,
-                tagName: `v${previewVersion}`,
-                push: true,
-            },
-            npm: {
-                publish: true,
-            },
-            github: {
-                release: true,
-                releaseName: `v${version}`,
-                web: true,
-            },
-            hooks: {
-                "before:init": ["cd packages/ui", "yarn build"],
-            },
-            plugins: {
-                "@release-it/conventional-changelog": {
-                    preset: {
-                        name: "conventionalcommits",
-                    },
-                    infile: "CHANGELOG.md",
-                    header: "# Changelog",
-                    ignoreRecommendedBump: true,
-                },
-            },
-        })
-        console.log({ releaseItResp })
-        await fsPromises.writeFile(
-                pkgFile,
-                JSON.stringify(pkgData, null, 2),
-                "utf-8"
-            )
             // }
-            // const pwd = execSync("pwd").toString().trim()
-            // console.log("Building and Publishing the package...", pwd)
-            // const publishOutput = execSync(`cd packages/ui && yarn release-it`, {
-            //   encoding: "utf-8",
-            //   env: {
-            //     ...process.env,
-            //     npm_config_registry: "https://registry.npmjs.org/",
-            //   },
-            // })
-        console.log("published with success")
+        const pwd = execSync('pwd').toString().trim();
+        console.log("Building and Publishing the package...", pwd)
+        const publishOutput = execSync(`cd packages/ui && yarn release-it`, {
+            encoding: 'utf-8',
+            env: {...process.env, npm_config_registry: 'https://registry.npmjs.org/' },
+        });
+        console.log("published with success", { publishOutput })
         execSync(`rm ${npmrcPath}`)
 
-        // console.log("Publish Output: \n", publishOutput)
-        const rootPKGFile = resolve("package.json")
+        console.log('Publish Output: \n', publishOutput);
+        const rootPKGFile = resolve('package.json')
         const RootData = JSON.parse(
             await fsPromises.readFile(rootPKGFile, "utf-8").catch((e) => {
                 console.error({ e })
@@ -221,30 +173,14 @@ async function main() {
             })
         )
         RootData.dependencies[pkgData.name] = pkgData.version
-        await fsPromises.writeFile(
-            rootPKGFile,
-            JSON.stringify(RootData, null, 2),
-            "utf-8"
-        )
-        const commitsListFromMaster = execSync("git log --pretty=format:%s HEAD..")
-            .toString("utf-8")
-            .trim()
+        await fsPromises
+            .writeFile(rootPKGFile, JSON.stringify(RootData, null, 2), "utf-8")
+        const commitsListFromMaster = execSync('git log --pretty=format:%s HEAD..').toString('utf-8').trim()
         console.log({ commitsListFromMaster })
-        console.log({ releaseFile, changelog })
-        console.log('changed files:')
-        const changedFiles = execSync(`git status --porcelain`, { encoding: 'utf-8' });
-        console.log({ changedFiles })
-        console.log("Committing changes...")
-        const releaseAdd = execSync(`git add .releases package.json packages/ui/`, { encoding: 'utf-8' });
-        const releaseCommit = execSync(`git commit -m "chore: release ${data.name}@${data.version}"`, { encoding: 'utf-8' });
-        console.log('Commit Output: \n', releaseCommit);
-        console.log("Pushing changes...")
-        const releasePush = execSync(`git push`, { encoding: 'utf-8' });
-        console.log('Push Output: \n', releasePush);
     }
 }
 
 main().catch((err) => {
-    console.error("Error: ", err)
-    process.exit(1)
-})
+    console.error("Error: ", err);
+    process.exit(1);
+});
