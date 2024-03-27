@@ -59,6 +59,7 @@ async function main() {
         env: {...process.env, npm_config_registry: 'https://registry.npmjs.org/' },
     });
     execSync(`rm ${npmrcPath}`)
+
     console.log('Publish Output: \n', publishOutput);
     const rootPKGFile = resolve('package.json')
     const RootData = JSON.parse(
@@ -73,7 +74,9 @@ async function main() {
         // create a .releases folder, with a file named after the version and with a changelog inside it
     const releaseFolder = resolve('.releases')
     await fsPromises.mkdir(releaseFolder, { recursive: true })
-
+    console.log('changing branch')
+    const checkout = execSync(`git checkout ${branchName}`, { encoding: 'utf-8' });
+    console.log({ checkout })
     const releaseFile = resolve(releaseFolder, `${data.version}.md`)
     const changelog = commitsListFromMaster.map((commit) => `- ${commit}`).join('\n')
     await fsPromises.writeFile(releaseFile, changelog, "utf-8")
