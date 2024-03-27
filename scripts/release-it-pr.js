@@ -3,7 +3,6 @@ import { resolve, join } from "path"
 import { execSync } from "child_process"
 import os from "os"
 import * as github from '@actions/github';
-import * as core from '@actions/core';
 const token = process.env.GITHUB_TOKEN
 const octokit = new github.getOctokit(token);
 

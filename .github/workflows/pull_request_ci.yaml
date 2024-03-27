@@ -20,8 +20,8 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: "18.x"
-      - name: Install dependencies
-        run: yarn install
+      - name: Install @actions/github dependency
+        run: yarn add -WD @actions/github
       - name: git config
         run: |
           git config user.name github-actions[bot]
