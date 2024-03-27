@@ -144,6 +144,17 @@ async function main() {
         const previewVersion = `${version}-${pkgVersion}-${commitHash}`;
         pkgData.version = previewVersion;
         await fsPromises.writeFile(pkgFile, JSON.stringify(pkgData, null, 2), "utf-8");
+        console.log({ releaseFile, changelog })
+        console.log('changed files:')
+        const changedFiles = execSync(`git status --porcelain`, { encoding: 'utf-8' });
+        console.log({ changedFiles })
+        console.log("Committing changes...")
+        const releaseAdd = execSync(`git add .releases package.json packages/ui/`, { encoding: 'utf-8' });
+        const releaseCommit = execSync(`git commit -m "chore: release ${data.name}@${data.version}"`, { encoding: 'utf-8' });
+        console.log('Commit Output: \n', releaseCommit);
+        console.log("Pushing changes...")
+        const releasePush = execSync(`git push`, { encoding: 'utf-8' });
+        console.log('Push Output: \n', releasePush);
         console.log(`Updated package version to: ${previewVersion}`);
         const npmrcPath = join(os.homedir(), '.npmrc');
         const nodeAuthToken = process.env.NODE_AUTH_TOKEN;
