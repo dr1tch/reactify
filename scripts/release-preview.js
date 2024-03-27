@@ -149,7 +149,7 @@ async function main() {
         console.log({ changedFiles })
         console.log("Committing changes...")
         const releaseAdd = execSync(`git add .releases package.json packages/ui/`, { encoding: 'utf-8' });
-        const releaseCommit = execSync(`git commit -m "chore: release ${data.name}@${data.version}"`, { encoding: 'utf-8' });
+        const releaseCommit = execSync(`git commit -m "chore: release ${pkgData.name}@${pkgData.version}"`, { encoding: 'utf-8' });
         console.log('Commit Output: \n', releaseCommit);
         console.log("Pushing changes...")
         const releasePush = execSync(`git push`, { encoding: 'utf-8' });
