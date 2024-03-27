@@ -38,6 +38,7 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.npm_token_test }}
 
   install:
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
