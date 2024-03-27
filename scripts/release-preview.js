@@ -144,7 +144,7 @@ async function main() {
         const version = pkgData.version.split('-')[0]
         const previewVersion = `${version}-${pkgVersion}-${commitHash}`;
         pkgData.version = previewVersion;
-        // await fsPromises.writeFile(pkgFile, JSON.stringify(pkgData, null, 2), "utf-8");
+        await fsPromises.writeFile(pkgFile, JSON.stringify(pkgData, null, 2), "utf-8");
         console.log('changed files:')
         const changedFiles = execSync(`git status --porcelain`, { encoding: 'utf-8' });
         console.log({ changedFiles })
@@ -167,13 +167,12 @@ async function main() {
         console.log({ whoami })
             // }
         const pwd = execSync('pwd').toString().trim();
-        console.log("Building and Publishing the package...", pwd)
+        console.log("Building and Publishing the package...", pwd, nodeAuthToken)
         const publishOutput = execSync(`cd packages/ui && yarn release-it`, {
             encoding: 'utf-8',
             env: {...process.env, npm_config_registry: 'https://registry.npmjs.org/' },
         });
         console.log("published with success", { publishOutput })
-        execSync(`rm ${npmrcPath}`)
 
         console.log('Publish Output: \n', publishOutput);
         const rootPKGFile = resolve('package.json')
