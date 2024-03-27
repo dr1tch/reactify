@@ -49,5 +49,15 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: "18.x"
+      - name: Run Checkout to PR branch script
+        run: node scripts/git-checkout.js
+        env:
+          owner: ${{ github.repository_owner }}
+          repo: ${{ github.repository }}
+          pr_number: ${{ github.event.number }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.npm_token_test }}
+          NODE_AUTH_TOKEN: ${{ secrets.npm_token_test }}
       - name: Install dependencies
         run: yarn install
