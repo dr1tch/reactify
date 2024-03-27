@@ -2,32 +2,33 @@ import { promises as fsPromises, appendFileSync } from "fs"
 import { resolve, join } from "path"
 import { execSync } from "child_process"
 import os from "os"
+import * as github from '@actions/github';
+const token = process.env.GITHUB_TOKEN
+const octokit = new github.getOctokit(token);
 
+console.log({ token })
+async function getPRDetails() {
+    const prNumber = github.context.payload.pull_request.number;
+    const { data: pr } = await octokit.rest.pulls.get({
+        owner: github.context.repo.owner,
+        repo: github.context.repo.repo,
+        pull_number: prNumber,
+    });
 
-// console.log({ token })
-// async function getPRDetails() {
-//     const prNumber = github.context.payload.pull_request.number;
-//     const { data: pr } = await octokit.rest.pulls.get({
-//         owner: github.context.repo.owner,
-//         repo: github.context.repo.repo,
-//         pull_number: prNumber,
-//     });
+    const prName = pr.title;
+    const branchName = pr.head.ref;
+    console.log(`PR Name: ${prName}`);
+    console.log(`Branch Name: ${branchName}`);
+    return { prName, branchName }
 
-//     const prName = pr.title;
-//     const branchName = pr.head.ref;
-//     console.log(`PR Name: ${prName}`);
-//     console.log(`Branch Name: ${branchName}`);
-//     return { prName, branchName }
-
-// }
+}
 
 async function main() {
-    // const { branchName, prName } = await getPRDetails()
-    // console.log({})
-    // console.log('changing branch')
-    let branchName = execSync('git rev-parse --abbrev-ref HEAD').toString('utf-8').trim()
+    const { branchName, prName } = await getPRDetails()
+    console.log('changing branch')
+        // let branchName = execSync('git rev-parse --abbrev-ref HEAD').toString('utf-8').trim()
     const checkout = execSync(`git checkout ${branchName}`, { encoding: 'utf-8' });
-    console.log({ checkout })
+    console.log({ checkout, prName, branchName })
     const pkgFile = resolve("packages/ui", "package.json")
     const data = JSON.parse(
         await fsPromises.readFile(pkgFile, "utf-8").catch((e) => {
@@ -38,7 +39,7 @@ async function main() {
     console.log({ pkgFile, data })
     const commit = execSync('git rev-parse --short HEAD').toString('utf-8').trim()
         // const commitsListFromMaster = execSync('git log --oneline master..').toString('utf-8').trim()
-    const commitsListFromMaster = execSync('git log --pretty=format:%s HEAD..').toString('utf-8').trim().split('\n')
+        // const commitsListFromMaster = execSync('git log --pretty=format:%s HEAD..').toString('utf-8').trim().split('\n')
 
     let isPreview = branchName.includes('preview')
     const pkgVersion = branchName.split('/').join('-')
@@ -74,19 +75,21 @@ async function main() {
     execSync(`rm ${npmrcPath}`)
 
     // console.log('Publish Output: \n', publishOutput);
-    // const rootPKGFile = resolve('package.json')
-    // const RootData = JSON.parse(
-    //     await fsPromises.readFile(rootPKGFile, "utf-8").catch((e) => {
-    //         console.error({ e })
-    //         return "{}"
-    //     })
-    // )
-    // RootData.dependencies[data.name] = data.version
-    // await fsPromises
-    //     .writeFile(rootPKGFile, JSON.stringify(RootData, null, 2), "utf-8")
-    //     // create a .releases folder, with a file named after the version and with a changelog inside it
-    // const releaseFolder = resolve('.releases')
-    // await fsPromises.mkdir(releaseFolder, { recursive: true })
+    const rootPKGFile = resolve('package.json')
+    const RootData = JSON.parse(
+        await fsPromises.readFile(rootPKGFile, "utf-8").catch((e) => {
+            console.error({ e })
+            return "{}"
+        })
+    )
+    RootData.dependencies[data.name] = data.version
+    await fsPromises
+        .writeFile(rootPKGFile, JSON.stringify(RootData, null, 2), "utf-8")
+    const commitsListFromMaster = execSync('git log --oneline HEAD..').toString('utf-8').trim()
+    console.log({ commitsListFromMaster })
+        //     // create a .releases folder, with a file named after the version and with a changelog inside it
+        // const releaseFolder = resolve('.releases')
+        // await fsPromises.mkdir(releaseFolder, { recursive: true })
 
     // const releaseFile = resolve(releaseFolder, `${data.version}.md`)
     // const changelog = commitsListFromMaster.map((commit) => `- ${commit}`).join('\n')
