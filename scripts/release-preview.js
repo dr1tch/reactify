@@ -171,7 +171,7 @@ async function main() {
         console.log("Building and Publishing the package...", pwd, nodeAuthToken)
         const publishOutput = execSync(`cd packages/ui && yarn release-it`, {
             encoding: 'utf-8',
-            env: {...process.env, npm_config_registry: 'https://registry.npmjs.org/' },
+            env: {...process.env, npm_config_registry: 'https://registry.npmjs.org/', always_auth: true, NODE_AUTH_TOKEN: nodeAuthToken },
         });
         console.log("published with success", { publishOutput })
 
