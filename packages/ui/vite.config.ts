@@ -14,10 +14,10 @@ const app = async (): Promise<UserConfigExport> => {
 
   return defineConfig({
     plugins: [
-      react(),
+      react() as any,
       dts({
         insertTypesEntry: true,
-      }),
+      }) as any,
     ],
     css: {
       postcss: {
@@ -47,7 +47,7 @@ const app = async (): Promise<UserConfigExport> => {
       globals: true,
       environment: 'jsdom',
     },
-  })
+  }) as UserConfigExport
 }
 // https://vitejs.dev/config/
 export default app
