@@ -174,7 +174,8 @@ async function main() {
             env: {...process.env, npm_config_registry: 'https://registry.npmjs.org/', always_auth: true, NODE_AUTH_TOKEN: nodeAuthToken },
         });
         console.log("published with success", { publishOutput })
-
+        const { prTitle: releaseTitle, branchName: releaseBranch } = await getPRDetails();
+        console.log({ releaseTitle, releaseBranch })
         console.log('Publish Output: \n', publishOutput);
         const rootPKGFile = resolve('package.json')
         const RootData = JSON.parse(
@@ -188,6 +189,16 @@ async function main() {
             .writeFile(rootPKGFile, JSON.stringify(RootData, null, 2), "utf-8")
         const commitsListFromMaster = execSync('git log --pretty=format:%s HEAD..').toString('utf-8').trim()
         console.log({ commitsListFromMaster })
+        console.log('changed files:')
+        const changedFilesAfterRelease = execSync(`git status --porcelain`, { encoding: 'utf-8' });
+        console.log({ changedFilesAfterRelease })
+        console.log(`upgrading package version to ${pkgData.version}`)
+        console.log("Committing changes...")
+        const releaseAddAfterRelease = execSync(`git add .`, { encoding: 'utf-8' });
+        console.log({ releaseAddAfterRelease })
+        const releaseCommitAfterRelease = execSync(`git commit -m "upgrading package version to ${pkgData.version}"`, { encoding: 'utf-8' });
+        console.log('Commit Output: \n', releaseCommitAfterRelease);
+        console.log("Pushing changes...")
     }
 }
 
