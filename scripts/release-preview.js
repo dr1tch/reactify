@@ -157,7 +157,7 @@ async function main() {
             // }
         const pwd = execSync('pwd').toString().trim();
         console.log("Building and Publishing the package...", pwd)
-        const publishOutput = execSync(`cd packages/ui && yarn release`, {
+        const publishOutput = execSync(`cd packages/ui && yarn release-it`, {
             encoding: 'utf-8',
             env: {...process.env, npm_config_registry: 'https://registry.npmjs.org/' },
         });
