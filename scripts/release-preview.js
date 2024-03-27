@@ -169,6 +169,7 @@ async function main() {
             // }
         const pwd = execSync('pwd').toString().trim();
         console.log("Building and Publishing the package...", pwd, nodeAuthToken)
+            // const publishOutput = execSync(`cd packages/ui && npm publish -q --access public`, {
         const publishOutput = execSync(`cd packages/ui && yarn release-it`, {
             encoding: 'utf-8',
             env: {...process.env, npm_config_registry: 'https://registry.npmjs.org/', always_auth: true, NODE_AUTH_TOKEN: nodeAuthToken },
@@ -194,7 +195,7 @@ async function main() {
         console.log({ changedFilesAfterRelease })
         console.log(`upgrading package version to ${pkgData.version}`)
         console.log("Committing changes...")
-        const releaseAddAfterRelease = execSync(`git add .`, { encoding: 'utf-8' });
+        const releaseAddAfterRelease = execSync(`git add .releases package.json packages/ui`, { encoding: 'utf-8' });
         console.log({ releaseAddAfterRelease })
         const releaseCommitAfterRelease = execSync(`git commit -m "upgrading package version to ${pkgData.version}"`, { encoding: 'utf-8' });
         console.log('Commit Output: \n', releaseCommitAfterRelease);
