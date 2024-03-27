@@ -140,14 +140,11 @@ async function main() {
         const pkgData = JSON.parse(await fsPromises.readFile(pkgFile, "utf-8"));
         const commitHash = execSync('git rev-parse --short HEAD').toString('utf-8').trim();
         const pkgVersion = branchName.split('/').join('-')
-        const previewVersion = `${pkgData.version}-${pkgVersion}-${commitHash}`;
-
+        const version = pkgData.version.split('-')[0]
+        const previewVersion = `${version}-${pkgVersion}-${commitHash}`;
         pkgData.version = previewVersion;
         await fsPromises.writeFile(pkgFile, JSON.stringify(pkgData, null, 2), "utf-8");
         console.log(`Updated package version to: ${previewVersion}`);
-        console.log("Building the package...")
-        const buildOutput = execSync(`cd packages/ui && yarn build`, { encoding: 'utf-8' });
-        console.log('Build Output: \n', buildOutput);
         const npmrcPath = join(os.homedir(), '.npmrc');
         const nodeAuthToken = process.env.NODE_AUTH_TOKEN;
         if (nodeAuthToken) {
@@ -159,7 +156,7 @@ async function main() {
         console.log({ whoami })
             // }
         const pwd = execSync('pwd').toString().trim();
-        console.log("Publishing the package...", pwd)
+        console.log("Building and Publishing the package...", pwd)
         const publishOutput = execSync(`cd packages/ui && yarn release`, {
             encoding: 'utf-8',
             env: {...process.env, npm_config_registry: 'https://registry.npmjs.org/' },
@@ -175,7 +172,7 @@ async function main() {
                 return "{}"
             })
         )
-        RootData.dependencies[data.name] = data.version
+        RootData.dependencies[pkgData.name] = pkgData.version
         await fsPromises
             .writeFile(rootPKGFile, JSON.stringify(RootData, null, 2), "utf-8")
         const commitsListFromMaster = execSync('git log --pretty=format:%s HEAD..').toString('utf-8').trim()
