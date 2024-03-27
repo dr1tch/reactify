@@ -115,7 +115,6 @@ async function main() {
     console.log("Pushing changes...")
     const releasePush = execSync(`git push`, { encoding: 'utf-8' });
     console.log('Push Output: \n', releasePush);
-    const checkoutHead = execSync(`git checkout HEAD`, { encoding: 'utf-8' });
 }
 main().catch((err) => {
     // eslint-disable-next-line no-console
