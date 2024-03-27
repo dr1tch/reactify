@@ -113,6 +113,9 @@
 
 import { promises as fsPromises } from "fs";
 import { resolve } from "path";
+import { execSync } from "child_process"
+import os from "os"
+
 import * as github from '@actions/github';
 
 const octokit = new github.getOctokit(process.env.GITHUB_TOKEN);
