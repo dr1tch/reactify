@@ -22,6 +22,8 @@ async function getPRDetails() {
     return { prName, branchName }
 
 }
+
+// this function will be executed on merge 
 const getNewVersion = (version) => {
     const [major, minor, patch] = version.split('.').map((v) => parseInt(v));
     return [major, minor, patch + 1].join('.')
