@@ -1,4 +1,4 @@
-import { promises as fsPromises } from "fs"
+import { promises as fsPromises, appendFileSync } from "fs"
 import { resolve, join } from "path"
 import { execSync } from "child_process"
 import os from "os"
@@ -46,9 +46,9 @@ async function main() {
     const nodeAuthToken = process.env.NODE_AUTH_TOKEN;
 
     if (nodeAuthToken) {
-        fs.appendFileSync(npmrcPath, `//registry.npmjs.org/:_authToken=${nodeAuthToken}\n`);
-        fs.appendFileSync(npmrcPath, 'registry=https://registry.npmjs.org/\n');
-        fs.appendFileSync(npmrcPath, 'always-auth=true\n');
+        appendFileSync(npmrcPath, `//registry.npmjs.org/:_authToken=${nodeAuthToken}\n`);
+        appendFileSync(npmrcPath, 'registry=https://registry.npmjs.org/\n');
+        appendFileSync(npmrcPath, 'always-auth=true\n');
 
         const whoami = execSync('npm whoami').toString().trim();
         console.log({ whoami })
