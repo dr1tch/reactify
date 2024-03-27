@@ -20,7 +20,10 @@ jobs:
           node-version: "18.x"
       - name: Install dependencies
         run: yarn install --frozen-lockfile
-
+      - name: git config
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email youssouf.kacemi@gmail.com
       - name: Run Pull Request script
         run: node scripts/release-it-pr.js
         env:
