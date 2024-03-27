@@ -4,9 +4,10 @@ import { execSync } from "child_process"
 import os from "os"
 import * as github from '@actions/github';
 import * as core from '@actions/core';
-const token = core.getInput('GITHUB_TOKEN');
+const token = process.env.GITHUB_TOKEN
 const octokit = new github.getOctokit(token);
 
+console.log({ token })
 async function getPRDetails() {
     const prNumber = github.context.payload.pull_request.number;
     const { data: pr } = await octokit.rest.pulls.get({
