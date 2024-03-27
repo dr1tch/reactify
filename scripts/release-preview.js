@@ -111,8 +111,8 @@
 //     process.exit(1)
 // });
 
-import { promises as fsPromises } from "fs";
-import { resolve } from "path";
+import { promises as fsPromises, appendFileSync } from "fs"
+import { resolve, join } from "path"
 import { execSync } from "child_process"
 import os from "os"
 
