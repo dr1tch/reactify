@@ -144,7 +144,6 @@ async function main() {
         const previewVersion = `${version}-${pkgVersion}-${commitHash}`;
         pkgData.version = previewVersion;
         await fsPromises.writeFile(pkgFile, JSON.stringify(pkgData, null, 2), "utf-8");
-        console.log({ releaseFile, changelog })
         console.log('changed files:')
         const changedFiles = execSync(`git status --porcelain`, { encoding: 'utf-8' });
         console.log({ changedFiles })
