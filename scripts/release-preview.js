@@ -50,22 +50,22 @@ async function main() {
     }
     await fsPromises
         .writeFile(pkgFile, JSON.stringify(data, null, 2), "utf-8")
-        // console.log("Building the package...")
-        // const buildOutput = execSync(`cd packages/ui && yarn build`, { encoding: 'utf-8' });
-        // console.log('Build Output: \n', buildOutput);
-        // const npmrcPath = join(os.homedir(), '.npmrc');
-        // const nodeAuthToken = process.env.NODE_AUTH_TOKEN;
-        // console.log({ isPreview, nodeAuthToken, npmrcPath, data, version, pkgVersion, commit, commitsListFromMaster, branchName })
-        // if (nodeAuthToken) {
-        //     appendFileSync(npmrcPath, `//registry.npmjs.org/:_authToken=${nodeAuthToken}\n`);
-        //     appendFileSync(npmrcPath, 'registry=https://registry.npmjs.org/\n');
-        //     appendFileSync(npmrcPath, 'always-auth=true\n');
-
-    //     const whoami = execSync('npm whoami').toString().trim();
-    //     console.log({ whoami })
-    // }
-    console.log("Publishing the package...")
-    const publishOutput = execSync(`cd packages/ui && yarn build`, {
+    console.log("Building the package...")
+    const buildOutput = execSync(`cd packages/ui && yarn build`, { encoding: 'utf-8' });
+    console.log('Build Output: \n', buildOutput);
+    const npmrcPath = join(os.homedir(), '.npmrc');
+    const nodeAuthToken = process.env.NODE_AUTH_TOKEN;
+    if (nodeAuthToken) {
+        appendFileSync(npmrcPath, `//registry.npmjs.org/:_authToken=${nodeAuthToken}\n`);
+        appendFileSync(npmrcPath, 'registry=https://registry.npmjs.org/\n');
+        appendFileSync(npmrcPath, 'always-auth=true\n');
+    }
+    const whoami = execSync('npm whoami').toString().trim();
+    console.log({ whoami })
+        // }
+    const pwd = execSync('pwd').toString().trim();
+    console.log("Publishing the package...", pwd)
+    const publishOutput = execSync(`cd packages/ui && yarn release`, {
         encoding: 'utf-8',
         env: {...process.env, npm_config_registry: 'https://registry.npmjs.org/' },
     });
