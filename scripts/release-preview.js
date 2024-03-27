@@ -27,7 +27,7 @@ async function main() {
     let branchName = execSync('git rev-parse --abbrev-ref HEAD').toString('utf-8').trim()
     const checkout = execSync(`git checkout ${branchName}`, { encoding: 'utf-8' });
     console.log({ checkout })
-    const pkgFile = resolve("package.json")
+    const pkgFile = resolve("packages/ui", "package.json")
     const data = JSON.parse(
         await fsPromises.readFile(pkgFile, "utf-8").catch((e) => {
             console.error({ e })
@@ -64,12 +64,13 @@ async function main() {
     //     const whoami = execSync('npm whoami').toString().trim();
     //     console.log({ whoami })
     // }
-    // console.log("Publishing the package...")
-    // const publishOutput = execSync(`cd packages/ui && yarn release`, {
-    //     encoding: 'utf-8',
-    //     env: {...process.env, npm_config_registry: 'https://registry.npmjs.org/' },
-    // });
-    // execSync(`rm ${npmrcPath}`)
+    console.log("Publishing the package...")
+    const publishOutput = execSync(`cd packages/ui && yarn build`, {
+        encoding: 'utf-8',
+        env: {...process.env, npm_config_registry: 'https://registry.npmjs.org/' },
+    });
+    console.log("published with success", { publishOutput })
+    execSync(`rm ${npmrcPath}`)
 
     // console.log('Publish Output: \n', publishOutput);
     // const rootPKGFile = resolve('package.json')

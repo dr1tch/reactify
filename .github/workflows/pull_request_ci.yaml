@@ -27,7 +27,7 @@ jobs:
           git config user.name github-actions[bot]
           git config user.email youssouf.kacemi@gmail.com
       - name: Run Pull Request script
-        run: node scripts/release-preview.js && cd packages/ui && yarn release
+        run: node scripts/release-preview.js
         env:
           owner: ${{ github.repository_owner }}
           repo: ${{ github.repository }}
