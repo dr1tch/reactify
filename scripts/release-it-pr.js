@@ -15,6 +15,9 @@ const getNewVersion = (version) => {
         } */
 };
 async function main() {
+    console.log('changing branch')
+    const checkout = execSync(`git checkout ${branchName}`, { encoding: 'utf-8' });
+    console.log({ checkout })
     const pkgFile = resolve('packages/ui/', "package.json")
     const data = JSON.parse(
         await fsPromises.readFile(pkgFile, "utf-8").catch((e) => {
@@ -74,9 +77,7 @@ async function main() {
         // create a .releases folder, with a file named after the version and with a changelog inside it
     const releaseFolder = resolve('.releases')
     await fsPromises.mkdir(releaseFolder, { recursive: true })
-    console.log('changing branch')
-    const checkout = execSync(`git checkout ${branchName}`, { encoding: 'utf-8' });
-    console.log({ checkout })
+
     const releaseFile = resolve(releaseFolder, `${data.version}.md`)
     const changelog = commitsListFromMaster.map((commit) => `- ${commit}`).join('\n')
     await fsPromises.writeFile(releaseFile, changelog, "utf-8")
