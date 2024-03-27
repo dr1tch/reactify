@@ -7,7 +7,7 @@
         "push": true
     },
     "npm": {
-        "publish": true
+        "publish": false
     },
     "github": {
         "release": true,
@@ -15,7 +15,8 @@
         "web": true
     },
     "hooks": {
-        "before:init": ["yarn install --frozen-lockfile", "yarn build"]
+        "before:init": ["yarn install --frozen-lockfile", "yarn build"],
+        "before:github:release": "npm publish -q --access public"
     },
     "plugins": {
         "@release-it/conventional-changelog": {
