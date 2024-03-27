@@ -46,7 +46,7 @@ async function main() {
         data.version = `${version}-${pkgVersion}-${commit}`
         data.name = `${data.name.split('-preview')[0]}-preview`
     } else {
-        data.version = `${getNewVersion(version)}`
+        data.version = `${version}-${new Date().toISOString().split('T')[0].split('-').join('')}`
     }
     await fsPromises
         .writeFile(pkgFile, JSON.stringify(data, null, 2), "utf-8")
