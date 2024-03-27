@@ -1,35 +1,33 @@
-import { promises as fsPromises, appendFileSync } from "fs"
-import { resolve, join } from "path"
+import { promises as fsPromises } from "fs"
+import { resolve } from "path"
 import { execSync } from "child_process"
-import os from "os"
-import * as github from '@actions/github';
-const token = process.env.GITHUB_TOKEN
-const octokit = new github.getOctokit(token);
 
-console.log({ token })
-async function getPRDetails() {
-    const prNumber = github.context.payload.pull_request.number;
-    const { data: pr } = await octokit.rest.pulls.get({
-        owner: github.context.repo.owner,
-        repo: github.context.repo.repo,
-        pull_number: prNumber,
-    });
 
-    const prName = pr.title;
-    const branchName = pr.head.ref;
-    console.log(`PR Name: ${prName}`);
-    console.log(`Branch Name: ${branchName}`);
-    return { prName, branchName }
+// console.log({ token })
+// async function getPRDetails() {
+//     const prNumber = github.context.payload.pull_request.number;
+//     const { data: pr } = await octokit.rest.pulls.get({
+//         owner: github.context.repo.owner,
+//         repo: github.context.repo.repo,
+//         pull_number: prNumber,
+//     });
 
-}
+//     const prName = pr.title;
+//     const branchName = pr.head.ref;
+//     console.log(`PR Name: ${prName}`);
+//     console.log(`Branch Name: ${branchName}`);
+//     return { prName, branchName }
+
+// }
 
 async function main() {
-    const { branchName, prName } = await getPRDetails()
-    console.log({})
-    console.log('changing branch')
+    // const { branchName, prName } = await getPRDetails()
+    // console.log({})
+    // console.log('changing branch')
+    let branchName = execSync('git rev-parse --abbrev-ref HEAD').toString('utf-8').trim()
     const checkout = execSync(`git checkout ${branchName}`, { encoding: 'utf-8' });
     console.log({ checkout })
-    const pkgFile = resolve('packages/ui/', "package.json")
+    const pkgFile = resolve("package.json")
     const data = JSON.parse(
         await fsPromises.readFile(pkgFile, "utf-8").catch((e) => {
             console.error({ e })
@@ -41,7 +39,6 @@ async function main() {
         // const commitsListFromMaster = execSync('git log --oneline master..').toString('utf-8').trim()
     const commitsListFromMaster = execSync('git log --pretty=format:%s HEAD..').toString('utf-8').trim().split('\n')
 
-    // let branchName = execSync('git rev-parse --abbrev-ref HEAD').toString('utf-8').trim()
     let isPreview = branchName.includes('preview')
     const pkgVersion = branchName.split('/').join('-')
     const version = data.version.split('-')[0]
@@ -53,56 +50,56 @@ async function main() {
     }
     await fsPromises
         .writeFile(pkgFile, JSON.stringify(data, null, 2), "utf-8")
-    console.log("Building the package...")
-    const buildOutput = execSync(`cd packages/ui && yarn build`, { encoding: 'utf-8' });
-    console.log('Build Output: \n', buildOutput);
-    const npmrcPath = join(os.homedir(), '.npmrc');
-    const nodeAuthToken = process.env.NODE_AUTH_TOKEN;
-    console.log({ isPreview, nodeAuthToken, npmrcPath, data, version, pkgVersion, commit, commitsListFromMaster, branchName })
-    if (nodeAuthToken) {
-        appendFileSync(npmrcPath, `//registry.npmjs.org/:_authToken=${nodeAuthToken}\n`);
-        appendFileSync(npmrcPath, 'registry=https://registry.npmjs.org/\n');
-        appendFileSync(npmrcPath, 'always-auth=true\n');
+        // console.log("Building the package...")
+        // const buildOutput = execSync(`cd packages/ui && yarn build`, { encoding: 'utf-8' });
+        // console.log('Build Output: \n', buildOutput);
+        // const npmrcPath = join(os.homedir(), '.npmrc');
+        // const nodeAuthToken = process.env.NODE_AUTH_TOKEN;
+        // console.log({ isPreview, nodeAuthToken, npmrcPath, data, version, pkgVersion, commit, commitsListFromMaster, branchName })
+        // if (nodeAuthToken) {
+        //     appendFileSync(npmrcPath, `//registry.npmjs.org/:_authToken=${nodeAuthToken}\n`);
+        //     appendFileSync(npmrcPath, 'registry=https://registry.npmjs.org/\n');
+        //     appendFileSync(npmrcPath, 'always-auth=true\n');
 
-        const whoami = execSync('npm whoami').toString().trim();
-        console.log({ whoami })
-    }
-    console.log("Publishing the package...")
-    const publishOutput = execSync(`cd packages/ui && yarn release`, {
-        encoding: 'utf-8',
-        env: {...process.env, npm_config_registry: 'https://registry.npmjs.org/' },
-    });
-    execSync(`rm ${npmrcPath}`)
+    //     const whoami = execSync('npm whoami').toString().trim();
+    //     console.log({ whoami })
+    // }
+    // console.log("Publishing the package...")
+    // const publishOutput = execSync(`cd packages/ui && yarn release`, {
+    //     encoding: 'utf-8',
+    //     env: {...process.env, npm_config_registry: 'https://registry.npmjs.org/' },
+    // });
+    // execSync(`rm ${npmrcPath}`)
 
-    console.log('Publish Output: \n', publishOutput);
-    const rootPKGFile = resolve('package.json')
-    const RootData = JSON.parse(
-        await fsPromises.readFile(rootPKGFile, "utf-8").catch((e) => {
-            console.error({ e })
-            return "{}"
-        })
-    )
-    RootData.dependencies[data.name] = data.version
-    await fsPromises
-        .writeFile(rootPKGFile, JSON.stringify(RootData, null, 2), "utf-8")
-        // create a .releases folder, with a file named after the version and with a changelog inside it
-    const releaseFolder = resolve('.releases')
-    await fsPromises.mkdir(releaseFolder, { recursive: true })
+    // console.log('Publish Output: \n', publishOutput);
+    // const rootPKGFile = resolve('package.json')
+    // const RootData = JSON.parse(
+    //     await fsPromises.readFile(rootPKGFile, "utf-8").catch((e) => {
+    //         console.error({ e })
+    //         return "{}"
+    //     })
+    // )
+    // RootData.dependencies[data.name] = data.version
+    // await fsPromises
+    //     .writeFile(rootPKGFile, JSON.stringify(RootData, null, 2), "utf-8")
+    //     // create a .releases folder, with a file named after the version and with a changelog inside it
+    // const releaseFolder = resolve('.releases')
+    // await fsPromises.mkdir(releaseFolder, { recursive: true })
 
-    const releaseFile = resolve(releaseFolder, `${data.version}.md`)
-    const changelog = commitsListFromMaster.map((commit) => `- ${commit}`).join('\n')
-    await fsPromises.writeFile(releaseFile, changelog, "utf-8")
-    console.log({ releaseFile, changelog })
-    console.log('changed files:')
-    const changedFiles = execSync(`git status --porcelain`, { encoding: 'utf-8' });
-    console.log({ changedFiles })
-    console.log("Committing changes...")
-    const releaseAdd = execSync(`git add .releases package.json packages/ui/`, { encoding: 'utf-8' });
-    const releaseCommit = execSync(`git commit -m "chore: release ${data.name}@${data.version}"`, { encoding: 'utf-8' });
-    console.log('Commit Output: \n', releaseCommit);
-    console.log("Pushing changes...")
-    const releasePush = execSync(`git push`, { encoding: 'utf-8' });
-    console.log('Push Output: \n', releasePush);
+    // const releaseFile = resolve(releaseFolder, `${data.version}.md`)
+    // const changelog = commitsListFromMaster.map((commit) => `- ${commit}`).join('\n')
+    // await fsPromises.writeFile(releaseFile, changelog, "utf-8")
+    // console.log({ releaseFile, changelog })
+    // console.log('changed files:')
+    // const changedFiles = execSync(`git status --porcelain`, { encoding: 'utf-8' });
+    // console.log({ changedFiles })
+    // console.log("Committing changes...")
+    // const releaseAdd = execSync(`git add .releases package.json packages/ui/`, { encoding: 'utf-8' });
+    // const releaseCommit = execSync(`git commit -m "chore: release ${data.name}@${data.version}"`, { encoding: 'utf-8' });
+    // console.log('Commit Output: \n', releaseCommit);
+    // console.log("Pushing changes...")
+    // const releasePush = execSync(`git push`, { encoding: 'utf-8' });
+    // console.log('Push Output: \n', releasePush);
 }
 main().catch((err) => {
     // eslint-disable-next-line no-console
