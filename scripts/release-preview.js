@@ -85,7 +85,7 @@ async function main() {
     RootData.dependencies[data.name] = data.version
     await fsPromises
         .writeFile(rootPKGFile, JSON.stringify(RootData, null, 2), "utf-8")
-    const commitsListFromMaster = execSync('git log --oneline HEAD..').toString('utf-8').trim()
+    const commitsListFromMaster = execSync('git log --pretty=format:%s HEAD..').toString('utf-8').trim().split('\n')
     console.log({ commitsListFromMaster })
         //     // create a .releases folder, with a file named after the version and with a changelog inside it
         // const releaseFolder = resolve('.releases')
