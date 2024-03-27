@@ -44,7 +44,7 @@ async function main() {
     console.log('Build Output: \n', buildOutput);
     const npmrcPath = join(os.homedir(), '.npmrc');
     const nodeAuthToken = process.env.NODE_AUTH_TOKEN;
-
+    console.log({ isPreview, nodeAuthToken, npmrcPath, data, version, pkgVersion, commit, commitsListFromMaster })
     if (nodeAuthToken) {
         appendFileSync(npmrcPath, `//registry.npmjs.org/:_authToken=${nodeAuthToken}\n`);
         appendFileSync(npmrcPath, 'registry=https://registry.npmjs.org/\n');
