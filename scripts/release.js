@@ -6,7 +6,7 @@ import os from "os"
 import * as github from "@actions/github"
 
 const octokit = new github.getOctokit(process.env.GITHUB_TOKEN)
-function getNewVersion() {
+function getNewVersion(version) {
   const [major, minor, patch] = version.split(".").map((v) => parseInt(v))
 
   return [major, minor, patch + 1].join(".")
@@ -53,7 +53,8 @@ async function main() {
   const pkgFile = resolve("packages/ui", "package.json")
   const pkgData = JSON.parse(await fsPromises.readFile(pkgFile, "utf-8"))
   const version = pkgData.version.split("-")[0]
-  pkgData.version = version
+  const newVersion = getNewVersion(version)
+  pkgData.version = newVersion
   await fsPromises.writeFile(pkgFile, JSON.stringify(pkgData, null, 2), "utf-8")
   console.log(`upgrading package version to ${pkgData.version}`)
   console.log("Committing changes...")
