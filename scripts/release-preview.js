@@ -6,6 +6,7 @@ import os from "os"
 import * as github from "@actions/github"
 const octokit = new github.getOctokit(process.env.GITHUB_TOKEN)
 function listChangedFiles() {
+  console.dir(process.env, { depth: null, colors: true })
   const eventPath = JSON.parse(
     readFileSync(process.env.GITHUB_EVENT_PATH || "", "utf8")
   )
