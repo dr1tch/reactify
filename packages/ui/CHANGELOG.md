@@ -1,5 +1,7 @@
 # Changelog
 
+## [0.0.17](https://github.com/dr1tch/reactify/compare/v0.0.16...v0.0.17) (2024-03-28)
+
 ## [0.0.16-preview-test-1-490c273](https://github.com/dr1tch/reactify/compare/v0.0.16...v0.0.16) (2024-03-28)
 
 ## [0.0.16](https://github.com/dr1tch/reactify/compare/68053fdb1884c899e56fbedc5206d9cdd2a58e72...v0.0.16) (2024-03-28)
