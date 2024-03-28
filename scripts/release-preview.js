@@ -4,10 +4,8 @@ import { execSync } from "child_process"
 import os from "os"
 
 import * as github from '@actions/github';
-import { eventPath } from "./utils.js";
 
 const octokit = new github.getOctokit(process.env.GITHUB_TOKEN);
-console.dir({ eventPath })
 async function getPRDetails() {
     const prNumber = github.context.payload.pull_request.number;
     const { data: pr } = await octokit.rest.pulls.get({
@@ -37,8 +35,7 @@ async function main() {
     const { branchName } = await getPRDetails();
     console.log(`PR Branch Name: ${branchName}`);
     const checkout = execSync(`git checkout ${branchName}`, { encoding: 'utf-8' });
-    console.log({ checkout })
-    const changedFiles = await listChangedFiles();
+    const changedFiles = execSync(`git diff --name-only HEAD...${branchName}`, { encoding: 'utf-8' }).trim().split('\n');
     console.log({ changedFiles })
     if (branchName.startsWith('preview/')) {
         const pkgFile = resolve("packages/ui", "package.json");
