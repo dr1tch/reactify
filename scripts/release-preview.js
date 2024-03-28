@@ -38,7 +38,15 @@ async function main() {
     const checkout = execSync(`git checkout ${branchName}`, { encoding: 'utf-8' });
     const changedFiles = await listChangedFiles();
     console.log({ changedFiles })
-    if (branchName.startsWith('preview/') && listChangedFiles.length > 0) {
+    // ensure that changes are only in packages/ui
+    const isChangedFilesInUI = changedFiles.some((file) => file.startsWith('packages/ui/'));
+    console.log({
+        isPreviewBranch: branchName.startsWith('preview/'),
+        isChangedFilesInUI,
+        count: changedFiles.length,
+        files: changedFiles,
+    })
+    if (branchName.startsWith('preview/') && listChangedFiles.length > 0 && isChangedFilesInUI) {
         const pkgFile = resolve("packages/ui", "package.json");
         const pkgData = JSON.parse(await fsPromises.readFile(pkgFile, "utf-8"));
         const commitHash = execSync('git rev-parse --short HEAD').toString('utf-8').trim();
