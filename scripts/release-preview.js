@@ -44,8 +44,8 @@ async function main() {
     const { branchName } = await getPRDetails();
     console.log(`checking out to branch: ${branchName}`);
     execSync(`git checkout ${branchName}`, { encoding: 'utf-8' });
-    // const changedFiles = await listChangedFiles();
-    // console.log({ changedFiles });
+    const changedFiles = execSync(`git status --porcelain`, { encoding: 'utf-8' });
+    console.log({ changedFiles });
     const commitsListFromMaster = execSync('git log --pretty=format:%s HEAD..').toString('utf-8').trim().split('\n')
     console.log({ commitsListFromMaster })
     if (branchName.startsWith('preview/') && commitsListFromMaster.length > 0) {
