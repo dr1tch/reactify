@@ -4,7 +4,9 @@ import { execSync } from "child_process"
 import os from "os"
 
 import * as github from "@actions/github"
-
+const eventPath = JSON.parse(
+  readFileSync(process.env.GITHUB_EVENT_PATH || "", "utf8")
+)
 const octokit = new github.getOctokit(process.env.GITHUB_TOKEN)
 function getNewVersion(version) {
   const [major, minor, patch] = version.split(".").map((v) => parseInt(v))
@@ -14,13 +16,17 @@ function getNewVersion(version) {
 
 function listChangedFiles() {
   console.dir(process.env, { depth: null, colors: true })
-  const eventPath = JSON.parse(
-    readFileSync(process.env.GITHUB_EVENT_PATH || "", "utf8")
-  )
   console.dir(eventPath, { depth: null, colors: true })
-  const baseCommit = eventPath.before
-  const headCommit = eventPath.after
-  console.log([baseCommit, headCommit])
+  let baseCommit = ""
+  let headCommit = ""
+  if (eventPath.action === "opened") {
+    baseCommit = eventPath.GITHUB_BASE_REF
+    headCommit = eventPath.GITHUB_HEAD_REF
+  } else {
+    baseCommit = eventPath.before
+    headCommit = eventPath.after
+  }
+
   // Fetch the list of changed files in the merge
   const changedFiles = execSync(
     `git diff --name-only ${baseCommit} ${headCommit}`,
@@ -28,7 +34,6 @@ function listChangedFiles() {
   )
     .split("\n")
     .filter(Boolean)
-
   return changedFiles
 }
 
