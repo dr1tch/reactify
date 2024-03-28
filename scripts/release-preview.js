@@ -6,14 +6,14 @@ import os from "os"
 const eventPath = JSON.parse(
   readFileSync(process.env.GITHUB_EVENT_PATH || "", "utf8")
 )
-function listChangedFiles() {
+export function listChangedFiles() {
   console.dir(process.env, { depth: null, colors: true })
   console.dir(eventPath, { depth: null, colors: true })
   let baseCommit = ""
   let headCommit = ""
   if (eventPath.action === "opened") {
-    baseCommit = eventPath.GITHUB_BASE_REF
-    headCommit = eventPath.GITHUB_HEAD_REF
+    baseCommit = process.env.GITHUB_BASE_REF
+    headCommit = process.env.GITHUB_HEAD_REF
   } else {
     baseCommit = eventPath.before
     headCommit = eventPath.after
@@ -30,7 +30,7 @@ function listChangedFiles() {
 }
 
 async function main() {
-  const branchName = eventPath.GITHUB_HEAD_REF
+  const branchName = process.env.GITHUB_HEAD_REF
   // checkout to pr branch
   execSync(`git checkout ${branchName}`, { encoding: "utf-8" })
   // list changed files (similar to git diff --name-only master..pr-branch)

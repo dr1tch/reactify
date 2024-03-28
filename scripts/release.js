@@ -1,40 +1,12 @@
-import { promises as fsPromises, appendFileSync, readFileSync } from "fs"
+import { promises as fsPromises, appendFileSync } from "fs"
 import { resolve, join } from "path"
 import { execSync } from "child_process"
 import os from "os"
-
-import * as github from "@actions/github"
-const eventPath = JSON.parse(
-  readFileSync(process.env.GITHUB_EVENT_PATH || "", "utf8")
-)
-const octokit = new github.getOctokit(process.env.GITHUB_TOKEN)
+import { listChangedFiles } from "./release-preview"
 function getNewVersion(version) {
   const [major, minor, patch] = version.split(".").map((v) => parseInt(v))
 
   return [major, minor, patch + 1].join(".")
-}
-
-function listChangedFiles() {
-  console.dir(process.env, { depth: null, colors: true })
-  console.dir(eventPath, { depth: null, colors: true })
-  let baseCommit = ""
-  let headCommit = ""
-  if (eventPath.action === "opened") {
-    baseCommit = eventPath.GITHUB_BASE_REF
-    headCommit = eventPath.GITHUB_HEAD_REF
-  } else {
-    baseCommit = eventPath.before
-    headCommit = eventPath.after
-  }
-
-  // Fetch the list of changed files in the merge
-  const changedFiles = execSync(
-    `git diff --name-only ${baseCommit} ${headCommit}`,
-    { encoding: "utf-8" }
-  )
-    .split("\n")
-    .filter(Boolean)
-  return changedFiles
 }
 
 async function main() {
