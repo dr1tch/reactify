@@ -39,6 +39,7 @@
     "release": "yarn build && yarn publish --non-interactive --access public",
     "release-it:dev:verbose": "release-it --no-increment --no-git.tag --ci --verbose",
     "release-it:dev": "release-it --no-increment --no-git.tag --ci",
+    "release-it:verbose": "release-it --ci --verbose",
     "release-it": "release-it --ci"
   },
   "dependencies": {

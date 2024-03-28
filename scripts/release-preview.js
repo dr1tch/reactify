@@ -33,17 +33,6 @@ async function getPRDetails() {
 
   return { prTitle: pr.title, branchName: pr.head.ref }
 }
-// async function listChangedFiles() {
-//   let changedFiles = []
-//   const prNumber = github.context.payload.pull_request.number
-//   const { data } = await octokit.rest.pulls.listFiles({
-//     owner: github.context.repo.owner,
-//     repo: github.context.repo.repo,
-//     pull_number: prNumber,
-//   })
-//   changedFiles = data.map((file) => file.filename)
-//   return changedFiles
-// }
 
 async function main() {
   const { branchName } = await getPRDetails()
@@ -74,6 +63,7 @@ async function main() {
   pkgData.version = previewVersion
   await fsPromises.writeFile(pkgFile, JSON.stringify(pkgData, null, 2), "utf-8")
   console.log(`upgrading package version to ${pkgData.version}`)
+  // Commit the changes
   console.log("Committing changes...")
   const commitChangesComands = [
     `git add packages/ui`,
@@ -100,6 +90,7 @@ async function main() {
       appendFileSync(npmrcPath, `${line}\n`)
     }
   }
+  // Building and Publishing the package
   console.log("Building and Publishing the package...")
   execSync(`cd packages/ui && yarn release-it:dev`, {
     encoding: "utf-8",
@@ -125,18 +116,8 @@ async function main() {
     JSON.stringify(RootData, null, 2),
     "utf-8"
   )
-
+  // Commit the changes
   console.log("Committing and pushing changes...")
-
-  //   const commitsListFromMaster = execSync("git log --pretty=format:%s HEAD..")
-  //     .toString("utf-8")
-  //     .trim()
-  //   console.log({ commitsListFromMaster })
-  //   console.log("changed files:")
-  //   const changedFilesAfterRelease = execSync(`git status --porcelain`, {
-  //     encoding: "utf-8",
-  //   })
-  //   console.log({ changedFilesAfterRelease })
   const rootCommitCommands = [
     `git add package.json`,
     `git commit -m "updating ${pkgData.name} to ${pkgData.version}"`,
