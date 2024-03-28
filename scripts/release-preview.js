@@ -3,7 +3,7 @@ import { resolve, join } from "path"
 import { execSync } from "child_process"
 
 import * as github from '@actions/github';
-import { listChangedFiles, writeToNpmrcFile } from "./utils.js";
+const { listChangedFiles, writeToNpmrcFile } = require("./utils.js");
 
 const octokit = new github.getOctokit(process.env.GITHUB_TOKEN);
 
