@@ -13,17 +13,21 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "16.x"
-
-      - name: Install dependencies
-        run: yarn install --frozen-lockfile
-
+          node-version: "18.x"
+      - name: Install @actions/github dependency
+        run: yarn install
+      - name: git config
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email youssouf.kacemi@gmail.com
       - name: Run Pull Request script
-        run: node scripts/ci-pull-request.js
+        run: node scripts/release-preview.js
         env:
           owner: ${{ github.repository_owner }}
           repo: ${{ github.repository }}
@@ -32,3 +36,5 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.npm_token_test }}
           NODE_AUTH_TOKEN: ${{ secrets.npm_token_test }}
+      - name: Install dependencies
+        run: yarn install

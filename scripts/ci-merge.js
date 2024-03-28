@@ -1,5 +1,4 @@
 const { execSync } = require('child_process');
-const core = require('@actions/core');
 
 const { isPackageChanged, getNewVersion, buildPackage, publishPackage, listChangedFiles, eventPath } = require("./utils");
 

@@ -1,7 +1,7 @@
 {
-  "name": "react-super-ui",
+  "name": "react-super-ui-preview",
   "private": false,
-  "version": "0.0.12",
+  "version": "0.0.16-preview-test-1-8665a81",
   "license": "MIT",
   "type": "module",
   "repository": {
@@ -23,6 +23,9 @@
   "sideEffects": [
     "**/*.css"
   ],
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org"
+  },
   "scripts": {
     "story:dev": "storybook dev -p 6006",
     "story:build": "storybook build",
@@ -33,7 +36,11 @@
     "test": "vitest",
     "build": "yarn build:lib && yarn build:style",
     "test:cov": "vitest run --coverage",
-    "release": "yarn build && yarn publish --non-interactive --access public"
+    "release": "yarn build && yarn publish --non-interactive --access public",
+    "release-it:dev:verbose": "release-it --no-increment --no-git.tag --ci --verbose",
+    "release-it:dev": "release-it --no-increment --no-git.tag --ci",
+    "release-it:verbose": "release-it --ci --verbose",
+    "release-it": "release-it --ci"
   },
   "dependencies": {
     "react": "^18.2.0",
