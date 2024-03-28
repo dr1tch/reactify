@@ -40,7 +40,6 @@ async function main() {
     encoding: "utf-8",
   })
   console.log("Commit Output: \n", releaseCommit)
-  console.log(`Updated package version to: ${version}`)
   // Generating new .npmrc file
   console.log("Generating new .npmrc file...")
   const npmrcPath = join(os.homedir(), ".npmrc")
