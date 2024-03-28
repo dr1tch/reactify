@@ -94,7 +94,7 @@ async function main() {
   }
   // Building and Publishing the package
   console.log("Building and Publishing the package...")
-  execSync(`cd packages/ui && yarn release-it:dev:verbose`, {
+  execSync(`cd packages/ui && yarn release-it:dev`, {
     encoding: "utf-8",
     env: {
       ...process.env,

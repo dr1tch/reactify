@@ -38,7 +38,7 @@ async function main() {
   console.log(`upgrading package version to ${pkgData.version}`)
   console.log("Committing changes...")
   const commitChangesComands = [
-    `git add packages/ui`,
+    `git add .`,
     `git commit -m "upgrading package version to ${pkgData.version}"`,
   ].join(" && ")
 
