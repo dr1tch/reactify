@@ -35,12 +35,12 @@ async function main() {
     const { branchName } = await getPRDetails();
     console.log(`PR Branch Name: ${branchName}`);
     const checkout = execSync(`git checkout ${branchName}`, { encoding: 'utf-8' });
-    const changedFiles = execSync(`git diff --name-only HEAD...${branchName}`, { encoding: 'utf-8' }).trim().split('\n');
+    const changedFiles = execSync(`git diff --name-only master...${branchName}`, { encoding: 'utf-8' }).trim().split('\n');
     console.log({ changedFiles })
     if (branchName.startsWith('preview/')) {
         const pkgFile = resolve("packages/ui", "package.json");
         const pkgData = JSON.parse(await fsPromises.readFile(pkgFile, "utf-8"));
-        const commitHash = execSync('git rev-parse --short HEAD').toString('utf-8').trim();
+        const commitHash = execSync('git rev-parse --short master').toString('utf-8').trim();
         const pkgVersion = branchName.split('/').join('-')
         const version = pkgData.version.split('-')[0]
         const previewVersion = `${version}-${pkgVersion}-${commitHash}`;
@@ -89,7 +89,7 @@ async function main() {
         RootData.dependencies[pkgData.name] = pkgData.version
         await fsPromises
             .writeFile(rootPKGFile, JSON.stringify(RootData, null, 2), "utf-8")
-        const commitsListFromMaster = execSync('git log --pretty=format:%s HEAD..').toString('utf-8').trim()
+        const commitsListFromMaster = execSync('git log --pretty=format:%s master..').toString('utf-8').trim()
         console.log({ commitsListFromMaster })
         console.log('changed files:')
         const changedFilesAfterRelease = execSync(`git status --porcelain`, { encoding: 'utf-8' });
