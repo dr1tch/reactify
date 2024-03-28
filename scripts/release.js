@@ -3,12 +3,20 @@ import { resolve, join } from "path"
 import { execSync } from "child_process"
 import os from "os"
 import { listChangedFiles } from "./release-preview.js"
+const safeCommit = execSync("git rev-parse HEAD", {
+  encoding: "utf-8",
+}).trim()
 function getNewVersion(version) {
   const [major, minor, patch] = version.split(".").map((v) => parseInt(v))
 
   return [major, minor, patch + 1].join(".")
 }
 
+function rollback() {
+  console.log(`Rolling back to commit ${safeCommit}...`)
+  execSync(`git reset --hard ${safeCommit}`, { encoding: "utf-8" })
+  console.log(`Rollback to commit ${safeCommit} completed.`)
+}
 async function main() {
   // this will be executed when we merge the PR
   const changedFiles = listChangedFiles()
@@ -29,22 +37,23 @@ async function main() {
     "git config user.email youssouf.kacemi@gmail.com",
   ].join(" && ")
   execSync(gitConfigSetupCommands, { encoding: "utf-8" })
+
   const pkgFile = resolve("packages/ui", "package.json")
   const pkgData = JSON.parse(await fsPromises.readFile(pkgFile, "utf-8"))
   const version = pkgData.version.split("-")[0]
   const newVersion = getNewVersion(version)
-  pkgData.version = newVersion
-  await fsPromises.writeFile(pkgFile, JSON.stringify(pkgData, null, 2), "utf-8")
-  console.log(`upgrading package version to ${newVersion}`)
-  console.log("Cleaning up...")
-  const commitChangesComands = [
-    `git add .`,
-    `git commit -m "cleaning up"`,
-  ].join(" && ")
+  //   pkgData.version = newVersion
+  //   await fsPromises.writeFile(pkgFile, JSON.stringify(pkgData, null, 2), "utf-8")
+  //   console.log(`upgrading package version to ${newVersion}`)
+  //   console.log("Cleaning up...")
+  //   const commitChangesComands = [
+  //     `git add .`,
+  //     `git commit -m "cleaning up"`,
+  //   ].join(" && ")
 
-  execSync(commitChangesComands, {
-    encoding: "utf-8",
-  })
+  //   execSync(commitChangesComands, {
+  //     encoding: "utf-8",
+  //   })
   // Generating new .npmrc file
   console.log("Generating new .npmrc file...")
   const npmrcPath = join(os.homedir(), ".npmrc")
@@ -99,5 +108,6 @@ async function main() {
 
 main().catch((err) => {
   console.error("Error: ", err)
+  rollback()
   process.exit(1)
 })

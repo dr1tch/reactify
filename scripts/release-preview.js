@@ -2,29 +2,88 @@ import { promises as fsPromises, appendFileSync, readFileSync } from "fs"
 import { resolve, join } from "path"
 import { execSync } from "child_process"
 import os from "os"
-
+import * as github from "@actions/github"
+const safeCommit = execSync("git rev-parse HEAD", {
+  encoding: "utf-8",
+}).trim()
 const eventPath = JSON.parse(
   readFileSync(process.env.GITHUB_EVENT_PATH || "", "utf8")
 )
-export function listChangedFiles() {
-  let baseCommit = ""
-  let headCommit = ""
-  if (eventPath.action === "opened") {
-    baseCommit = process.env.GITHUB_BASE_REF
-    headCommit = process.env.GITHUB_HEAD_REF
-  } else {
-    baseCommit = eventPath.before
-    headCommit = eventPath.after
-  }
+export const isMergeEvent = !eventPath.hasOwnProperty("pull_request")
+export const owner = process.env.GITHUB_REPOSITORY_OWNER
+export const repo = process.env.repo ? process.env.repo.split("/")[1] : ""
+export const pr_number = eventPath.number
+export const githubToken = process.env.GITHUB_TOKEN
+export const npmToken = process.env.NPM_TOKEN
+export const nodeAuthToken = process.env.NODE_AUTH_TOKEN
+const listChangedFiles = async () => {
+  let changedFiles = null
+  if (isMergeEvent) {
+    const baseCommit = eventPath.before
+    const headCommit = eventPath.after
 
-  // Fetch the list of changed files in the merge
-  const changedFiles = execSync(
-    `git diff --name-only ${baseCommit}...${headCommit}`,
-    { encoding: "utf-8" }
-  )
-    .split("\n")
-    .filter(Boolean)
-  return changedFiles
+    // Fetch the list of changed files in the merge
+    changedFiles = execSync(
+      `git diff --name-only ${baseCommit} ${headCommit}`,
+      { encoding: "utf-8" }
+    )
+      .split("\n")
+      .filter(Boolean)
+
+    console.log({ changedFiles })
+    return changedFiles
+  } else {
+    /**
+     * Now we need to create an instance of Octokit which will use to call
+     * GitHub's REST API endpoints.
+     * We will pass the token as an argument to the constructor. This token
+     * will be used to authenticate our requests.
+     * You can find all the information about how to use Octokit here:
+     * https://octokit.github.io/rest.js/v18
+     **/
+    const octokit = new github.getOctokit(githubToken)
+    /**
+     * We need to fetch the list of files that were changes in the Pull Request
+     * and store them in a variable.
+     * We use octokit.paginate() to automatically loop over all the pages of the
+     * results.
+     * Reference: https://octokit.github.io/rest.js/v18#pulls-list-files
+     */
+    const { data } = await octokit.rest.pulls.listFiles({
+      owner,
+      repo,
+      pull_number: pr_number,
+    })
+    console.log({ data })
+    changedFiles = data
+    return changedFiles
+  }
+}
+// export function listChangedFiles() {
+//   let baseCommit = ""
+//   let headCommit = ""
+//   if (eventPath.action === "opened") {
+//     baseCommit = process.env.GITHUB_BASE_REF
+//     headCommit = process.env.GITHUB_HEAD_REF
+//   } else {
+//     baseCommit = eventPath.before
+//     headCommit = eventPath.after
+//   }
+
+//   // Fetch the list of changed files in the merge
+//   const changedFiles = execSync(
+//     `git diff --name-only ${baseCommit}...${headCommit}`,
+//     { encoding: "utf-8" }
+//   )
+//     .split("\n")
+//     .filter(Boolean)
+//   return changedFiles
+// }
+
+function rollback() {
+  console.log(`Rolling back to commit ${safeCommit}...`)
+  execSync(`git reset --hard ${safeCommit}`, { encoding: "utf-8" })
+  console.log(`Rollback to commit ${safeCommit} completed.`)
 }
 
 async function main() {
@@ -32,7 +91,7 @@ async function main() {
   // checkout to pr branch
   execSync(`git checkout ${branchName}`, { encoding: "utf-8" })
   // list changed files (similar to git diff --name-only master..pr-branch)
-  const changedFiles = listChangedFiles()
+  const changedFiles = await listChangedFiles()
   console.log({ changedFiles })
   const isPackageChanged = changedFiles.some((file) =>
     file.startsWith("packages/ui/")
@@ -131,5 +190,6 @@ async function main() {
 
 main().catch((err) => {
   console.error("Error: ", err)
+  rollback()
   process.exit(1)
 })
