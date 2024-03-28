@@ -6,6 +6,8 @@ import os from "os"
 import * as github from '@actions/github';
 
 const octokit = new github.getOctokit(process.env.GITHUB_TOKEN);
+const eventPath = JSON.parse(readFileSync(process.env.GITHUB_EVENT_PATH, 'utf8'));
+export const isMergeEvent = !eventPath.hasOwnProperty('pull_request');
 
 async function getPRDetails() {
     const prNumber = github.context.payload.pull_request.number;
