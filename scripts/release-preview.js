@@ -37,7 +37,7 @@ async function main() {
   const isPackageChanged = changedFiles.some((file) =>
     file.startsWith("packages/ui/")
   )
-  const isPreviewBranch = branch.startsWith("preview/")
+  const isPreviewBranch = branchName.startsWith("preview/")
   console.log({ changedFiles })
   if (!isPackageChanged(changedFiles) || !isPreviewBranch) {
     console.log('No changes in "packages/ui/". Skipping package build.')
