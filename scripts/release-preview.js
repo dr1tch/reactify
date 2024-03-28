@@ -46,7 +46,7 @@ async function main() {
         count: changedFiles.length,
         files: changedFiles,
     })
-    if (branchName.startsWith('preview/') && listChangedFiles.length > 0 && isChangedFilesInUI) {
+    if (branchName.startsWith('preview/') && changedFiles.length > 0 && isChangedFilesInUI) {
         const pkgFile = resolve("packages/ui", "package.json");
         const pkgData = JSON.parse(await fsPromises.readFile(pkgFile, "utf-8"));
         const commitHash = execSync('git rev-parse --short HEAD').toString('utf-8').trim();
