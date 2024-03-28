@@ -1,13 +1,11 @@
-import { promises as fsPromises, appendFileSync, readFileSync } from "fs"
+import { promises as fsPromises, appendFileSync } from "fs"
 import { resolve, join } from "path"
 import { execSync } from "child_process"
 import os from "os"
 
 import * as github from '@actions/github';
-export const eventPath = JSON.parse(readFileSync(process.env.GITHUB_EVENT_PATH, 'utf8'));
 
 const octokit = new github.getOctokit(process.env.GITHUB_TOKEN);
-export const pr_number = eventPath.number;
 
 async function getPRDetails() {
     const prNumber = github.context.payload.pull_request.number;
@@ -20,35 +18,14 @@ async function getPRDetails() {
     return { prTitle: pr.title, branchName: pr.head.ref };
 }
 
-const listChangedFiles = async() => {
-    let changedFiles = null
-        /**
-         * We need to fetch the list of files that were changes in the Pull Request
-         * and store them in a variable.
-         * We use octokit.paginate() to automatically loop over all the pages of the
-         * results.
-         * Reference: https://octokit.github.io/rest.js/v18#pulls-list-files
-         */
-    const { data } = await octokit.rest.pulls.listFiles({
-        owner,
-        repo,
-        pull_number: pr_number,
-    });
-    changedFiles = data
-    return changedFiles;
-
-};
-
-
 async function main() {
     const { branchName } = await getPRDetails();
-    console.log(`checking out to branch: ${branchName}`);
-    execSync(`git checkout ${branchName}`, { encoding: 'utf-8' });
+    console.log(`PR Branch Name: ${branchName}`);
+    const checkout = execSync(`git checkout ${branchName}`, { encoding: 'utf-8' });
+    console.log({ checkout })
     const changedFiles = execSync(`git status --porcelain`, { encoding: 'utf-8' });
-    console.log({ changedFiles });
-    const commitsListFromMaster = execSync('git log --pretty=format:%s HEAD..').toString('utf-8').trim().split('\n')
-    console.log({ commitsListFromMaster })
-    if (branchName.startsWith('preview/') && commitsListFromMaster.length > 0) {
+    console.log({ changedFiles })
+    if (branchName.startsWith('preview/') && changedFiles.length > 0) {
         const pkgFile = resolve("packages/ui", "package.json");
         const pkgData = JSON.parse(await fsPromises.readFile(pkgFile, "utf-8"));
         const commitHash = execSync('git rev-parse --short HEAD').toString('utf-8').trim();
@@ -66,7 +43,8 @@ async function main() {
         const releaseCommit = execSync(`git commit -m "upgrading package version to ${pkgData.version}"`, { encoding: 'utf-8' });
         console.log('Commit Output: \n', releaseCommit);
         console.log("Pushing changes...")
-
+            // const releasePush = execSync(`git push`, { encoding: 'utf-8' });
+            // console.log('Push Output: \n', releasePush);
         console.log(`Updated package version to: ${previewVersion}`);
         const npmrcPath = join(os.homedir(), '.npmrc');
         const nodeAuthToken = process.env.NODE_AUTH_TOKEN;
@@ -80,11 +58,15 @@ async function main() {
             // }
         const pwd = execSync('pwd').toString().trim();
         console.log("Building and Publishing the package...", pwd, nodeAuthToken)
-        execSync(`cd packages/ui && yarn release-it`, {
+            // const publishOutput = execSync(`cd packages/ui && npm publish -q --access public`, {
+        const publishOutput = execSync(`cd packages/ui && yarn release-it`, {
             encoding: 'utf-8',
             env: {...process.env, npm_config_registry: 'https://registry.npmjs.org/', always_auth: true, NODE_AUTH_TOKEN: nodeAuthToken },
         });
-        console.log("published with success :smile:")
+        console.log("published with success", { publishOutput })
+        const { prTitle: releaseTitle, branchName: releaseBranch } = await getPRDetails();
+        console.log({ releaseTitle, releaseBranch })
+        console.log('Publish Output: \n', publishOutput);
         const rootPKGFile = resolve('package.json')
         const RootData = JSON.parse(
             await fsPromises.readFile(rootPKGFile, "utf-8").catch((e) => {
@@ -96,8 +78,10 @@ async function main() {
         await fsPromises
             .writeFile(rootPKGFile, JSON.stringify(RootData, null, 2), "utf-8")
         const commitsListFromMaster = execSync('git log --pretty=format:%s HEAD..').toString('utf-8').trim()
-
+        console.log({ commitsListFromMaster })
+        console.log('changed files:')
         const changedFilesAfterRelease = execSync(`git status --porcelain`, { encoding: 'utf-8' });
+        console.log({ changedFilesAfterRelease })
         console.log(`upgrading package version to ${pkgData.version}`)
         console.log("Committing changes...")
         const releaseAddAfterRelease = execSync(`git add .releases package.json packages/ui`, { encoding: 'utf-8' });
