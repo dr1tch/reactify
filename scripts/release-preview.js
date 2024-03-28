@@ -35,7 +35,7 @@ async function main() {
     const { branchName } = await getPRDetails();
     console.log(`PR Branch Name: ${branchName}`);
     const checkout = execSync(`git checkout ${branchName}`, { encoding: 'utf-8' });
-    const changedFiles = execSync(`git diff --name-only master...${branchName}`, { encoding: 'utf-8' }).trim().split('\n');
+    const changedFiles = execSync(`git diff --name-only master ${branchName}`, { encoding: 'utf-8' }).trim().split('\n');
     console.log({ changedFiles })
     if (branchName.startsWith('preview/')) {
         const pkgFile = resolve("packages/ui", "package.json");
