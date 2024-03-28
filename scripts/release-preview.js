@@ -31,8 +31,8 @@ function listChangedFiles() {
 
 async function main() {
   const branchName = eventPath.GITHUB_HEAD_REF
-    // checkout to pr branch
-    .execSync(`git checkout ${branchName}`, { encoding: "utf-8" })
+  // checkout to pr branch
+  execSync(`git checkout ${branchName}`, { encoding: "utf-8" })
   // list changed files (similar to git diff --name-only master..pr-branch)
   const changedFiles = listChangedFiles()
   console.log({ changedFiles })
