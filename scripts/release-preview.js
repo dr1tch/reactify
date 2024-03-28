@@ -90,7 +90,7 @@ async function main() {
   // checkout to pr branch
   execSync(`git checkout ${branchName}`, { encoding: "utf-8" })
   // list changed files (similar to git diff --name-only master..pr-branch)
-  const changedFiles = listChangedFiles()
+  const changedFiles = await listChangedFiles()
   console.log({ changedFiles })
   const isPackageChanged = changedFiles.some((file) =>
     file.startsWith("packages/ui/")
