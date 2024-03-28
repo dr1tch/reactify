@@ -5,6 +5,23 @@ import os from "os"
 
 import * as github from "@actions/github"
 const octokit = new github.getOctokit(process.env.GITHUB_TOKEN)
+function listChangedFiles() {
+  const eventPath = JSON.parse(
+    readFileSync(process.env.GITHUB_EVENT_PATH || "", "utf8")
+  )
+  const baseCommit = eventPath.before
+  const headCommit = eventPath.after
+  console.log([baseCommit, headCommit])
+  // Fetch the list of changed files in the merge
+  const changedFiles = execSync(
+    `git diff --name-only ${baseCommit} ${headCommit}`,
+    { encoding: "utf-8" }
+  )
+    .split("\n")
+    .filter(Boolean)
+
+  return changedFiles
+}
 
 async function getPRDetails() {
   const prNumber = github.context.payload.pull_request.number
@@ -16,29 +33,29 @@ async function getPRDetails() {
 
   return { prTitle: pr.title, branchName: pr.head.ref }
 }
-async function listChangedFiles() {
-  let changedFiles = []
-  const prNumber = github.context.payload.pull_request.number
-  const { data } = await octokit.rest.pulls.listFiles({
-    owner: github.context.repo.owner,
-    repo: github.context.repo.repo,
-    pull_number: prNumber,
-  })
-  changedFiles = data.map((file) => file.filename)
-  return changedFiles
-}
+// async function listChangedFiles() {
+//   let changedFiles = []
+//   const prNumber = github.context.payload.pull_request.number
+//   const { data } = await octokit.rest.pulls.listFiles({
+//     owner: github.context.repo.owner,
+//     repo: github.context.repo.repo,
+//     pull_number: prNumber,
+//   })
+//   changedFiles = data.map((file) => file.filename)
+//   return changedFiles
+// }
 
 async function main() {
   const { branchName } = await getPRDetails()
   // checkout to pr branch
   execSync(`git checkout ${branchName}`, { encoding: "utf-8" })
   // list changed files (similar to git diff --name-only master..pr-branch)
-  const changedFiles = await listChangedFiles()
+  const changedFiles = listChangedFiles()
+  console.log({ changedFiles })
   const isPackageChanged = changedFiles.some((file) =>
     file.startsWith("packages/ui/")
   )
   const isPreviewBranch = branchName.startsWith("preview/")
-  console.log({ changedFiles })
   // ensure that changes are only in packages/ui
   if (!isPackageChanged || !isPreviewBranch) {
     console.log('No changes in "packages/ui/". Skipping package build.')

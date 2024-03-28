@@ -6,7 +6,11 @@ import os from "os"
 import * as github from '@actions/github';
 
 const octokit = new github.getOctokit(process.env.GITHUB_TOKEN);
+function getNewVersion() {
+  const [major, minor, patch] = version.split(".").map((v) => parseInt(v))
 
+  return [major, minor, patch + 1].join(".")
+}
 async function getPRDetails() {
     const prNumber = github.context.payload.pull_request.number;
     const { data: pr } = await octokit.rest.pulls.get({
