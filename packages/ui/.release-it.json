@@ -15,7 +15,7 @@
         "web": true
     },
     "hooks": {
-        "before:init": ["yarn install --frozen-lockfile", "yarn build"],
+        "before:init": ["yarn build"],
         "before:github:release": "npm publish -q --access public"
     },
     "plugins": {

@@ -39,17 +39,13 @@ async function main() {
   )
   const isPreviewBranch = branchName.startsWith("preview/")
   console.log({ changedFiles })
+  // ensure that changes are only in packages/ui
   if (!isPackageChanged || !isPreviewBranch) {
     console.log('No changes in "packages/ui/". Skipping package build.')
 
     return
   }
-  // ensure that changes are only in packages/ui
-  console.log({
-    isPreviewBranch: branchName.startsWith("preview/"),
-    count: changedFiles.length,
-    files: changedFiles,
-  })
+  // update the ui package.json version with a new dev version
   const pkgFile = resolve("packages/ui", "package.json")
   const pkgData = JSON.parse(await fsPromises.readFile(pkgFile, "utf-8"))
   const commitHash = execSync("git rev-parse --short HEAD")
@@ -60,11 +56,10 @@ async function main() {
   const previewVersion = `${version}-${pkgVersion}-${commitHash}`
   pkgData.version = previewVersion
   await fsPromises.writeFile(pkgFile, JSON.stringify(pkgData, null, 2), "utf-8")
-  console.log("changed files:")
   console.log(`upgrading package version to ${pkgData.version}`)
   console.log("Committing changes...")
   const commitChangesComands = [
-    `git add .releases package.json packages/ui`,
+    `git add packages/ui`,
     `git commit -m "upgrading package version to ${pkgData.version}"`,
   ].join(" && ")
 
@@ -87,12 +82,6 @@ async function main() {
     for (const line of registeryContent) {
       appendFileSync(npmrcPath, `${line}\n`)
     }
-    // appendFileSync(
-    //   npmrcPath,
-    //   `//registry.npmjs.org/:_authToken=${nodeAuthToken}\n`
-    // )
-    // appendFileSync(npmrcPath, "registry=https://registry.npmjs.org/\n")
-    // appendFileSync(npmrcPath, "always-auth=true\n")
   }
   console.log("Building and Publishing the package...")
   execSync(`cd packages/ui && yarn release-it:dev`, {
@@ -101,17 +90,15 @@ async function main() {
       ...process.env,
       npm_config_registry: "https://registry.npmjs.org/",
       always_auth: true,
-      NODE_AUTH_TOKEN: nodeAuthToken,
     },
   })
-  console.log("published with success :smile:")
+  console.log("published with success!")
   // Update root package.json
   console.log("Updating root package.json...")
   const rootPKGFile = resolve("package.json")
   const RootData = JSON.parse(
     await fsPromises.readFile(rootPKGFile, "utf-8").catch((e) => {
       console.error({ e })
-      return "{}"
     })
   )
   RootData.dependencies[pkgData.name] = pkgData.version
@@ -121,17 +108,17 @@ async function main() {
     "utf-8"
   )
 
-  console.log("Committing changes...")
+  console.log("Committing and pushing changes...")
 
-  const commitsListFromMaster = execSync("git log --pretty=format:%s HEAD..")
-    .toString("utf-8")
-    .trim()
-  console.log({ commitsListFromMaster })
-  console.log("changed files:")
-  const changedFilesAfterRelease = execSync(`git status --porcelain`, {
-    encoding: "utf-8",
-  })
-  console.log({ changedFilesAfterRelease })
+  //   const commitsListFromMaster = execSync("git log --pretty=format:%s HEAD..")
+  //     .toString("utf-8")
+  //     .trim()
+  //   console.log({ commitsListFromMaster })
+  //   console.log("changed files:")
+  //   const changedFilesAfterRelease = execSync(`git status --porcelain`, {
+  //     encoding: "utf-8",
+  //   })
+  //   console.log({ changedFilesAfterRelease })
   const rootCommitCommands = [
     `git add package.json`,
     `git commit -m "updating ${pkgData.name} to ${pkgData.version}"`,
@@ -140,19 +127,7 @@ async function main() {
   const releaseCommitAfterRelease = execSync(rootCommitCommands, {
     encoding: "utf-8",
   })
-
-  //   console.log(`upgrading package version to ${pkgData.version}`)
-  //   const releaseAddAfterRelease = execSync(
-  //     `git add .releases package.json packages/ui`,
-  //     { encoding: "utf-8" }
-  //   )
-  //   console.log({ releaseAddAfterRelease })
-  //   const releaseCommitAfterRelease = execSync(
-  //     `git commit -m "upgrading package version to ${pkgData.version}"`,
-  //     { encoding: "utf-8" }
-  //   )
-  console.log("Commit Output: \n", releaseCommitAfterRelease)
-  console.log("Pushing changes...")
+  console.log("Done!")
 }
 
 main().catch((err) => {
