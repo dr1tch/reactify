@@ -1,5 +1,7 @@
 # Changelog
 
+## [0.0.21](https://github.com/dr1tch/reactify/compare/v0.0.19...v0.0.21) (2024-03-28)
+
 * cleaning up (6236cef)
 * Merge pull request #30 from dr1tch/preview/test-1 (0deb956)
 * updating react-super-ui-preview to 0.0.19-preview-test-1-b1ddc14 (45d8db3)
