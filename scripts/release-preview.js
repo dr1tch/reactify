@@ -7,8 +7,7 @@ import * as github from '@actions/github';
 import { eventPath } from "./utils.js";
 
 const octokit = new github.getOctokit(process.env.GITHUB_TOKEN);
-console.log({ eventPath: JSON.stringify(eventPath, null, 2) })
-
+console.dir({ eventPath })
 async function getPRDetails() {
     const prNumber = github.context.payload.pull_request.number;
     const { data: pr } = await octokit.rest.pulls.get({
