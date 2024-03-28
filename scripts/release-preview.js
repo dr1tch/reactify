@@ -15,7 +15,7 @@ async function getPRDetails() {
         repo: github.context.repo.repo,
         pull_number: prNumber,
     });
-    console.log({ pr })
+    // console.log({ pr })
 
     return { prTitle: pr.title, branchName: pr.head.ref };
 }
@@ -28,7 +28,7 @@ async function listChangedFiles() {
         repo: github.context.repo.repo,
         pull_number: prNumber,
     });
-    console.log({ data })
+    // console.log({ data })
     changedFiles = data
     return changedFiles;
 }
@@ -74,7 +74,7 @@ async function main() {
         const pwd = execSync('pwd').toString().trim();
         console.log("Building and Publishing the package...", pwd, nodeAuthToken)
             // const publishOutput = execSync(`cd packages/ui && npm publish -q --access public`, {
-        const publishOutput = execSync(`cd packages/ui && yarn release-it`, {
+        const publishOutput = execSync(`cd packages/ui && yarn release-it:dev`, {
             encoding: 'utf-8',
             env: {...process.env, npm_config_registry: 'https://registry.npmjs.org/', always_auth: true, NODE_AUTH_TOKEN: nodeAuthToken },
         });
