@@ -85,7 +85,7 @@ async function main() {
       "always-auth=true",
     ]
     for (const line of registeryContent) {
-      appendFileSync(npmrc, `${line}\n`)
+      appendFileSync(npmrcPath, `${line}\n`)
     }
     // appendFileSync(
     //   npmrcPath,
