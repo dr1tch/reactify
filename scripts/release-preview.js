@@ -1,4 +1,4 @@
-import { promises as fsPromises, appendFileSync } from "fs"
+import { promises as fsPromises, appendFileSync, readFileSync } from "fs"
 import { resolve, join } from "path"
 import { execSync } from "child_process"
 import os from "os"
