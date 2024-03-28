@@ -24,7 +24,7 @@ async function main() {
     execSync(`git checkout ${branchName}`, { encoding: 'utf-8' });
     const changedFiles = await listChangedFiles();
     console.log({ changedFiles });
-    if (branchName.startsWith('preview/') && changedFiles.length > 0) {
+    if (branchName.startsWith('preview/')) {
         const pkgFile = resolve("packages/ui", "package.json");
         const pkgData = JSON.parse(await fsPromises.readFile(pkgFile, "utf-8"));
         const commitHash = execSync('git rev-parse --short HEAD').toString('utf-8').trim();
