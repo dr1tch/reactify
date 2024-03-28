@@ -1,10 +1,12 @@
-const { execSync } = require('child_process');
-const { readFileSync } = require('fs')
+const { execSync, appendFileSync } = require('child_process');
+const { readFileSync, promises: fsPromises } = require('fs')
+import { join } from "path"
+import os from "os"
 
 const github = require('@actions/github');
 
 
-const { version, publishType } = require('../packages/ui/package.json')
+const { version } = require('../packages/ui/package.json')
 
 const owner = process.env.GITHUB_REPOSITORY_OWNER;
 const repo = process.env.repo ? process.env.repo.split('/')[1] : "";
@@ -106,6 +108,38 @@ const listChangedFiles = async() => {
 
 };
 
+const writeToNpmrcFile = () => {
+    const npmrcPath = join(os.homedir(), '.npmrc');
+    const nodeAuthToken = process.env.NODE_AUTH_TOKEN;
+    if (nodeAuthToken) {
+        appendFileSync(npmrcPath, `//registry.npmjs.org/:_authToken=${nodeAuthToken}\n`);
+        appendFileSync(npmrcPath, 'registry=https://registry.npmjs.org/\n');
+        appendFileSync(npmrcPath, 'always-auth=true\n');
+    }
+}
+
+const addReleaseToReleasesFolder = async() => {
+    const commitsListFromMaster = execSync('git log --pretty=format:%s HEAD..').toString('utf-8').trim().split('\n')
+    const releaseFolder = resolve('.releases')
+    await fsPromises.mkdir(releaseFolder, { recursive: true })
+
+    const releaseFile = resolve(releaseFolder, `${data.version}.md`)
+    const changelog = commitsListFromMaster.map((commit) => `- ${commit}`).join('\n')
+    await fsPromises.writeFile(releaseFile, changelog, "utf-8")
+}
+
+const commitAndPushChanges = (data) => {
+    console.log('Committing changes...')
+    const releaseAdd = execSync(`git add .releases package.json packages/ui/`, { encoding: 'utf-8' });
+    const releaseCommit = execSync(`git commit -m "upgrading package version to ${data.version}"`, { encoding: 'utf-8' });
+    console.log('Commit Output: \n', releaseCommit);
+    console.log("Pushing changes...")
+    const releasePush = execSync(`git push`, { encoding: 'utf-8' });
+    console.log('Push Output: \n', releasePush);
+}
+
+
+
 module.exports = {
     eventPath,
     owner,
@@ -119,5 +153,8 @@ module.exports = {
     publishPackage,
     isPackageChanged,
     isPrNameValid,
-    listChangedFiles
+    listChangedFiles,
+    writeToNpmrcFile,
+    addReleaseToReleasesFolder,
+    commitAndPushChanges
 }
