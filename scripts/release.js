@@ -17,6 +17,7 @@ function listChangedFiles() {
   const eventPath = JSON.parse(
     readFileSync(process.env.GITHUB_EVENT_PATH || "", "utf8")
   )
+  console.dir(eventPath, { depth: null, colors: true })
   const baseCommit = eventPath.before
   const headCommit = eventPath.after
   console.log([baseCommit, headCommit])
