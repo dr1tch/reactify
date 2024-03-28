@@ -12,6 +12,9 @@ export function listChangedFiles() {
   if (eventPath.action === "opened") {
     baseCommit = process.env.GITHUB_BASE_REF
     headCommit = process.env.GITHUB_HEAD_REF
+  } else if (process.env.GITHUB_EVENT_NAME === "push") {
+    baseCommit = "HEAD^" // The previous commit
+    headCommit = process.env.GITHUB_SHA // The latest commit SHA
   } else {
     baseCommit = eventPath.before
     headCommit = eventPath.after
@@ -19,7 +22,7 @@ export function listChangedFiles() {
 
   // Fetch the list of changed files in the merge
   const changedFiles = execSync(
-    `git diff --name-only ${baseCommit}...${headCommit}`,
+    `git diff --name-only ${baseCommit} ${headCommit ?? ""}`,
     { encoding: "utf-8" }
   )
     .split("\n")
