@@ -2,7 +2,7 @@ import { promises as fsPromises, appendFileSync } from "fs"
 import { resolve, join } from "path"
 import { execSync } from "child_process"
 import os from "os"
-import { listChangedFiles } from "./release-preview"
+import { listChangedFiles } from "./release-preview.js"
 function getNewVersion(version) {
   const [major, minor, patch] = version.split(".").map((v) => parseInt(v))
 

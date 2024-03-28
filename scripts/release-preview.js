@@ -7,8 +7,8 @@ const eventPath = JSON.parse(
   readFileSync(process.env.GITHUB_EVENT_PATH || "", "utf8")
 )
 export function listChangedFiles() {
-  console.dir(process.env, { depth: null, colors: true })
-  console.dir(eventPath, { depth: null, colors: true })
+  //   console.dir(process.env, { depth: null, colors: true })
+  //   console.dir(eventPath, { depth: null, colors: true })
   let baseCommit = ""
   let headCommit = ""
   if (eventPath.action === "opened") {
