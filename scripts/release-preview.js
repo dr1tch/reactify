@@ -7,8 +7,6 @@ const eventPath = JSON.parse(
   readFileSync(process.env.GITHUB_EVENT_PATH || "", "utf8")
 )
 export function listChangedFiles() {
-  //   console.dir(process.env, { depth: null, colors: true })
-  //   console.dir(eventPath, { depth: null, colors: true })
   let baseCommit = ""
   let headCommit = ""
   if (eventPath.action === "opened") {
@@ -21,7 +19,7 @@ export function listChangedFiles() {
 
   // Fetch the list of changed files in the merge
   const changedFiles = execSync(
-    `git diff --name-only ${baseCommit} ${headCommit}`,
+    `git diff --name-only ${baseCommit}...${headCommit}`,
     { encoding: "utf-8" }
   )
     .split("\n")
