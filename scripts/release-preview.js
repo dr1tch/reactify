@@ -90,6 +90,7 @@ async function main() {
       ...process.env,
       npm_config_registry: "https://registry.npmjs.org/",
       always_auth: true,
+      NODE_AUTH_TOKEN: nodeAuthToken,
     },
   })
   console.log("published with success!")

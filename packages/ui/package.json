@@ -37,7 +37,7 @@
     "build": "yarn build:lib && yarn build:style",
     "test:cov": "vitest run --coverage",
     "release": "yarn build && yarn publish --non-interactive --access public",
-    "release-it:dev": "release-it --no-increment --no-git.tag --verbose --ci",
+    "release-it:dev": "release-it --no-increment --no-git.tag --ci",
     "release-it": "release-it --ci"
   },
   "dependencies": {
