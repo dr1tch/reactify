@@ -20,15 +20,26 @@ async function getPRDetails() {
     return { prTitle: pr.title, branchName: pr.head.ref };
 }
 
-
+async function listChangedFiles() {
+    let changedFiles = [];
+    const prNumber = github.context.payload.pull_request.number;
+    const { data } = await octokit.rest.pulls.listFiles({
+        owner: github.context.repo.owner,
+        repo: github.context.repo.repo,
+        pull_number: prNumber,
+    });
+    console.log({ data })
+    changedFiles = data
+    return changedFiles;
+}
 
 async function main() {
     const { branchName } = await getPRDetails();
     console.log(`PR Branch Name: ${branchName}`);
     const checkout = execSync(`git checkout ${branchName}`, { encoding: 'utf-8' });
     console.log({ checkout })
-        // const changedFiles = await listChangedFiles();
-        // console.log({ changedFiles })
+    const changedFiles = await listChangedFiles();
+    console.log({ changedFiles })
     if (branchName.startsWith('preview/')) {
         const pkgFile = resolve("packages/ui", "package.json");
         const pkgData = JSON.parse(await fsPromises.readFile(pkgFile, "utf-8"));
