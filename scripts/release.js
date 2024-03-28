@@ -1,4 +1,4 @@
-import { promises as fsPromises, appendFileSync } from "fs"
+import { promises as fsPromises, appendFileSync, readFileSync } from "fs"
 import { resolve, join } from "path"
 import { execSync } from "child_process"
 import os from "os"
@@ -43,6 +43,13 @@ async function main() {
 
     return
   }
+  // setup git config
+  console.log("Setting up git config...")
+  const gitConfigSetupCommands = [
+    "git config user.name github-actions[bot]",
+    "git config user.email youssouf.kacemi@gmail.com",
+  ].join(" && ")
+  execSync(gitConfigSetupCommands, { encoding: "utf-8" })
   const pkgFile = resolve("packages/ui", "package.json")
   const pkgData = JSON.parse(await fsPromises.readFile(pkgFile, "utf-8"))
   const version = pkgData.version.split("-")[0]
