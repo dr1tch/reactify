@@ -37,11 +37,10 @@ jobs:
 
       - name: Release with release-it for Master Branch
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        run: yarn release
+        run: node scripts/release.js
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.npm_token_test }}
           NPM_TOKEN: ${{ secrets.npm_token_test }}
-
       - name: Install dependencies
         run: yarn install
