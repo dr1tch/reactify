@@ -1,13 +1,13 @@
-import { promises as fsPromises, appendFileSync } from "fs"
+import { promises as fsPromises, appendFileSync, readFileSync } from "fs"
 import { resolve, join } from "path"
 import { execSync } from "child_process"
 import os from "os"
 
 import * as github from '@actions/github';
+export const eventPath = JSON.parse(readFileSync(process.env.GITHUB_EVENT_PATH, 'utf8'));
 
 const octokit = new github.getOctokit(process.env.GITHUB_TOKEN);
-const eventPath = JSON.parse(readFileSync(process.env.GITHUB_EVENT_PATH, 'utf8'));
-export const isMergeEvent = !eventPath.hasOwnProperty('pull_request');
+export const pr_number = eventPath.number;
 
 async function getPRDetails() {
     const prNumber = github.context.payload.pull_request.number;
@@ -22,27 +22,6 @@ async function getPRDetails() {
 
 const listChangedFiles = async() => {
     let changedFiles = null
-    if (isMergeEvent) {
-        const baseCommit = eventPath.before;
-        const headCommit = eventPath.after;
-
-        // Fetch the list of changed files in the merge
-        changedFiles = execSync(`git diff --name-only ${baseCommit} ${headCommit}`, { encoding: 'utf-8' })
-            .split('\n')
-            .filter(Boolean);
-
-        console.log({ changedFiles });
-        return changedFiles;
-    } else {
-        /**
-         * Now we need to create an instance of Octokit which will use to call
-         * GitHub's REST API endpoints.
-         * We will pass the token as an argument to the constructor. This token
-         * will be used to authenticate our requests.
-         * You can find all the information about how to use Octokit here:
-         * https://octokit.github.io/rest.js/v18
-         **/
-        const octokit = new github.getOctokit(githubToken);
         /**
          * We need to fetch the list of files that were changes in the Pull Request
          * and store them in a variable.
@@ -50,14 +29,13 @@ const listChangedFiles = async() => {
          * results.
          * Reference: https://octokit.github.io/rest.js/v18#pulls-list-files
          */
-        const { data } = await octokit.rest.pulls.listFiles({
-            owner,
-            repo,
-            pull_number: pr_number,
-        });
-        changedFiles = data
-        return changedFiles;
-    }
+    const { data } = await octokit.rest.pulls.listFiles({
+        owner,
+        repo,
+        pull_number: pr_number,
+    });
+    changedFiles = data
+    return changedFiles;
 
 };
 
@@ -66,9 +44,11 @@ async function main() {
     const { branchName } = await getPRDetails();
     console.log(`checking out to branch: ${branchName}`);
     execSync(`git checkout ${branchName}`, { encoding: 'utf-8' });
-    const changedFiles = await listChangedFiles();
-    console.log({ changedFiles });
-    if (branchName.startsWith('preview/') && changedFiles.length > 0) {
+    // const changedFiles = await listChangedFiles();
+    // console.log({ changedFiles });
+    const commitsListFromMaster = execSync('git log --pretty=format:%s HEAD..').toString('utf-8').trim().split('\n')
+    console.log({ commitsListFromMaster })
+    if (branchName.startsWith('preview/') && commitsListFromMaster.length > 0) {
         const pkgFile = resolve("packages/ui", "package.json");
         const pkgData = JSON.parse(await fsPromises.readFile(pkgFile, "utf-8"));
         const commitHash = execSync('git rev-parse --short HEAD').toString('utf-8').trim();
