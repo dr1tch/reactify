@@ -13,6 +13,7 @@ function getNewVersion(version) {
 }
 
 function listChangedFiles() {
+  console.dir(process.env, { depth: null, colors: true })
   const eventPath = JSON.parse(
     readFileSync(process.env.GITHUB_EVENT_PATH || "", "utf8")
   )
