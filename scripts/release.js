@@ -29,17 +29,20 @@ async function main() {
     "git config user.email youssouf.kacemi@gmail.com",
   ].join(" && ")
   execSync(gitConfigSetupCommands, { encoding: "utf-8" })
-
+  const pkgFile = resolve("packages/ui", "package.json")
+  const pkgData = JSON.parse(await fsPromises.readFile(pkgFile, "utf-8"))
+  const version = pkgData.version.split("-")[0]
+  const newVersion = getNewVersion(version)
+  console.log(`upgrading package version to ${newVersion}`)
   console.log("Cleaning up...")
   const commitChangesComands = [
     `git add .`,
     `git commit -m "cleaning up"`,
   ].join(" && ")
 
-  const releaseCommit = execSync(commitChangesComands, {
+  execSync(commitChangesComands, {
     encoding: "utf-8",
   })
-  console.log("Commit Output: \n", releaseCommit)
   // Generating new .npmrc file
   console.log("Generating new .npmrc file...")
   const npmrcPath = join(os.homedir(), ".npmrc")
@@ -73,7 +76,7 @@ async function main() {
       console.error({ e })
     })
   )
-  RootData.dependencies[pkgData.name] = pkgData.version
+  RootData.dependencies[pkgData.name] = newVersion
   await fsPromises.writeFile(
     rootPKGFile,
     JSON.stringify(RootData, null, 2),
@@ -83,7 +86,7 @@ async function main() {
   console.log("Committing and pushing changes...")
   const rootCommitCommands = [
     `git add package.json`,
-    `git commit -m "updating ${pkgData.name} to ${pkgData.version}"`,
+    `git commit -m "updating ${pkgData.name} to ${newVersion}"`,
     `git push`,
   ].join(" && ")
   const releaseCommitAfterRelease = execSync(rootCommitCommands, {
