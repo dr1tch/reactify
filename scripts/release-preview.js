@@ -44,7 +44,7 @@ async function main() {
     if (branchName.startsWith('preview/')) {
         const pkgFile = resolve("packages/ui", "package.json");
         const pkgData = JSON.parse(await fsPromises.readFile(pkgFile, "utf-8"));
-        const commitHash = execSync('git rev-parse --short master').toString('utf-8').trim();
+        const commitHash = execSync('git rev-parse --short HEAD').toString('utf-8').trim();
         const pkgVersion = branchName.split('/').join('-')
         const version = pkgData.version.split('-')[0]
         const previewVersion = `${version}-${pkgVersion}-${commitHash}`;
@@ -93,7 +93,7 @@ async function main() {
         RootData.dependencies[pkgData.name] = pkgData.version
         await fsPromises
             .writeFile(rootPKGFile, JSON.stringify(RootData, null, 2), "utf-8")
-        const commitsListFromMaster = execSync('git log --pretty=format:%s master..').toString('utf-8').trim()
+        const commitsListFromMaster = execSync('git log --pretty=format:%s HEAD..').toString('utf-8').trim()
         console.log({ commitsListFromMaster })
         console.log('changed files:')
         const changedFilesAfterRelease = execSync(`git status --porcelain`, { encoding: 'utf-8' });
