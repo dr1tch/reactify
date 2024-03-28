@@ -4,8 +4,12 @@ import { execSync } from "child_process"
 import os from "os"
 
 import * as github from '@actions/github';
-
+export const eventPath = JSON.parse(readFileSync(process.env.GITHUB_EVENT_PATH, 'utf8'));
 const octokit = new github.getOctokit(process.env.GITHUB_TOKEN);
+
+const baseCommit = eventPath.before;
+const headCommit = eventPath.after;
+
 async function getPRDetails() {
     const prNumber = github.context.payload.pull_request.number;
     const { data: pr } = await octokit.rest.pulls.get({
@@ -26,8 +30,8 @@ async function listChangedFiles() {
         repo: github.context.repo.repo,
         pull_number: prNumber,
     });
-    // console.log({ data })
-    changedFiles = data
+    console.log({ data: data.length })
+    changedFiles = data.map((file) => file.filename);
     return changedFiles;
 }
 
@@ -35,7 +39,7 @@ async function main() {
     const { branchName } = await getPRDetails();
     console.log(`PR Branch Name: ${branchName}`);
     const checkout = execSync(`git checkout ${branchName}`, { encoding: 'utf-8' });
-    const changedFiles = execSync(`git diff --name-only master ${branchName}`, { encoding: 'utf-8' }).trim().split('\n');
+    const changedFiles = await listChangedFiles();
     console.log({ changedFiles })
     if (branchName.startsWith('preview/')) {
         const pkgFile = resolve("packages/ui", "package.json");
