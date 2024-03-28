@@ -1,35 +1,12 @@
-import { promises as fsPromises, appendFileSync, readFileSync } from "fs"
+import { promises as fsPromises, appendFileSync } from "fs"
 import { resolve, join } from "path"
 import { execSync } from "child_process"
 import os from "os"
-
-import * as github from "@actions/github"
-
-const octokit = new github.getOctokit(process.env.GITHUB_TOKEN)
+import { listChangedFiles } from "./release-preview"
 function getNewVersion(version) {
   const [major, minor, patch] = version.split(".").map((v) => parseInt(v))
 
   return [major, minor, patch + 1].join(".")
-}
-
-function listChangedFiles() {
-  console.dir(process.env, { depth: null, colors: true })
-  const eventPath = JSON.parse(
-    readFileSync(process.env.GITHUB_EVENT_PATH || "", "utf8")
-  )
-  console.dir(eventPath, { depth: null, colors: true })
-  const baseCommit = eventPath.before
-  const headCommit = eventPath.after
-  console.log([baseCommit, headCommit])
-  // Fetch the list of changed files in the merge
-  const changedFiles = execSync(
-    `git diff --name-only ${baseCommit} ${headCommit}`,
-    { encoding: "utf-8" }
-  )
-    .split("\n")
-    .filter(Boolean)
-
-  return changedFiles
 }
 
 async function main() {
@@ -61,7 +38,7 @@ async function main() {
   console.log(`upgrading package version to ${pkgData.version}`)
   console.log("Committing changes...")
   const commitChangesComands = [
-    `git add packages/ui`,
+    `git add .`,
     `git commit -m "upgrading package version to ${pkgData.version}"`,
   ].join(" && ")
 

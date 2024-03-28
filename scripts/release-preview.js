@@ -3,17 +3,22 @@ import { resolve, join } from "path"
 import { execSync } from "child_process"
 import os from "os"
 
-import * as github from "@actions/github"
-const octokit = new github.getOctokit(process.env.GITHUB_TOKEN)
-function listChangedFiles() {
+const eventPath = JSON.parse(
+  readFileSync(process.env.GITHUB_EVENT_PATH || "", "utf8")
+)
+export function listChangedFiles() {
   console.dir(process.env, { depth: null, colors: true })
-  const eventPath = JSON.parse(
-    readFileSync(process.env.GITHUB_EVENT_PATH || "", "utf8")
-  )
   console.dir(eventPath, { depth: null, colors: true })
-  const baseCommit = eventPath.before
-  const headCommit = eventPath.after
-  console.log([baseCommit, headCommit])
+  let baseCommit = ""
+  let headCommit = ""
+  if (eventPath.action === "opened") {
+    baseCommit = process.env.GITHUB_BASE_REF
+    headCommit = process.env.GITHUB_HEAD_REF
+  } else {
+    baseCommit = eventPath.before
+    headCommit = eventPath.after
+  }
+
   // Fetch the list of changed files in the merge
   const changedFiles = execSync(
     `git diff --name-only ${baseCommit} ${headCommit}`,
@@ -21,23 +26,11 @@ function listChangedFiles() {
   )
     .split("\n")
     .filter(Boolean)
-
   return changedFiles
 }
 
-async function getPRDetails() {
-  const prNumber = github.context.payload.pull_request.number
-  const { data: pr } = await octokit.rest.pulls.get({
-    owner: github.context.repo.owner,
-    repo: github.context.repo.repo,
-    pull_number: prNumber,
-  })
-
-  return { prTitle: pr.title, branchName: pr.head.ref }
-}
-
 async function main() {
-  const { branchName } = await getPRDetails()
+  const branchName = process.env.GITHUB_HEAD_REF
   // checkout to pr branch
   execSync(`git checkout ${branchName}`, { encoding: "utf-8" })
   // list changed files (similar to git diff --name-only master..pr-branch)
@@ -75,7 +68,7 @@ async function main() {
   // Commit the changes
   console.log("Committing changes...")
   const commitChangesComands = [
-    `git add packages/ui`,
+    `git add .`,
     `git commit -m "upgrading package version to ${pkgData.version}"`,
   ].join(" && ")
 
