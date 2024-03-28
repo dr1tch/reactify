@@ -1,4 +1,4 @@
-import { promises as fsPromises, appendFileSync, readFileSync } from "fs"
+import { promises as fsPromises, appendFileSync } from "fs"
 import { resolve, join } from "path"
 import { execSync } from "child_process"
 import os from "os"
@@ -6,10 +6,7 @@ import os from "os"
 import * as github from '@actions/github';
 
 const octokit = new github.getOctokit(process.env.GITHUB_TOKEN);
-export const eventPath = JSON.parse(readFileSync(process.env.GITHUB_EVENT_PATH, 'utf8'));
-export const pr_number = eventPath.number;
-export const owner = process.env.GITHUB_REPOSITORY_OWNER;
-export const repo = process.env.repo ? process.env.repo.split('/')[1] : "";
+
 
 async function getPRDetails() {
     const prNumber = github.context.payload.pull_request.number;
@@ -18,30 +15,21 @@ async function getPRDetails() {
         repo: github.context.repo.repo,
         pull_number: prNumber,
     });
+    console.log({ pr })
 
     return { prTitle: pr.title, branchName: pr.head.ref };
 }
 
-export const listChangedFiles = async() => {
-    let changedFiles = null
 
-    const { data } = await octokit.rest.pulls.listFiles({
-        owner,
-        repo,
-        pull_number: pr_number,
-    });
-    changedFiles = data
-    return changedFiles;
-};
 
 async function main() {
     const { branchName } = await getPRDetails();
     console.log(`PR Branch Name: ${branchName}`);
     const checkout = execSync(`git checkout ${branchName}`, { encoding: 'utf-8' });
     console.log({ checkout })
-    const changedFiles = await listChangedFiles();
-    console.log({ changedFiles })
-    if (branchName.startsWith('preview/') && changedFiles.length > 0) {
+        // const changedFiles = await listChangedFiles();
+        // console.log({ changedFiles })
+    if (branchName.startsWith('preview/')) {
         const pkgFile = resolve("packages/ui", "package.json");
         const pkgData = JSON.parse(await fsPromises.readFile(pkgFile, "utf-8"));
         const commitHash = execSync('git rev-parse --short HEAD').toString('utf-8').trim();
