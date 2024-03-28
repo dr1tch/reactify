@@ -54,6 +54,7 @@ const listChangedFiles = async () => {
       repo,
       pull_number: pr_number,
     })
+    console.log({ data })
     changedFiles = data
     return changedFiles
   }
