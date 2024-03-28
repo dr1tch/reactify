@@ -4,11 +4,8 @@ import { execSync } from "child_process"
 import os from "os"
 
 import * as github from '@actions/github';
-export const eventPath = JSON.parse(readFileSync(process.env.GITHUB_EVENT_PATH, 'utf8'));
 const octokit = new github.getOctokit(process.env.GITHUB_TOKEN);
 
-const baseCommit = eventPath.before;
-const headCommit = eventPath.after;
 
 async function getPRDetails() {
     const prNumber = github.context.payload.pull_request.number;
@@ -41,7 +38,7 @@ async function main() {
     const checkout = execSync(`git checkout ${branchName}`, { encoding: 'utf-8' });
     const changedFiles = await listChangedFiles();
     console.log({ changedFiles })
-    if (branchName.startsWith('preview/')) {
+    if (branchName.startsWith('preview/') && listChangedFiles.length > 0) {
         const pkgFile = resolve("packages/ui", "package.json");
         const pkgData = JSON.parse(await fsPromises.readFile(pkgFile, "utf-8"));
         const commitHash = execSync('git rev-parse --short HEAD').toString('utf-8').trim();
