@@ -6,6 +6,10 @@ import os from "os"
 import * as github from '@actions/github';
 
 const octokit = new github.getOctokit(process.env.GITHUB_TOKEN);
+export const eventPath = JSON.parse(readFileSync(process.env.GITHUB_EVENT_PATH, 'utf8'));
+export const pr_number = eventPath.number;
+export const owner = process.env.GITHUB_REPOSITORY_OWNER;
+export const repo = process.env.repo ? process.env.repo.split('/')[1] : "";
 
 async function getPRDetails() {
     const prNumber = github.context.payload.pull_request.number;
@@ -18,12 +22,24 @@ async function getPRDetails() {
     return { prTitle: pr.title, branchName: pr.head.ref };
 }
 
+export const listChangedFiles = async() => {
+    let changedFiles = null
+
+    const { data } = await octokit.rest.pulls.listFiles({
+        owner,
+        repo,
+        pull_number: pr_number,
+    });
+    changedFiles = data
+    return changedFiles;
+};
+
 async function main() {
     const { branchName } = await getPRDetails();
     console.log(`PR Branch Name: ${branchName}`);
     const checkout = execSync(`git checkout ${branchName}`, { encoding: 'utf-8' });
     console.log({ checkout })
-    const changedFiles = execSync(`git status --porcelain`, { encoding: 'utf-8' });
+    const changedFiles = await listChangedFiles();
     console.log({ changedFiles })
     if (branchName.startsWith('preview/') && changedFiles.length > 0) {
         const pkgFile = resolve("packages/ui", "package.json");
