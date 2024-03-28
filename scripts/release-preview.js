@@ -51,6 +51,13 @@ async function main() {
 
     return
   }
+  // setup git config
+  console.log("Setting up git config...")
+  const gitConfigSetupCommands = [
+    "git config user.name github-actions[bot]",
+    "git config user.email youssouf.kacemi@gmail.com",
+  ].join(" && ")
+  execSync(gitConfigSetupCommands, { encoding: "utf-8" })
   // update the ui package.json version with a new dev version
   const pkgFile = resolve("packages/ui", "package.json")
   const pkgData = JSON.parse(await fsPromises.readFile(pkgFile, "utf-8"))
