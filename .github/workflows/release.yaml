@@ -20,10 +20,10 @@ jobs:
         with:
           node-version: "18.x"
 
-      # - name: git config
-      #   run: |
-      #     git config user.name github-actions[bot]
-      #     git config user.email youssouf.kacemi@gmail.com
+      - name: git config
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email youssouf.kacemi@gmail.com
 
       - name: Install dependencies
         run: yarn install
