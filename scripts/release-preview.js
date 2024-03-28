@@ -4,7 +4,6 @@ import { execSync } from "child_process"
 import os from "os"
 
 import * as github from '@actions/github';
-import { listChangedFiles } from "./utils.js";
 
 const octokit = new github.getOctokit(process.env.GITHUB_TOKEN);
 
@@ -18,6 +17,48 @@ async function getPRDetails() {
 
     return { prTitle: pr.title, branchName: pr.head.ref };
 }
+
+const listChangedFiles = async() => {
+    let changedFiles = null
+    if (isMergeEvent) {
+        const baseCommit = eventPath.before;
+        const headCommit = eventPath.after;
+
+        // Fetch the list of changed files in the merge
+        changedFiles = execSync(`git diff --name-only ${baseCommit} ${headCommit}`, { encoding: 'utf-8' })
+            .split('\n')
+            .filter(Boolean);
+
+        console.log({ changedFiles });
+        return changedFiles;
+    } else {
+        /**
+         * Now we need to create an instance of Octokit which will use to call
+         * GitHub's REST API endpoints.
+         * We will pass the token as an argument to the constructor. This token
+         * will be used to authenticate our requests.
+         * You can find all the information about how to use Octokit here:
+         * https://octokit.github.io/rest.js/v18
+         **/
+        const octokit = new github.getOctokit(githubToken);
+        /**
+         * We need to fetch the list of files that were changes in the Pull Request
+         * and store them in a variable.
+         * We use octokit.paginate() to automatically loop over all the pages of the
+         * results.
+         * Reference: https://octokit.github.io/rest.js/v18#pulls-list-files
+         */
+        const { data } = await octokit.rest.pulls.listFiles({
+            owner,
+            repo,
+            pull_number: pr_number,
+        });
+        changedFiles = data
+        return changedFiles;
+    }
+
+};
+
 
 async function main() {
     const { branchName } = await getPRDetails();
