@@ -15,7 +15,6 @@
         "web": true
     },
     "hooks": {
-        "before:init": ["yarn build"],
         "before:github:release": "npm publish -q --access public"
     },
     "plugins": {

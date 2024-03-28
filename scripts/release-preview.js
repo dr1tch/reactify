@@ -59,7 +59,7 @@ async function main() {
   console.log(`upgrading package version to ${pkgData.version}`)
   console.log("Committing changes...")
   const commitChangesComands = [
-    `git add packages/ui`,
+    `git add .releases package.json packages/ui`,
     `git commit -m "upgrading package version to ${pkgData.version}"`,
   ].join(" && ")
 
@@ -84,7 +84,7 @@ async function main() {
     }
   }
   console.log("Building and Publishing the package...")
-  execSync(`cd packages/ui && yarn release-it:dev`, {
+  execSync(`cd packages/ui && yarn build && yarn release-it:dev`, {
     encoding: "utf-8",
     env: {
       ...process.env,
