@@ -25,6 +25,6 @@
     "yarn-changed-workspaces": "^2.0.11"
   },
   "dependencies": {
-    "react-super-ui-preview": "0.0.28"
+    "react-super-ui-preview": "0.0.28-preview-last-one-50729c6"
   }
 }
