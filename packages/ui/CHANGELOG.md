@@ -1,5 +1,7 @@
 # Changelog
 
+## [0.0.26](https://github.com/dr1tch/reactify/compare/v0.0.25...v0.0.26) (2024-03-29)
+
 ## [0.0.25](https://github.com/dr1tch/reactify/compare/v0.0.23...v0.0.25) (2024-03-29)
 
 * Merge pull request #41 from dr1tch/preview/test-9 (722165d)
