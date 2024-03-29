@@ -31,12 +31,12 @@ async function main() {
         "git config user.email youssouf.kacemi@gmail.com",
     ].join(" && ")
     execSync(gitConfigSetupCommands, { encoding: "utf-8" })
-        // const pkgFile = resolve("packages/ui", "package.json")
-        // const pkgData = JSON.parse(await fsPromises.readFile(pkgFile, "utf-8"))
-        // const version = pkgData.version.split("-")[0]
-        // const newVersion = getNewVersion(version)
-        // pkgData.version = newVersion
-        // await fsPromises.writeFile(pkgFile, JSON.stringify(pkgData, null, 2), "utf-8")
+    const pkgFile = resolve("packages/ui", "package.json")
+    const pkgData = JSON.parse(await fsPromises.readFile(pkgFile, "utf-8"))
+    const version = pkgData.version.split("-")[0]
+    const newVersion = getNewVersion(version)
+    pkgData.version = newVersion
+    await fsPromises.writeFile(pkgFile, JSON.stringify(pkgData, null, 2), "utf-8")
     console.log(`upgrading package version`)
     console.log("Cleaning up...")
     const commitChangesComands = [
@@ -63,7 +63,7 @@ async function main() {
     }
     // execSync(`git branch --set-upstream-to=origin/${branchName}`)
     console.log("Building and Publishing the package...")
-    execSync(`cd packages/ui && yarn release-it:verbose`, {
+    execSync(`cd packages/ui && yarn release-it:dev:verbose`, {
         encoding: "utf-8",
         env: {
             ...process.env,
@@ -72,9 +72,6 @@ async function main() {
             NODE_AUTH_TOKEN: nodeAuthToken,
         },
     })
-    const pkgFile = resolve("packages/ui", "package.json")
-    const pkgData = JSON.parse(await fsPromises.readFile(pkgFile, "utf-8"))
-    const version = pkgData.version.split("-")[0]
     console.log("published with success!")
         // Update root package.json
     console.log("Updating root package.json...")
@@ -84,7 +81,7 @@ async function main() {
             console.error({ e })
         })
     )
-    RootData.dependencies[pkgData.name] = version
+    RootData.dependencies[pkgData.name] = newVersion
     await fsPromises.writeFile(
         rootPKGFile,
         JSON.stringify(RootData, null, 2),
@@ -94,7 +91,7 @@ async function main() {
     console.log("Committing and pushing changes...")
     const rootCommitCommands = [
         `git add package.json`,
-        `git commit -m "updating ${pkgData.name} to ${version}"`,
+        `git commit -m "updating ${pkgData.name} to ${newVersion}"`,
         `git push`,
     ].join(" && ")
     execSync(rootCommitCommands, {
