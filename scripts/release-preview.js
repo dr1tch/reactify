@@ -37,6 +37,11 @@ export function rollback() {
     console.log(`Rollback to commit ${safeCommit} completed.`)
 }
 
+function getNewVersion(version) {
+    const [major, minor, patch] = version.split(".").map((v) => parseInt(v))
+
+    return [major, minor, patch + 1].join(".")
+}
 async function main() {
     const branchName = process.env.GITHUB_HEAD_REF
         // checkout to pr branch
@@ -69,7 +74,12 @@ async function main() {
         .trim()
     const pkgVersion = branchName.split("/").join("-")
     const version = pkgData.version.split("-")[0]
-    const previewVersion = `${version}-${pkgVersion}-${commitHash}`
+    let previewVersion = ""
+    if (branchName.includes('preview')) {
+        previewVersion = `${version}-${pkgVersion}-${commitHash}`
+    } else {
+        previewVersion = getNewVersion(version)
+    }
     pkgData.version = previewVersion
     await fsPromises.writeFile(pkgFile, JSON.stringify(pkgData, null, 2), "utf-8")
     console.log(`upgrading package version to ${pkgData.version}`)
