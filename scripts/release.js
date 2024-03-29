@@ -94,7 +94,7 @@ async function main() {
     console.log("Committing and pushing changes...")
     const rootCommitCommands = [
         `git add package.json`,
-        `git commit -m "updating ${pkgData.name} to ${newVersion}"`,
+        `git commit -m "updating ${pkgData.name} to ${version}"`,
         `git push`,
     ].join(" && ")
     execSync(rootCommitCommands, {
