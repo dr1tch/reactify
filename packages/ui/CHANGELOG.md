@@ -1,5 +1,7 @@
 # Changelog
 
+## [0.0.23](https://github.com/dr1tch/reactify/compare/v0.0.21...v0.0.23) (2024-03-29)
+
 ## [0.0.21-preview-test7-dfeef0b](https://github.com/dr1tch/reactify/compare/v0.0.19...v0.0.21) (2024-03-29)
 
 ## [0.0.21](https://github.com/dr1tch/reactify/compare/v0.0.19...v0.0.21) (2024-03-28)
