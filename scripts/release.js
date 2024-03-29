@@ -31,23 +31,23 @@ async function main() {
         "git config user.email youssouf.kacemi@gmail.com",
     ].join(" && ")
     execSync(gitConfigSetupCommands, { encoding: "utf-8" })
-    const pkgFile = resolve("packages/ui", "package.json")
-    const pkgData = JSON.parse(await fsPromises.readFile(pkgFile, "utf-8"))
-    const version = pkgData.version.split("-")[0]
-    const newVersion = getNewVersion(version)
+        // const pkgFile = resolve("packages/ui", "package.json")
+        // const pkgData = JSON.parse(await fsPromises.readFile(pkgFile, "utf-8"))
+        // const version = pkgData.version.split("-")[0]
+        // const newVersion = getNewVersion(version)
         // pkgData.version = newVersion
         // await fsPromises.writeFile(pkgFile, JSON.stringify(pkgData, null, 2), "utf-8")
-        // console.log(`upgrading package version to ${newVersion}`)
-        // console.log("Cleaning up...")
-        // const commitChangesComands = [
-        //     `git add .`,
-        //     `git commit -m "cleaning up"`,
-        // ].join(" && ")
+    console.log(`upgrading package version to ${newVersion}`)
+    console.log("Cleaning up...")
+    const commitChangesComands = [
+        `git add .`,
+        `git commit -m "cleaning up"`,
+    ].join(" && ")
 
-    // execSync(commitChangesComands, {
-    //         encoding: "utf-8",
-    //     })
-    // Generating new .npmrc file
+    execSync(commitChangesComands, {
+            encoding: "utf-8",
+        })
+        // Generating new .npmrc file
     console.log("Generating new .npmrc file...")
     const npmrcPath = join(os.homedir(), ".npmrc")
     const nodeAuthToken = process.env.NODE_AUTH_TOKEN
@@ -72,6 +72,9 @@ async function main() {
             NODE_AUTH_TOKEN: nodeAuthToken,
         },
     })
+    const pkgFile = resolve("packages/ui", "package.json")
+    const pkgData = JSON.parse(await fsPromises.readFile(pkgFile, "utf-8"))
+    const version = pkgData.version.split("-")[0]
     console.log("published with success!")
         // Update root package.json
     console.log("Updating root package.json...")
@@ -81,7 +84,7 @@ async function main() {
             console.error({ e })
         })
     )
-    RootData.dependencies[pkgData.name] = newVersion
+    RootData.dependencies[pkgData.name] = version
     await fsPromises.writeFile(
         rootPKGFile,
         JSON.stringify(RootData, null, 2),

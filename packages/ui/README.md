@@ -34,4 +34,3 @@ kdmskmqk
 dlùqldùqlsd
 kdmsmdqkmdkqkd
 dksqmqkdmqk
-kdmsqdq
