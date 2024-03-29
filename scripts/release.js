@@ -35,10 +35,10 @@ async function main() {
     const pkgData = JSON.parse(await fsPromises.readFile(pkgFile, "utf-8"))
     const version = pkgData.version.split("-")[0]
     const newVersion = getNewVersion(version)
-    pkgData.version = newVersion
-    await fsPromises.writeFile(pkgFile, JSON.stringify(pkgData, null, 2), "utf-8")
-    console.log(`upgrading package version to ${newVersion}`)
-    console.log("Cleaning up...")
+        // pkgData.version = newVersion
+        // await fsPromises.writeFile(pkgFile, JSON.stringify(pkgData, null, 2), "utf-8")
+        // console.log(`upgrading package version to ${newVersion}`)
+        // console.log("Cleaning up...")
     const commitChangesComands = [
         `git add .`,
         `git commit -m "cleaning up"`,
