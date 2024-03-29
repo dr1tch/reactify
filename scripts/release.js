@@ -37,7 +37,7 @@ async function main() {
         // const newVersion = getNewVersion(version)
         // pkgData.version = newVersion
         // await fsPromises.writeFile(pkgFile, JSON.stringify(pkgData, null, 2), "utf-8")
-    console.log(`upgrading package version to ${newVersion}`)
+    console.log(`upgrading package version`)
     console.log("Cleaning up...")
     const commitChangesComands = [
         `git add .`,
