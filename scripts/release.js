@@ -39,15 +39,15 @@ async function main() {
         // await fsPromises.writeFile(pkgFile, JSON.stringify(pkgData, null, 2), "utf-8")
         // console.log(`upgrading package version to ${newVersion}`)
         // console.log("Cleaning up...")
-    const commitChangesComands = [
-        `git add .`,
-        `git commit -m "cleaning up"`,
-    ].join(" && ")
+        // const commitChangesComands = [
+        //     `git add .`,
+        //     `git commit -m "cleaning up"`,
+        // ].join(" && ")
 
-    execSync(commitChangesComands, {
-            encoding: "utf-8",
-        })
-        // Generating new .npmrc file
+    // execSync(commitChangesComands, {
+    //         encoding: "utf-8",
+    //     })
+    // Generating new .npmrc file
     console.log("Generating new .npmrc file...")
     const npmrcPath = join(os.homedir(), ".npmrc")
     const nodeAuthToken = process.env.NODE_AUTH_TOKEN
