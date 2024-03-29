@@ -9201,14 +9201,6 @@ react-style-singleton@^2.2.1:
     invariant "^2.2.4"
     tslib "^2.0.0"
 
-react-super-ui-preview@0.0.25:
-  version "0.0.25"
-  resolved "https://registry.yarnpkg.com/react-super-ui-preview/-/react-super-ui-preview-0.0.25.tgz#8f1ccdae981b32a77fbee929232cb4636db8aad5"
-  integrity sha512-YXH8JhK4cyOeGsa8IF6czt55Uervq+h9du3nWG342qjtcYU+et9pNybF73NlXYdnJNhiyXN/kLfVFWUzBVuk+Q==
-  dependencies:
-    react "^18.2.0"
-    react-dom "^18.2.0"
-
 react-super-ui@^0.0.2:
   version "0.0.2"
   resolved "https://registry.yarnpkg.com/react-super-ui/-/react-super-ui-0.0.2.tgz#d31f7129514959bc46c2843ffc9ede8d1a7757c9"
