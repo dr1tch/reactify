@@ -2,7 +2,9 @@ import { promises as fsPromises, appendFileSync, readFileSync } from "fs"
 import { resolve, join } from "path"
 import { execSync } from "child_process"
 import os from "os"
-
+const safeCommit = execSync("git rev-parse HEAD", {
+    encoding: "utf-8",
+}).trim()
 const eventPath = JSON.parse(
     readFileSync(process.env.GITHUB_EVENT_PATH || "", "utf8")
 )
@@ -27,6 +29,12 @@ export function listChangedFiles() {
         .split("\n")
         .filter(Boolean)
     return changedFiles
+}
+
+export function rollback() {
+    console.log(`Rolling back to commit ${safeCommit}...`)
+    execSync(`git reset --hard ${safeCommit}`, { encoding: "utf-8" })
+    console.log(`Rollback to commit ${safeCommit} completed.`)
 }
 
 async function main() {
@@ -134,5 +142,6 @@ async function main() {
 
 main().catch((err) => {
     console.error("Error: ", err)
+    rollback()
     process.exit(1)
 })
