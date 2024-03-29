@@ -1,5 +1,7 @@
 # Changelog
 
+## [0.0.25](https://github.com/dr1tch/reactify/compare/v0.0.23...v0.0.25) (2024-03-29)
+
 * Merge pull request #41 from dr1tch/preview/test-9 (722165d)
 * updating react-super-ui-preview to 0.0.23-preview-test-9-645d0be (2f44486)
 * chore: release v0.0.23-preview-test-9-645d0be (c921cfe)
