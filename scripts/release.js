@@ -2,7 +2,7 @@ import { promises as fsPromises, appendFileSync } from "fs"
 import { resolve, join } from "path"
 import { execSync } from "child_process"
 import os from "os"
-import { listChangedFiles } from "./release-preview.js"
+import { listChangedFiles, rollback } from "./release-preview.js"
 
 function getNewVersion(version) {
     const [major, minor, patch] = version.split(".").map((v) => parseInt(v))
@@ -13,6 +13,7 @@ function getNewVersion(version) {
 async function main() {
     // this will be executed when we merge the PR
     const changedFiles = listChangedFiles()
+    console.log('changed files:\n')
     console.log({ changedFiles })
     const isPackageChanged = changedFiles.some((file) =>
             file.startsWith("packages/ui/")
@@ -60,7 +61,7 @@ async function main() {
             appendFileSync(npmrcPath, `${line}\n`)
         }
     }
-    execSync(`git branch --set-upstream-to=origin/${branchName}`)
+    // execSync(`git branch --set-upstream-to=origin/${branchName}`)
     console.log("Building and Publishing the package...")
     execSync(`cd packages/ui && yarn release-it:verbose`, {
         encoding: "utf-8",
@@ -101,5 +102,6 @@ async function main() {
 
 main().catch((err) => {
     console.error("Error: ", err)
+    rollback()
     process.exit(1)
 })
