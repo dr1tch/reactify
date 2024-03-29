@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.0.29-preview-add-tag-a6c541c](https://github.com/dr1tch/reactify/compare/v0.0.26...v0.0.27) (2024-03-29)
+
+## [0.0.27](https://github.com/dr1tch/reactify/compare/v0.0.26...v0.0.27) (2024-03-29)
+
 ## [0.0.29](https://github.com/dr1tch/reactify/compare/v0.0.26...v0.0.27) (2024-03-29)
 
 ## [0.0.27](https://github.com/dr1tch/reactify/compare/v0.0.26...v0.0.27) (2024-03-29)
