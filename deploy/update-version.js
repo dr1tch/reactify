@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { resolve } = require('path');
+const { resolve, join } = require('path');
 const execSync = require('child_process').execSync;
 const os = require('os');
 
