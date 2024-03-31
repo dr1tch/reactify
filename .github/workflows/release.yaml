@@ -24,6 +24,11 @@ jobs:
           git fetch origin ${GITHUB_BASE_REF}:${GITHUB_BASE_REF}
           git fetch origin ${GITHUB_HEAD_REF}:${GITHUB_HEAD_REF}
 
+      - name: Setup git user
+        run: |
+          git config user.email "youssouf.kacemi@gmail.com"
+          git config user.name "github-actions[bot]"
+
       - name: Install dependencies
         run: yarn install
 
