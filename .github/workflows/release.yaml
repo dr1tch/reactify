@@ -26,7 +26,7 @@ jobs:
           git fetch origin ${GITHUB_HEAD_REF}:${GITHUB_HEAD_REF}
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: yarn install
 
       - name: Run Custom Script for PRs
         if: github.event_name == 'pull_request'
@@ -37,4 +37,4 @@ jobs:
           NPM_TOKEN: ${{ secrets.npm_token_test }}
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: yarn install
