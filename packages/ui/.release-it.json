@@ -3,7 +3,9 @@
         "commit": true,
         "commitMessage": "chore: release v${version}",
         "tag": true,
-        "tagName": "v${version}"
+        "tagName": "v${version}",
+        "tagAnnotation": "Release v${version}",
+        "push": false
     },
     "npm": {
         "publish": false
