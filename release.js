@@ -8,8 +8,8 @@ const execSync = require("child_process").execSync
 const os = require("os")
 
 // For JSON files, require them directly
-const uiPkg = require("./packages/ui/package.json")
-const rootPkg = require("./package.json")
+// const uiPkg = require("./packages/ui/package.json")
+// const rootPkg = require("./package.json")
 async function main() {
     const branchName = execSync("git rev-parse --abbrev-ref HEAD", {
         encoding: "utf-8",
@@ -34,6 +34,8 @@ async function main() {
 
         return
     }
+    const pkgFile = resolve("packages/ui", "package.json")
+    const uiPkg = JSON.parse(await fsPromises.readFile(pkgFile, "utf-8"))
     const commitHash = execSync("git rev-parse --short HEAD")
         .toString("utf-8")
         .trim()
@@ -45,7 +47,6 @@ async function main() {
         // }
     previewVersion = `${version}-${pkgVersion}-${commitHash}`
     uiPkg.version = previewVersion
-    const pkgFile = resolve("packages/ui", "package.json")
     const uiOutput = await fsPromises.writeFile(pkgFile, JSON.stringify(uiPkg, null, 2), "utf-8")
     console.log({ uiOutput })
     console.log(`upgrading package version to ${uiPkg.version}`)
@@ -94,6 +95,11 @@ async function main() {
         // Update root package.json
     console.log("Updating root package.json...")
     const rootPKGFile = resolve("package.json")
+    const rootPkg = JSON.parse(
+        await fsPromises.readFile(rootPKGFile, "utf-8").catch((e) => {
+            console.error({ e })
+        })
+    )
     rootPkg.dependencies[uiPkg.name] = uiPkg.version
     const rootOutput = await fsPromises.writeFile(
             rootPKGFile,
