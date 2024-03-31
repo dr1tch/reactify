@@ -17,7 +17,9 @@ function main() {
         const safeBranchName = makeBranchSafeForNpm(branchName);
         packageJson.version = `${baseVersion}-${safeBranchName}`;
     }
-    fs.writeFileSync('../package.json', JSON.stringify(packageJson, null, 2)); // Adjust the path as necessary
+    const pwd = execSync('pwd').toString().trim();
+    console.log(`Writing package.json in ${pwd}`);
+    fs.writeFileSync('./package.json', JSON.stringify(packageJson, null, 2)); // Adjust the path as necessary
 }
 
 main();

@@ -9,6 +9,8 @@ function updateRootPackageVersion(packagePath, rootPackagePath) {
     rootPackageJson.dependencies[packageJson.name] = packageJson.version;
 
     fs.writeFileSync(rootPackagePath, JSON.stringify(rootPackageJson, null, 2));
+    const pwd = execSync('pwd').toString().trim();
+    console.log(`Writing package.json in ${pwd}`);
 }
 
 const packagePath = path.resolve(__dirname, '../packages/ui/package.json'); // Adjust the path to your package
