@@ -12,7 +12,8 @@ function updateRootPackageVersion(packagePath, rootPackagePath) {
     const pwd = execSync('pwd').toString().trim();
     console.log(`Writing package.json in ${pwd}`);
 }
-
+const pwd = execSync('pwd').toString().trim();
+console.log(`Writing package.json in ${pwd}`);
 const packagePath = path.resolve(__dirname, '../packages/ui/package.json'); // Adjust the path to your package
 const rootPackagePath = path.resolve(__dirname, '../package.json'); // Adjust the path to your root package
 
