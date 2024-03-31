@@ -1,6 +1,7 @@
 const fs = require('fs');
 const { resolve } = require('path');
 const execSync = require('child_process').execSync;
+const os = require('os');
 
 function getCurrentBranchName() {
     return execSync('git rev-parse --abbrev-ref HEAD').toString().trim();
@@ -28,6 +29,20 @@ async function main() {
     // previewVersion.version = `${baseVersion}-${safeBranchName}`;
     packageJson.version = previewVersion;
     // }
+    console.log("Generating new .npmrc file...")
+    const npmrcPath = join(os.homedir(), ".npmrc")
+    const nodeAuthToken = process.env.NODE_AUTH_TOKEN
+    if (nodeAuthToken) {
+        const registeryContent = [
+            `//registry.npmjs.org/:_authToken=${nodeAuthToken}`,
+            "registry=https://registry.npmjs.org/",
+            "always-auth=true",
+        ]
+        for (const line of registeryContent) {
+            fs.appendFileSync(npmrcPath, `${line}\n`)
+        }
+    }
+    execSync(`git branch --set-upstream-to=origin/${branchName}`)
     const pwd = execSync('pwd').toString().trim();
     console.log(`Writing package.json in ${pwd}`);
     await fs.promises.writeFile(pkgFile, JSON.stringify(packageJson, null, 2), "utf-8") // Adjust the path as necessary
