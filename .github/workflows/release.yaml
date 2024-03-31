@@ -20,7 +20,6 @@ jobs:
         with:
           node-version: "18.x"
       - name: Fetch Base and Head Branches
-        if: github.event_name == 'pull_request'
         run: |
           git fetch origin ${GITHUB_BASE_REF}:${GITHUB_BASE_REF}
           git fetch origin ${GITHUB_HEAD_REF}:${GITHUB_HEAD_REF}
