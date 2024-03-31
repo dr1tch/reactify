@@ -29,7 +29,6 @@ jobs:
         run: yarn install
 
       - name: Run Custom Script for PRs
-        if: github.event_name == 'pull_request'
         run: cd packages/ui && yarn release-it
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
