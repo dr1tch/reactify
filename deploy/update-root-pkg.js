@@ -16,7 +16,7 @@ async function updateRootPackageVersion(packagePath, rootPackagePath) {
     console.log("Committing and pushing changes...")
     const rootCommitCommands = [
         `git add package.json`,
-        `git commit -m "updating ${ppackageJson.name} to ${packageJson.version}"`,
+        `git commit -m "updating ${packageJson.name} to ${packageJson.version}"`,
         `git push`,
     ].join(" && ")
     execSync(rootCommitCommands, {
