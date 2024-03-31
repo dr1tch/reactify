@@ -60,3 +60,4 @@ typings/
 **/**/.npmrc
 **/**/.env
 .npmrc
+packages/ui/dist
