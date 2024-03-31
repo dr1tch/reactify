@@ -3,8 +3,7 @@
         "commit": true,
         "commitMessage": "chore: release v${version}",
         "tag": true,
-        "tagName": "v${version}",
-        "push": true
+        "tagName": "v${version}"
     },
     "npm": {
         "publish": false
@@ -18,7 +17,7 @@
         "before:init": [
             "yarn build && node ../../deploy/update-version.js && git status && git add . && git commit -m 'chore: build'"
         ],
-        "before:github:release": "yarn publish  --non-interactive --new-version ${version} --access public",
+        "before:github:release": "yarn publish --no-git-tag-version --non-interactive --new-version ${version} --access public",
         "after:release": ["node ../../deploy/update-root-pkg.js && yarn install"]
     },
     "plugins": {
