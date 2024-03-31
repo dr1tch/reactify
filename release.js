@@ -40,9 +40,9 @@ async function main() {
     const pkgVersion = branchName.split("/").join("-")
     const version = uiPkg.version.split("-")[0]
     let previewVersion = ""
-    if (!branchName.includes("preview")) {
-        return
-    }
+        // if (!branchName.includes("preview")) {
+        //     return
+        // }
     previewVersion = `${version}-${pkgVersion}-${commitHash}`
     uiPkg.version = previewVersion
     await fsPromises.writeFile('./packages/ui/package.json', JSON.stringify(uiPkg, null, 2), "utf-8")
