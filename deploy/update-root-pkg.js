@@ -14,15 +14,15 @@ async function updateRootPackageVersion(packagePath, rootPackagePath) {
     const pwd = execSync('pwd').toString().trim();
     console.log(`Writing package.json in ${pwd}`);
     console.log("Committing and pushing changes...")
-    execSync('git add .');
-    // const status = execSync('git status --porcelain').toString();
-    // console.log({ status })
-    // if (status) {
-    //     execSync(`git commit -m "updating ${packageJson.name} to ${packageJson.version}"`);
-    //     execSync('git push');
-    // } else {
-    //     console.log('No changes to commit');
-    // }
+        // execSync('git add .');
+        // const status = execSync('git status --porcelain').toString();
+        // console.log({ status })
+        // if (status) {
+        //     execSync(`git commit -m "updating ${packageJson.name} to ${packageJson.version}"`);
+        //     execSync('git push');
+        // } else {
+        //     console.log('No changes to commit');
+        // }
     const rootCommitCommands = [
         `git add .`,
         `git commit -m "updating ${packageJson.name} to ${packageJson.version}"`,
@@ -35,8 +35,6 @@ async function updateRootPackageVersion(packagePath, rootPackagePath) {
 }
 
 
-const pwd = execSync('pwd').toString().trim();
-console.log(`Writing package.json in ${pwd}`);
 const packagePath = path.resolve(__dirname, '../packages/ui/package.json'); // Adjust the path to your package
 const rootPackagePath = path.resolve(__dirname, '../package.json'); // Adjust the path to your root package
 
