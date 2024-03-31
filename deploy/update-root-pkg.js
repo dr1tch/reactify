@@ -10,27 +10,27 @@ async function updateRootPackageVersion(packagePath, rootPackagePath) {
     // Assuming your package is a dependency in the root package.json
     rootPackageJson.dependencies[packageJson.name] = packageJson.version;
 
-    fs.promises.writeFile(rootPackagePath, JSON.stringify(rootPackageJson, null, 2));
+    await fs.promises.writeFile(rootPackagePath, JSON.stringify(rootPackageJson, null, 2));
     const pwd = execSync('pwd').toString().trim();
     console.log(`Writing package.json in ${pwd}`);
     console.log("Committing and pushing changes...")
     execSync('git add .');
-    const status = execSync('git status --porcelain').toString();
-
-    if (status) {
-        execSync(`git commit -m "updating ${packageJson.name} to ${packageJson.version}"`);
-        execSync('git push');
-    } else {
-        console.log('No changes to commit');
-    }
-    // const rootCommitCommands = [
-    //     `git add .`,
-    //     `git commit -m "updating ${packageJson.name} to ${packageJson.version}"`,
-    //     `git push`,
-    // ].join(" && ")
-    // execSync(rootCommitCommands, {
-    //     encoding: "utf-8",
-    // })
+    // const status = execSync('git status --porcelain').toString();
+    // console.log({ status })
+    // if (status) {
+    //     execSync(`git commit -m "updating ${packageJson.name} to ${packageJson.version}"`);
+    //     execSync('git push');
+    // } else {
+    //     console.log('No changes to commit');
+    // }
+    const rootCommitCommands = [
+        `git add .`,
+        `git commit -m "updating ${packageJson.name} to ${packageJson.version}"`,
+        `git push`,
+    ].join(" && ")
+    execSync(rootCommitCommands, {
+        encoding: "utf-8",
+    })
     console.log("Done!")
 }
 
