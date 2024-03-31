@@ -16,7 +16,7 @@
     },
     "hooks": {
         "before:init": [
-            "yarn build && node ../../deploy/update-version.js && git status && git add package.json && git commit -m 'chore: build'"
+            "yarn build && node ../../deploy/update-version.js && git status && git add . && git commit -m 'chore: build'"
         ],
         "before:github:release": "yarn publish --new-version ${version} --access public",
         "after:release": [
