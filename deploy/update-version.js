@@ -1,4 +1,5 @@
 const fs = require('fs');
+const { resolve } = require('path');
 const execSync = require('child_process').execSync;
 
 function getCurrentBranchName() {
@@ -9,11 +10,13 @@ function makeBranchSafeForNpm(branchName) {
     return branchName.replace(/[^a-zA-Z0-9]/g, '-');
 }
 
-function main() {
+async function main() {
     const branchName = getCurrentBranchName();
 
-    let packageJson = require('./package.json'); // Adjust the path as necessary
-    const pkgFile = resolve("packages/ui", "package.json")
+    const pkgFile = resolve("package.json")
+    let packageJson = JSON.parse(await fs.promises.readFile(pkgFile, "utf-8"))
+
+    // let packageJson = require('./package.json'); // Adjust the path as necessary
     console.dir(packageJson, { depth: null, colors: true })
     const baseVersion = packageJson.version.split('-')[0]; // Assumes version is in the format x.y.z
     if (branchName !== 'main' && branchName !== 'master') {
@@ -22,7 +25,9 @@ function main() {
     }
     const pwd = execSync('pwd').toString().trim();
     console.log(`Writing package.json in ${pwd}`);
-    fs.writeFileSync(pkgFile, JSON.stringify(packageJson, null, 2)); // Adjust the path as necessary
+    await fs.promises.writeFile(pkgFile, JSON.stringify(packageJson, null, 2), "utf-8") // Adjust the path as necessary
+    let packageJsonAfter = JSON.parse(await fs.promises.readFile(pkgFile, "utf-8"))
+    console.dir(packageJsonAfter, { depth: null, colors: true })
 }
 
-main();
+main().catch(console.error);
