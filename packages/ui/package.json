@@ -40,7 +40,7 @@
         "release-it:dev:verbose": "release-it --no-increment --no-git.tag --ci --verbose",
         "release-it:dev": "release-it --no-increment --no-git.tag --ci",
         "release-it:verbose": "release-it --ci --verbose",
-        "release-it": "release-it --ci"
+        "release-it": "release-it --verbose --ci"
     },
     "dependencies": {
         "react": "^18.2.0",
