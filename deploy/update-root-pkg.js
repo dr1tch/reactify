@@ -14,15 +14,6 @@ async function updateRootPackageVersion(packagePath, rootPackagePath) {
     const pwd = execSync('pwd').toString().trim();
     console.log(`Writing package.json in ${pwd}`);
     console.log("Committing and pushing changes...")
-        // execSync('git add .');
-    const status = execSync('git status --porcelain').toString();
-    console.log({ status })
-        // if (status) {
-        //     execSync(`git commit -m "updating ${packageJson.name} to ${packageJson.version}"`);
-        //     execSync('git push');
-        // } else {
-        //     console.log('No changes to commit');
-        // }
     const rootCommitCommands = [
         `git commit -am "updating ${packageJson.name} to ${packageJson.version}"`,
         `git push`,
