@@ -15,8 +15,13 @@
         "web": true
     },
     "hooks": {
-        "before:init": ["yarn build"],
-        "before:github:release": "yarn publish --new-version ${version} --access public"
+        "before:init": [
+            "yarn build && node ../../deploy/update-version.js && git add dist && git commit -m 'chore: build' && git push"
+        ],
+        "before:github:release": "yarn publish --access public",
+        "after:release": [
+            "node ../../deploy/update-root-pkg.js && yarn install && yarn build && git add package.json yarn.lock dist && git commit -m 'chore: update root package.json' && git push"
+        ]
     },
     "plugins": {
         "@release-it/conventional-changelog": {
