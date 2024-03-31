@@ -1,5 +1,11 @@
 # Changelog
 
+* upgrading package version to 0.0.31-master-165e1e2 (4b31c07)
+* fix release-it (165e1e2)
+* chore: release v0.0.31 (d9d2518)
+* upgrading package version to 0.0.31-master-98a8d99 (38a9366)
+* try again (98a8d99)
+
 * upgrading package version to 0.0.31-master-98a8d99 (38a9366)
 * try again (98a8d99)
 
