@@ -7,7 +7,7 @@
         "push": true
     },
     "npm": {
-        "publish": true
+        "publish": false
     },
     "github": {
         "release": true,
@@ -16,7 +16,7 @@
     },
     "hooks": {
         "before:init": ["yarn build"],
-        "before:github:release": "yarn publish --new-version ${version} --access public"
+        "before:github:release": "yarn publish --access public"
     },
     "plugins": {
         "@release-it/conventional-changelog": {
