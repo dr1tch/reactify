@@ -13,6 +13,16 @@ async function updateRootPackageVersion(packagePath, rootPackagePath) {
     fs.promises.writeFile(rootPackagePath, JSON.stringify(rootPackageJson, null, 2));
     const pwd = execSync('pwd').toString().trim();
     console.log(`Writing package.json in ${pwd}`);
+    console.log("Committing and pushing changes...")
+    const rootCommitCommands = [
+        `git add package.json`,
+        `git commit -m "updating ${ppackageJson.name} to ${packageJson.version}"`,
+        `git push`,
+    ].join(" && ")
+    execSync(rootCommitCommands, {
+        encoding: "utf-8",
+    })
+    console.log("Done!")
 }
 
 
