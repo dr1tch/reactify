@@ -19,7 +19,7 @@ async function main() {
     // let packageJson = require('./package.json'); // Adjust the path as necessary
     console.dir(packageJson, { depth: null, colors: true })
     const pkgVersion = branchName.split("/").join("-")
-    const version = uiPkg.version.split("-")[0]
+    const version = packageJson.version.split("-")[0]
     const previewVersion = `${version}-${pkgVersion}-${commitHash}`
         // if (branchName !== 'main' && branchName !== 'master') {
     const safeBranchName = makeBranchSafeForNpm(branchName);
