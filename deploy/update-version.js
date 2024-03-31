@@ -18,11 +18,14 @@ async function main() {
 
     // let packageJson = require('./package.json'); // Adjust the path as necessary
     console.dir(packageJson, { depth: null, colors: true })
-    const baseVersion = packageJson.version.split('-')[0]; // Assumes version is in the format x.y.z
-    if (branchName !== 'main' && branchName !== 'master') {
-        const safeBranchName = makeBranchSafeForNpm(branchName);
-        packageJson.version = `${baseVersion}-${safeBranchName}`;
-    }
+    const pkgVersion = branchName.split("/").join("-")
+    const version = uiPkg.version.split("-")[0]
+    const previewVersion = `${version}-${pkgVersion}-${commitHash}`
+        // if (branchName !== 'main' && branchName !== 'master') {
+    const safeBranchName = makeBranchSafeForNpm(branchName);
+    // previewVersion.version = `${baseVersion}-${safeBranchName}`;
+    packageJson.version = previewVersion;
+    // }
     const pwd = execSync('pwd').toString().trim();
     console.log(`Writing package.json in ${pwd}`);
     await fs.promises.writeFile(pkgFile, JSON.stringify(packageJson, null, 2), "utf-8") // Adjust the path as necessary
