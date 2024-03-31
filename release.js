@@ -47,7 +47,7 @@ async function main() {
         // }
     previewVersion = `${version}-${pkgVersion}-${commitHash}`
     uiPkg.version = previewVersion
-    const uiOutput = await fsPromises.writeFile(pkgFile, JSON.stringify(uiPkg, null, 2), "utf-8")
+    await fsPromises.writeFile(pkgFile, JSON.stringify(uiPkg, null, 2), "utf-8")
     console.log({ uiOutput })
     console.log(`upgrading package version to ${uiPkg.version}`)
         // Commit the changes
