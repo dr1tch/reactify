@@ -21,4 +21,4 @@ console.log(`Writing package.json in ${pwd}`);
 const packagePath = path.resolve(__dirname, '../packages/ui/package.json'); // Adjust the path to your package
 const rootPackagePath = path.resolve(__dirname, '../package.json'); // Adjust the path to your root package
 
-updateRootPackageVersion(packagePath, rootPackagePath).catch(console.error);
+updateRootPackageVersion(packagePath, rootPackagePath).catch(e => console.error({ e }));
