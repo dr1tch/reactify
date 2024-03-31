@@ -1,5 +1,7 @@
 const fs = require('fs');
 const path = require('path');
+const execSync = require('child_process').execSync;
+
 
 async function updateRootPackageVersion(packagePath, rootPackagePath) {
     const packageJson = JSON.parse(await fs.promises.readFile(packagePath, "utf-8"));
