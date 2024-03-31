@@ -45,7 +45,9 @@ async function main() {
         // }
     previewVersion = `${version}-${pkgVersion}-${commitHash}`
     uiPkg.version = previewVersion
-    await fsPromises.writeFile('./packages/ui/package.json', JSON.stringify(uiPkg, null, 2), "utf-8")
+    const pkgFile = resolve("packages/ui", "package.json")
+    const uiOutput = await fsPromises.writeFile(pkgFile, JSON.stringify(uiPkg, null, 2), "utf-8")
+    console.log({ uiOutput })
     console.log(`upgrading package version to ${uiPkg.version}`)
         // Commit the changes
         // execSync("cd packages/ui && yarn install ", {
@@ -91,13 +93,15 @@ async function main() {
     console.log("published with success!")
         // Update root package.json
     console.log("Updating root package.json...")
+    const rootPKGFile = resolve("package.json")
     rootPkg.dependencies[uiPkg.name] = uiPkg.version
-    await fsPromises.writeFile(
-            "./package.json",
+    const rootOutput = await fsPromises.writeFile(
+            rootPKGFile,
             JSON.stringify(rootPkg, null, 2),
             "utf-8"
         )
         // Commit the changes
+    console.log({ rootOutput })
     console.log("Committing and pushing changes...")
     const rootCommitCommands = [
         "git add package.json",
