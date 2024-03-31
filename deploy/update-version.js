@@ -15,8 +15,10 @@ async function main() {
 
     const pkgFile = resolve("package.json")
     let packageJson = JSON.parse(await fs.promises.readFile(pkgFile, "utf-8"))
-
-    // let packageJson = require('./package.json'); // Adjust the path as necessary
+    const commitHash = execSync("git rev-parse --short HEAD")
+        .toString("utf-8")
+        .trim()
+        // let packageJson = require('./package.json'); // Adjust the path as necessary
     console.dir(packageJson, { depth: null, colors: true })
     const pkgVersion = branchName.split("/").join("-")
     const version = packageJson.version.split("-")[0]
