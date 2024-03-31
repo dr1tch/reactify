@@ -20,7 +20,7 @@
         ],
         "before:github:release": "yarn publish --no-git-tag-version --no-commit-hooks --new-version ${version} --access public",
         "after:release": [
-            "node ../../deploy/update-root-pkg.js && yarn install && git add . && git commit -m 'chore: update root package.json' && git push"
+            "node ../../deploy/update-root-pkg.js && yarn install && git status && git add . && git commit -m 'chore: update root package.json'"
         ]
     },
     "plugins": {
