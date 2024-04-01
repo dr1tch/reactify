@@ -8,7 +8,6 @@ function getCurrentBranchName() {
 }
 
 function listChangedFiles() {
-    console.dir(process.env, { depth: null, colors: true })
     let baseCommit = ""
     let headCommit = ""
     if (process.env.GITHUB_EVENT_NAME) {
