@@ -1,4 +1,4 @@
-name: Build and Publish
+name: Build and Publish react-super-ui
 
 on:
   # pull_request:
@@ -23,24 +23,23 @@ jobs:
         run: |
           git fetch origin ${GITHUB_BASE_REF}:${GITHUB_BASE_REF}
           git fetch origin ${GITHUB_HEAD_REF}:${GITHUB_HEAD_REF}
+      - name: checkout base branch
+        run: git checkout ${GITHUB_HEAD_REF}
 
       - name: Setup git user
         run: |
           git config user.email "youssouf.kacemi@gmail.com"
           git config user.name "github-actions[bot]"
-      - name: checkout base branch
-        run: git checkout ${GITHUB_HEAD_REF}
 
       - name: Install dependencies
         run: yarn install
 
       - name: Run Custom Script for PRs
-        run: cd packages/ui && yarn release-it
-        # run: node deploy/test.js
+        run: deploy/test.js
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NODE_AUTH_TOKEN: ${{ secrets.npm_token_test }}
-          NPM_TOKEN: ${{ secrets.npm_token_test }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN_TEST }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN_TEST }}
 
-      - name: Install dependencies
-        run: yarn install
+      # - name: Install dependencies
+      #   run: yarn install

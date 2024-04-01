@@ -1,35 +1,35 @@
 {
-    "git": {
-        "commit": true,
-        "commitMessage": "chore: release v${version}",
-        "tag": true,
-        "tagName": "v${version}",
-        "tagAnnotation": "Release v${version}",
-        "push": false
-    },
-    "npm": {
-        "publish": false
-    },
-    "github": {
-        "release": true,
-        "releaseName": "v${version}",
-        "web": true
-    },
-    "hooks": {
-        "before:init": [
-            "yarn build && node ../../deploy/update-version.js && git status && git add . && git commit -m 'chore: build'"
-        ],
-        "before:github:release": "yarn publish --no-git-tag-version --non-interactive --new-version ${version} --access public",
-        "after:release": ["node ../../deploy/update-root-pkg.js && yarn install"]
-    },
-    "plugins": {
-        "@release-it/conventional-changelog": {
-            "preset": {
-                "name": "conventionalcommits"
-            },
-            "infile": "CHANGELOG.md",
-            "header": "# Changelog",
-            "ignoreRecommendedBump": true
-        }
+  "git": {
+    "commit": true,
+    "commitMessage": "chore: release v${version}",
+    "tag": true,
+    "tagName": "v${version}",
+    "tagAnnotation": "Release v${version}",
+    "push": false,
+    "requireUpstream": false,
+    "requireCleanWorkingDir": false
+  },
+  "npm": {
+    "publish": false
+  },
+  "github": {
+    "release": true,
+    "releaseName": "v${version}",
+    "web": true
+  },
+  "hooks": {
+    "before:init": ["yarn install && yarn build"],
+    "before:github:release": "yarn publish --no-git-tag-version --non-interactive --new-version ${version} --access public",
+    "after:release": ["yarn install"]
+  },
+  "plugins": {
+    "@release-it/conventional-changelog": {
+      "preset": {
+        "name": "conventionalcommits"
+      },
+      "infile": "CHANGELOG.md",
+      "header": "# Changelog",
+      "ignoreRecommendedBump": true
     }
+  }
 }
