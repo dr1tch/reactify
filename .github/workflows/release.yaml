@@ -35,7 +35,7 @@ jobs:
         run: yarn install
 
       - name: Run Custom Script for PRs
-        run: deploy/test.js
+        run: node deploy/test.js
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN_TEST }}
