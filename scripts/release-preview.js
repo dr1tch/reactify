@@ -6,7 +6,7 @@ const safeCommit = execSync("git rev-parse HEAD", {
     encoding: "utf-8",
 }).trim()
 const eventPath = JSON.parse(
-    readFileSync(process.env.GITHUB_EVENT_PATH || "", "utf8")
+    fs.readFileSync(process.env.GITHUB_EVENT_PATH || "", "utf8")
 )
 export function listChangedFiles() {
     let baseCommit = ""
