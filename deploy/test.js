@@ -127,7 +127,7 @@ async function main() {
             `git commit -am "updating package version to ${packageJson.version}"`
         )
     }
-    execSync("yarn publish-ci --verbose", { encoding: "utf-8" })
+    execSync("cd ../packages/ui && yarn release-it --verbose", { encoding: "utf-8" })
     const rootPackagePath = resolve("package.json") // Adjust the path to your root package
 
     const rootPackageJson = JSON.parse(
