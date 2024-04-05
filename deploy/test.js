@@ -191,6 +191,7 @@ async function main() {
     console.log("Updating changelog...")
     const isPreview = branchName !== "master"
     if (!isPreview) {
+        console.log('Updating changelog for "master" branch...')
         updateChangelog(packageJson.version)
     }
     console.log("Updating root package.json...")
