@@ -98,8 +98,9 @@ function updateChangelog(version) {
         const branchName = getCurrentBranchName()
             // get new updates and format: "* <Commit Message> (<Issue Number>) <Commit Hash>"
         const newUpdates = execSync(
-            `git log --no-merges --pretty=format:"* %s ([%h](https://github.com/dr1tch/reactify/commit/%H))" master..${branchName}`, { encoding: "utf-8" }
+            `git log --no-merges --pretty=format:"* %s ([%h](https://github.com/dr1tch/reactify/commit/%H))" master..${branchName === "master" ? 'HEAD' : branchName}`, { encoding: "utf-8" }
         )
+        console.log({ newUpdates })
         if (newUpdates === "") {
             console.log("No new updates found.")
 
