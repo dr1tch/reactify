@@ -79,6 +79,45 @@ function installPkgs(name, version) {
     }
 }
 
+const executeCommandSync = (command) => {
+    try {
+        return execSync(command).toString().trim();
+    } catch (error) {
+        console.error("Error:", error.message);
+        return null;
+    }
+};
+
+// Find the last merged branch
+const findLastMergedBranch = () => {
+    // Get the hash of the latest merge commit
+    const mergeCommitHash = executeCommandSync('git log --merges --pretty=format:"%H" -n 1');
+    if (!mergeCommitHash) {
+        console.log("No merge commits found or an error occurred.");
+        return;
+    }
+
+    // Get the parent hashes of the merge commit
+    const parentHashes = executeCommandSync(`git show --pretty=format:"%P" ${mergeCommitHash} -q`);
+    if (!parentHashes) {
+        console.log("Error getting parent hashes or no parents found.");
+        return;
+    }
+
+    const [ /*firstParent*/ , secondParent] = parentHashes.split(' ');
+
+    // Get the branches containing the second parent
+    const branches = executeCommandSync(`git branch --all --contains ${secondParent}`);
+    if (!branches) {
+        console.log("Error getting branches or no branches found.");
+        return;
+    }
+
+    console.log("Branches containing the commit:", branches);
+
+    // Additional logic to determine the specific branch name might be needed here
+};
+
 function updateChangelog(version) {
     try {
         const changelogPath = resolve("packages/ui", "CHANGELOG.md")
@@ -96,9 +135,10 @@ function updateChangelog(version) {
             console.log("Changelog file created!")
         }
         const branchName = getCurrentBranchName()
+        console.log({ branchName, lastBranch: findLastMergedBranch() })
             // get new updates and format: "* <Commit Message> (<Issue Number>) <Commit Hash>"
         const newUpdates = execSync(
-            `git log --no-merges --pretty=format:"* %s ([%h](https://github.com/dr1tch/reactify/commit/%H))" master..${branchName === "master" ? 'master' : branchName}`, { encoding: "utf-8" }
+            `git log --no-merges --pretty=format:"* %s ([%h](https://github.com/dr1tch/reactify/commit/%H))" master..${branchName === 'master' ? findLastMergedBranch() : branchName}`, { encoding: "utf-8" }
         )
         console.log({ newUpdates })
         if (newUpdates === "") {
