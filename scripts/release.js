@@ -1,107 +1,93 @@
-import { promises as fsPromises, appendFileSync } from "fs"
-import { resolve, join } from "path"
-import { execSync } from "child_process"
+import {execSync} from "child_process"
+import fs from "fs"
+import {join} from "path"
 import os from "os"
-import { listChangedFiles, rollback } from "./release-preview.js"
 
-function getNewVersion(version) {
-    const [major, minor, patch] = version.split(".").map((v) => parseInt(v))
-
-    return [major, minor, patch + 1].join(".")
+function listChangedFiles() {
+    // Get changes between the current commit and its parent
+    return execSync(
+        'git diff --name-only HEAD HEAD^',
+        { encoding: 'utf-8' }
+    )
+        .split('\n')
+        .filter(Boolean)
 }
 
-async function main() {
-    // this will be executed when we merge the PR
-    const changedFiles = listChangedFiles()
-    console.log('changed files:\n')
-    console.log({ changedFiles })
-    const isPackageChanged = changedFiles.some((file) =>
-            file.startsWith("packages/ui/")
-        )
-        // ensure that changes are only in packages/ui
-    if (!isPackageChanged) {
-        console.log('No changes in "packages/ui/". Skipping package build.')
-
-        return
-    }
-    // setup git config
-    console.log("Setting up git config...")
-    const gitConfigSetupCommands = [
-        "git config user.name github-actions[bot]",
-        "git config user.email youssouf.kacemi@gmail.com",
-    ].join(" && ")
-    execSync(gitConfigSetupCommands, { encoding: "utf-8" })
-    const pkgFile = resolve("packages/ui", "package.json")
-    const pkgData = JSON.parse(await fsPromises.readFile(pkgFile, "utf-8"))
-    const version = pkgData.version.split("-")[0]
-    const newVersion = getNewVersion(version)
-    pkgData.version = newVersion
-    await fsPromises.writeFile(pkgFile, JSON.stringify(pkgData, null, 2), "utf-8")
-    console.log(`upgrading package version`)
-    console.log("Cleaning up...")
-    const commitChangesComands = [
-        `git add .`,
-        `git commit -m "cleaning up"`,
-    ].join(" && ")
-
-    execSync(commitChangesComands, {
-            encoding: "utf-8",
-        })
-        // Generating new .npmrc file
-    console.log("Generating new .npmrc file...")
+async function generateNpmrc(nodeAuthToken) {
     const npmrcPath = join(os.homedir(), ".npmrc")
-    const nodeAuthToken = process.env.NODE_AUTH_TOKEN
-    if (nodeAuthToken) {
-        const registeryContent = [
-            `//registry.npmjs.org/:_authToken=${nodeAuthToken}`,
-            "registry=https://registry.npmjs.org/",
-            "always-auth=true",
-        ]
-        for (const line of registeryContent) {
-            appendFileSync(npmrcPath, `${line}\n`)
-        }
-    }
-    // execSync(`git branch --set-upstream-to=origin/${branchName}`)
-    console.log("Building and Publishing the package...")
-    execSync(`cd packages/ui && yarn release-it:dev:verbose`, {
-        encoding: "utf-8",
-        env: {
-            ...process.env,
-            npm_config_registry: "https://registry.npmjs.org/",
-            always_auth: true,
-            NODE_AUTH_TOKEN: nodeAuthToken,
-        },
-    })
-    console.log("published with success!")
-        // Update root package.json
-    console.log("Updating root package.json...")
-    const rootPKGFile = resolve("package.json")
-    const RootData = JSON.parse(
-        await fsPromises.readFile(rootPKGFile, "utf-8").catch((e) => {
-            console.error({ e })
-        })
-    )
-    RootData.dependencies[pkgData.name] = newVersion
-    await fsPromises.writeFile(
-        rootPKGFile,
-        JSON.stringify(RootData, null, 2),
-        "utf-8"
-    )
-
-    console.log("Committing and pushing changes...")
-    const rootCommitCommands = [
-        `git add package.json`,
-        `git commit -m "updating ${pkgData.name} to ${newVersion}"`,
-        `git push`,
-    ].join(" && ")
-    execSync(rootCommitCommands, {
-        encoding: "utf-8",
-    })
-    console.log("Done!")
+    const registryContent = [
+        `//registry.npmjs.org/:_authToken=${nodeAuthToken}`,
+        "registry=https://registry.npmjs.org/",
+        "always-auth=true",
+    ].join("\n")
+    await fs.promises.writeFile(npmrcPath, registryContent + "\n")
 }
 
-main().catch((err) => {
-    console.error("Error: ", err)
-    rollback()
+async function publishToNpm(path) {
+        // 1 - check if there is changes in the api package
+        console.log(`checking for changes in packages/${path}...`)
+        const changedFiles = listChangedFiles()
+        console.log({changedFiles})
+
+        // - if no changes, abort
+        if (!changedFiles.some((file) => file.startsWith(`${path}/`))) {
+            console.log(`No changes in ${path}. Skipping package build.`)
+            return process.exit(0)
+        }
+
+        // Generate .npmrc with authentication
+        if (process.env.NODE_AUTH_TOKEN) {
+            console.log("Generating new .npmrc file...")
+            await generateNpmrc(process.env.NODE_AUTH_TOKEN)
+        }
+
+        // 2 - get the latest commit hash
+        console.log("getting the latest commit hash...")
+        const lastCommitHash = execSync("git rev-parse --short HEAD").toString().trim()
+        console.log({lastCommitHash})
+
+        console.log("preparing to publish package...")
+        const newVersion = `0.0.1-${lastCommitHash}`
+        console.log({newVersion})
+        // moving to the package directory
+        execSync(`cd packages/${path}`, {stdio: "inherit"})
+
+        // Build package
+        console.log("Building package...")
+        execSync("yarn build", {stdio: "inherit"})
+
+        // Store original version
+        const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'))
+
+        try {
+            // Publish with yarn
+            console.log(`Publishing version ${newVersion}...`)
+            execSync(`yarn publish --access public --new-version ${newVersion} --non-interactive --no-git-tag-version`, {
+                stdio: "inherit"
+            })
+
+            // Revert version in package.json
+            console.log("Reverting package.json version...")
+            packageJson.version = "0.0.1"
+            fs.writeFileSync('package.json', JSON.stringify(packageJson, null, 2) + '\n')
+
+            console.log("Package published successfully!")
+        } catch (error) {
+            // Revert version in package.json even if publish fails
+            console.log("Publishing failed, reverting package.json version...")
+            packageJson.version = "0.0.1"
+            fs.writeFileSync('package.json', JSON.stringify(packageJson, null, 2) + '\n')
+            process.exit(1)
+        }
+
+}
+
+publishToNpm("ui").catch((error) => {
+    console.error("Error during publishing ui:", error)
+    process.exit(1)
+})
+
+publishToNpm("api").catch((error) => {
+    console.error("Error during publish:", error)
     process.exit(1)
 })
