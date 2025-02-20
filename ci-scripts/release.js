@@ -30,7 +30,7 @@ async function publishToNpm(path) {
         console.log({changedFiles})
 
         // - if no changes, abort
-        if (!changedFiles.some((file) => file.startsWith(`${path}/`))) {
+        if (!changedFiles.some((file) => file.startsWith(`packages/${path}/`))) {
             console.log(`No changes in ${path}. Skipping package build.`)
             return process.exit(0)
         }
