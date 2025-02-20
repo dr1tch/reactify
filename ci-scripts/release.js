@@ -35,11 +35,11 @@ async function publishToNpm(path) {
             return process.exit(0)
         }
 
-        // Generate .npmrc with authentication
-        if (process.env.NODE_AUTH_TOKEN) {
-            console.log("Generating new .npmrc file...")
-            await generateNpmrc(process.env.NODE_AUTH_TOKEN)
-        }
+        // // Generate .npmrc with authentication
+        // if (process.env.NODE_AUTH_TOKEN) {
+        //     console.log("Generating new .npmrc file...")
+        //     await generateNpmrc(process.env.NODE_AUTH_TOKEN)
+        // }
 
         // 2 - get the latest commit hash
         console.log("getting the latest commit hash...")
