@@ -15,4 +15,4 @@ inputs:
     required: true
 runs:
   using: "node16"
-  main: "scripts/pr-metadata.js"
+  main: "ci-scripts/pr-metadata.js"

@@ -24,7 +24,7 @@ const mainPullRequest = async() => {
         if (changedFiles.some((file) => file.filename.startsWith('packages/ui/'))) {
             console.log('Package in "packages/ui/" has changed. Building the package...');
             buildPackage();
-            execSync('node scripts/release-it-pr.js', { encoding: 'utf-8' })
+            execSync('node ci-scripts/release-it-pr.js', { encoding: 'utf-8' })
 
         } else {
             console.log('No changes in "packages/ui/". Skipping package build.');
