@@ -50,24 +50,33 @@ async function publishToNpm(path) {
         const newVersion = `0.0.1-${lastCommitHash}`
         console.log({newVersion})
         // moving to the package directory
-        execSync(`cd packages/${path}`, {stdio: "inherit"})
+        // execSync(`cd packages/${path}`, {stdio: "inherit"})
 
         // logging current path
-        console.log("path: ", process.cwd())
 
-        // Build package
-        console.log("Building package...")
-        execSync("yarn build", {stdio: "inherit"})
+
+        // // Build package
+        // console.log("Building package...")
+        // execSync("yarn build", {stdio: "inherit"})
 
         // Store original version
         const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'))
 
         try {
             // Publish with yarn
-            console.log(`Publishing version ${newVersion}...`)
-            execSync(`yarn publish --access public --new-version ${newVersion} --non-interactive --no-git-tag-version`, {
-                stdio: "inherit"
-            })
+            console.log(`Building and publishing package version ${newVersion}...`)
+            const command = [
+                `cd packages/${path}`,
+                "yarn install",
+                "yarn build",
+                `yarn publish --access public --new-version ${newVersion} --non-interactive --no-git-tag-version`,
+            ].join(" && ")
+
+            execSync(command, { stdio: "inherit" })
+            console.log("path: ", process.cwd())
+            // execSync(`yarn publish --access public --new-version ${newVersion} --non-interactive --no-git-tag-version`, {
+            //     stdio: "inherit"
+            // })
 
             // Revert version in package.json
             console.log("Reverting package.json version...")
