@@ -52,6 +52,9 @@ async function publishToNpm(path) {
         // moving to the package directory
         execSync(`cd packages/${path}`, {stdio: "inherit"})
 
+        // logging current path
+        console.log("path: ", process.cwd())
+
         // Build package
         console.log("Building package...")
         execSync("yarn build", {stdio: "inherit"})
